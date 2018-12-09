@@ -1,0 +1,17 @@
+language: python
+python:
+  - "3.6"
+before_install:
+  - pip install pytest pytest-cov
+  - pip install coveralls
+install:
+  - pip install numpy
+  - pip install matplotlib
+  - pip install networks
+  - pip install scipy-stats
+  - pip install -e .
+script:
+  - pytest --cov=karstnet
+  - pycodestyle karstnet tests
+after_success:
+- coveralls
