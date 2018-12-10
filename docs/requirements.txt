@@ -1,5 +1,5 @@
 networkx
 numpy
 numpydoc
-scipy-stats
+scipy.stats
 matplotlib.pyplot
