@@ -31,8 +31,6 @@ From source directory, and after instaling **karstnet** run:
 
 ## Documentation
 
-An html documentation is available in the sub directory:
+The html documentation is available in the sub directory:  ``docs/_build/html/index.html``
 
- ``docs/_build/html/index.html``
-
-Also available in ReadTheDocs: https://karstnet.readthedocs.io/en/latest/
+Also available online at: https://karstnet.readthedocs.io/
