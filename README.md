@@ -34,5 +34,6 @@ An html documentation is available in the sub directory:
 
  ``docs/_build/html/index.html``
 
+Also available in ReadTheDocs
 
 
