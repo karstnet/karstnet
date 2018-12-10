@@ -1,0 +1,5 @@
+networkx
+numpy
+numpydoc
+scipy-stats
+matplotlib.pyplot
