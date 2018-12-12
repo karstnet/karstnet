@@ -1,1 +1,3 @@
 karstnet.egg-info/
+.nbgrader.log
+notebooks/.ipynb_checkpoints/
