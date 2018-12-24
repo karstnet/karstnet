@@ -506,12 +506,16 @@ class KGraph:
         """
 
         v = self.br_lengths
-        nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
-        counts, _ = np.histogram(v, bins=nbins,
-                                 range=(np.min(v)*0.97, np.max(v)*1.08))
-        # trick: interval is shifted to avoid rounding error issues on edges
-        freq = counts / sum(counts)  # Computes the frequencies
-        entropy = st.entropy(freq, base=len(freq))
+
+        if(len(v) > 1):
+            nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
+            # trick: interval is shifted to avoid rounding error issues on edges
+            counts, _ = np.histogram(v, bins=nbins,
+                                     range=(np.min(v)*0.97, np.max(v)*1.08))
+            freq = counts / sum(counts)  # Computes the frequencies
+            entropy = st.entropy(freq, base=len(freq))
+        else:
+            entropy = 0 # v contains a single value - no uncertainty
 
         return entropy
 
@@ -535,12 +539,14 @@ class KGraph:
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
 
-        # We use Sturges rule to define the number of bins fron nb of samples
-        nbins = int(np.ceil(1 + np.log2(len(azim))))
-        counts, _ = np.histogram(azim, bins=nbins, range=(0, 180), weights=l2d)
-        # trick: interval is shifted to avoid rounding error issues on edges
-        freq = counts / sum(counts)  # Computes the frequencies
-        entropy = st.entropy(freq, base=len(freq))
+        if(len(azim) > 1):
+            # We use Sturges rule to define the number of bins fron nb of samples
+            nbins = int(np.ceil(1 + np.log2(len(azim))))
+            counts, _ = np.histogram(azim, bins=nbins, range=(-0.1, 181), weights=l2d)
+            freq = counts / sum(counts)  # Computes the frequencies
+            entropy = st.entropy(freq, base=len(freq))
+        else:
+            entropy = 0
 
         return entropy
 
@@ -1012,6 +1018,7 @@ class KGraph:
             if(self.graph.degree(i) != 2):
                 target.append(i)
                 degreeTarget.append(nx.degree(self.graph, i))
+
 
         # Identifies all the neighbors of those nodes,
         # to create all the initial paths
