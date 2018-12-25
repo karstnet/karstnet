@@ -1019,6 +1019,9 @@ class KGraph:
                 target.append(i)
                 degreeTarget.append(nx.degree(self.graph, i))
 
+        if(len(target) == 0):
+            target.append(i)
+            degreeTarget.append(nx.degree(self.graph, i))
 
         # Identifies all the neighbors of those nodes,
         # to create all the initial paths
@@ -1076,9 +1079,15 @@ class KGraph:
                               "1 edge when computing length")
 
             br_lengths.append(br_len)
+            # dist = 0 when positions are not defined
+            # or when we have a loop
             if dist != 0:
                 tort = br_len/dist
                 br_tort.append(tort)
+            else:
+                print("Warning: tortuosity is infinite on a looping branch.",
+                      "It is set to NAN to avoid further errors.")
+                br_tort.append(np.nan)
 
         return branches, np.array(br_lengths), np.array(br_tort)
 
@@ -1093,8 +1102,8 @@ class KGraph:
         """
 
         current = path[-1]
-        # Checks first tif the end of the path is already on an end
-        if self.graph.degree(current) != 2:
+        # Checks first if the end of the path is already on an end
+        if(self.graph.degree(current) != 2) :
             stopc = False
             return path, stopc
 
@@ -1111,7 +1120,11 @@ class KGraph:
 
         # Add the next node to the path and check stopping criteria
         path.append(nextn)
-        if self.graph.degree(nextn) != 2:
+
+        # Test for a closed loop / even if start node has degree = 2
+        testloop = path[0] == path[-1]
+
+        if((self.graph.degree(nextn) != 2) or testloop):
             stopc = False
         else:
             stopc = True
