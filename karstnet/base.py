@@ -369,9 +369,38 @@ class KGraph:
         plt.subplot(121)
         nx.draw_networkx(self.graph, pos=self.pos2d,
                          with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('y')
         plt.subplot(122)
         nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
                          with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.show()
+
+    def plotxz(self):
+        """
+        Simple 2D map of the original and simplified karstic network.
+
+        The two maps are ploted side by side. This function allows
+        to check rapidly the data after an import for example.
+
+        Examples
+        ---------
+           >>> myKGraph.plot()
+
+        """
+        plt.figure(figsize=(12, 5))
+        plt.subplot(121)
+        nx.draw_networkx(self.graph, pos=self.pos2d,
+                         with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('z')
+        plt.subplot(122)
+        nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
+                         with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('z')
         plt.show()
 
     # *************************************************************
@@ -509,13 +538,13 @@ class KGraph:
 
         if(len(v) > 1):
             nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
-            # trick: interval is shifted to avoid rounding error issues on edges
+            # interval is shifted to avoid rounding error issues on edges
             counts, _ = np.histogram(v, bins=nbins,
                                      range=(np.min(v)*0.97, np.max(v)*1.08))
             freq = counts / sum(counts)  # Computes the frequencies
             entropy = st.entropy(freq, base=len(freq))
         else:
-            entropy = 0 # v contains a single value - no uncertainty
+            entropy = 0   # v contains a single value - no uncertainty
 
         return entropy
 
@@ -540,10 +569,11 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
 
         if(len(azim) > 1):
-            # We use Sturges rule to define the number of bins fron nb of samples
+            # Sturges rule to define the number of bins fron nb of samples
             nbins = int(np.ceil(1 + np.log2(len(azim))))
-            counts, _ = np.histogram(azim, bins=nbins, range=(-0.1, 181), weights=l2d)
-            freq = counts / sum(counts)  # Computes the frequencies
+            counts, _ = np.histogram(azim, bins=nbins,
+                                     range=(-0.1, 181), weights=l2d)
+            freq = counts / sum(counts)   # Computes the frequencies
             entropy = st.entropy(freq, base=len(freq))
         else:
             entropy = 0
@@ -1103,7 +1133,7 @@ class KGraph:
 
         current = path[-1]
         # Checks first if the end of the path is already on an end
-        if(self.graph.degree(current) != 2) :
+        if(self.graph.degree(current) != 2):
             stopc = False
             return path, stopc
 
