@@ -571,7 +571,7 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'azimuth')).values()))
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
- 
+
         # Removing NAN Azimuth values that correspond to length2d=0
         azim_not_Nan = azim[~np.isnan(azim)]
         l2d_not_zero = l2d[np.nonzero(l2d)]
