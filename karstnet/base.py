@@ -1131,7 +1131,7 @@ class KGraph:
                 # the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        print("Warning: This network contains ",nb_of_Nan,"looping branches", 
+        print("Warning: This network contains ", nb_of_Nan, "looping branches", 
               "Tortuosity is infinite on a looping branch.", 
               "It is set to NAN to avoid further errors.\n")
         return branches, np.array(br_lengths), np.array(br_tort)
