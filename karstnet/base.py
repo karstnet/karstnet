@@ -488,10 +488,11 @@ class KGraph:
         --------
            >>> t = myKGraph.mean_tortuosity()
         """
-        nb_of_Nan=np.isnan(self.br_tort).sum()
-        if nb_of_Nan !=0:
+        nb_of_Nan = np.isnan(self.br_tort).sum()
+        if nb_of_Nan != 0:
             print("\n WARNING: This network contains ", nb_of_Nan,
-                  " cycles, which are not considered for the mean tortuosity computation")
+                  " cycles, which are not considered for the mean tortuosity ",
+                  "computation")
         return(np.nanmean(self.br_tort))
 
     def mean_length(self):
@@ -571,9 +572,9 @@ class KGraph:
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
         
-        #Removing NAN Azimuth values that correspond to length2d=0
-        azim_not_Nan= azim[~np.isnan(azim)]
-        l2d_not_zero= l2d[np.nonzero(l2d)]
+        # Removing NAN Azimuth values that correspond to length2d=0
+        azim_not_Nan = azim[~np.isnan(azim)]
+        l2d_not_zero = l2d[np.nonzero(l2d)]
         
         if(len(azim_not_Nan) > 1):
             # Sturges rule to define the number of bins fron nb of samples
@@ -1088,7 +1089,7 @@ class KGraph:
         # Read the dictionnary of length for each edge
         length = nx.get_edge_attributes(self.graph, 'length')
         
-        #To count the number of looping branches, for which tortuosity is Nan
+        # To count the number of looping branches, for which tortuosity is Nan
         nb_of_Nan = 0 
         for br in branches:
 
@@ -1120,19 +1121,19 @@ class KGraph:
             br_lengths.append(br_len)
             # dist = 0 when positions are not defined
             # or when we have a loop
-            
             if dist != 0:
                 tort = br_len/dist
                 br_tort.append(tort)
             else:
-                #print("Warning: tortuosity is infinite on a looping branch.",
-                 #     "It is set to NAN to avoid further errors.")
-                #On real systems, this message appears too many times and let the user thinks something goes wrong
+                # print("Warning: tortuosity is infinite on a looping branch.",
+                # "It is set to NAN to avoid further errors.")
+                # On real systems, this message appears too many times and let
+                # the user thinks something goes wrong
                 br_tort.append(np.nan)
-                nb_of_Nan +=1
-        print("Warning: This network contains ",nb_of_Nan,"looping branches",
-                  "Tortuosity is infinite on a looping branch.",
-                  "It is set to NAN to avoid further errors.\n")
+                nb_of_Nan += 1
+        print("Warning: This network contains ",nb_of_Nan,"looping branches", 
+              "Tortuosity is infinite on a looping branch.", 
+              "It is set to NAN to avoid further errors.\n")
 
         return branches, np.array(br_lengths), np.array(br_tort)
 
