@@ -571,11 +571,11 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'azimuth')).values()))
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
-        
+ 
         # Removing NAN Azimuth values that correspond to length2d=0
         azim_not_Nan = azim[~np.isnan(azim)]
         l2d_not_zero = l2d[np.nonzero(l2d)]
-        
+
         if(len(azim_not_Nan) > 1):
             # Sturges rule to define the number of bins fron nb of samples
             nbins = int(np.ceil(1 + np.log2(len(azim_not_Nan))))
@@ -1088,7 +1088,7 @@ class KGraph:
 
         # Read the dictionnary of length for each edge
         length = nx.get_edge_attributes(self.graph, 'length')
-        
+
         # To count the number of looping branches, for which tortuosity is Nan
         nb_of_Nan = 0
         for br in branches:
