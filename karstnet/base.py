@@ -1090,7 +1090,7 @@ class KGraph:
         length = nx.get_edge_attributes(self.graph, 'length')
         
         # To count the number of looping branches, for which tortuosity is Nan
-        nb_of_Nan = 0 
+        nb_of_Nan = 0
         for br in branches:
 
             # Computes the distance between extremities IF they are different
@@ -1134,7 +1134,6 @@ class KGraph:
         print("Warning: This network contains ",nb_of_Nan,"looping branches", 
               "Tortuosity is infinite on a looping branch.", 
               "It is set to NAN to avoid further errors.\n")
-
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.
