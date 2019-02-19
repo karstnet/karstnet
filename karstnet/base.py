@@ -146,7 +146,7 @@ def from_pline(filename):
         # Open the ascii file in reading mode
         f_pline = open(filename, 'r')
     except OSError:
-        print("IMPORT ERROR: Could not import {}".format(basename))
+        print("IMPORT ERROR: Could not import {}".format(filename))
         return
 
     #  To store 3D location
