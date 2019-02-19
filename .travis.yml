@@ -3,7 +3,6 @@ python:
   - "3.6"
 before_install:
   - pip install -U pytest 
-  - pytest --version
   - pip install pytest-cov
   - pip install coveralls
 install:
