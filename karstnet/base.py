@@ -146,7 +146,7 @@ def from_pline(filename):
         # Open the ascii file in reading mode
         f_pline = open(filename, 'r')
     except OSError:
-        print("IMPORT ERROR: Could not import {}".format(basename))
+        print("IMPORT ERROR: Could not import {}".format(filename))
         return
 
     #  To store 3D location
@@ -369,9 +369,38 @@ class KGraph:
         plt.subplot(121)
         nx.draw_networkx(self.graph, pos=self.pos2d,
                          with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('y')
         plt.subplot(122)
         nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
                          with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.show()
+
+    def plotxz(self):
+        """
+        Simple 2D map of the original and simplified karstic network.
+
+        The two maps are ploted side by side. This function allows
+        to check rapidly the data after an import for example.
+
+        Examples
+        ---------
+           >>> myKGraph.plot()
+
+        """
+        plt.figure(figsize=(12, 5))
+        plt.subplot(121)
+        nx.draw_networkx(self.graph, pos=self.pos2d,
+                         with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('z')
+        plt.subplot(122)
+        nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
+                         with_labels=False, node_size=0.1)
+        plt.xlabel('x')
+        plt.ylabel('z')
         plt.show()
 
     # *************************************************************
@@ -459,8 +488,12 @@ class KGraph:
         --------
            >>> t = myKGraph.mean_tortuosity()
         """
-
-        return(np.mean(self.br_tort))
+        nb_of_Nan = np.isnan(self.br_tort).sum()
+        if nb_of_Nan != 0:
+            print("\n WARNING: This network contains ", nb_of_Nan,
+                  " cycles, which are not considered for the mean tortuosity ",
+                  "computation")
+        return(np.nanmean(self.br_tort))
 
     def mean_length(self):
         """
@@ -494,7 +527,7 @@ class KGraph:
 
     def length_entropy(self):
         """
-        Compute the entropy of lengths of the branches of a karstic networkx
+        Compute the entropy of lengths of the branches of a karstic network
 
         Returns
         -------
@@ -506,12 +539,16 @@ class KGraph:
         """
 
         v = self.br_lengths
-        nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
-        counts, _ = np.histogram(v, bins=nbins,
-                                 range=(np.min(v)*0.97, np.max(v)*1.08))
-        # trick: interval is shifted to avoid rounding error issues on edges
-        freq = counts / sum(counts)  # Computes the frequencies
-        entropy = st.entropy(freq, base=len(freq))
+
+        if(len(v) > 1):
+            nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
+            # interval is shifted to avoid rounding error issues on edges
+            counts, _ = np.histogram(v, bins=nbins,
+                                     range=(np.min(v)*0.97, np.max(v)*1.08))
+            freq = counts / sum(counts)  # Computes the frequencies
+            entropy = st.entropy(freq, base=len(freq))
+        else:
+            entropy = 0   # v contains a single value - no uncertainty
 
         return entropy
 
@@ -535,12 +572,19 @@ class KGraph:
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
 
-        # We use Sturges rule to define the number of bins fron nb of samples
-        nbins = int(np.ceil(1 + np.log2(len(azim))))
-        counts, _ = np.histogram(azim, bins=nbins, range=(0, 180), weights=l2d)
-        # trick: interval is shifted to avoid rounding error issues on edges
-        freq = counts / sum(counts)  # Computes the frequencies
-        entropy = st.entropy(freq, base=len(freq))
+        # Removing NAN Azimuth values that correspond to length2d=0
+        azim_not_Nan = azim[~np.isnan(azim)]
+        l2d_not_zero = l2d[np.nonzero(l2d)]
+
+        if(len(azim_not_Nan) > 1):
+            # Sturges rule to define the number of bins fron nb of samples
+            nbins = int(np.ceil(1 + np.log2(len(azim_not_Nan))))
+            counts, _ = np.histogram(azim_not_Nan, bins=nbins,
+                                     range=(-0.1, 181), weights=l2d_not_zero)
+            freq = counts / sum(counts)   # Computes the frequencies
+            entropy = st.entropy(freq, base=len(freq))
+        else:
+            entropy = 0
 
         return entropy
 
@@ -1013,6 +1057,10 @@ class KGraph:
                 target.append(i)
                 degreeTarget.append(nx.degree(self.graph, i))
 
+        if(len(target) == 0):
+            target.append(i)
+            degreeTarget.append(nx.degree(self.graph, i))
+
         # Identifies all the neighbors of those nodes,
         # to create all the initial paths
         listStartBranches = []
@@ -1041,6 +1089,8 @@ class KGraph:
         # Read the dictionnary of length for each edge
         length = nx.get_edge_attributes(self.graph, 'length')
 
+        # To count the number of looping branches, for which tortuosity is Nan
+        nb_of_Nan = 0
         for br in branches:
 
             # Computes the distance between extremities IF they are different
@@ -1069,10 +1119,21 @@ class KGraph:
                               "1 edge when computing length")
 
             br_lengths.append(br_len)
+            # dist = 0 when positions are not defined
+            # or when we have a loop
             if dist != 0:
                 tort = br_len/dist
                 br_tort.append(tort)
-
+            else:
+                # print("Warning: tortuosity is infinite on a looping branch.",
+                # "It is set to NAN to avoid further errors.")
+                # On real systems, this message appears too many times and let
+                # the user thinks something goes wrong
+                br_tort.append(np.nan)
+                nb_of_Nan += 1
+        print("Warning: This network contains ", nb_of_Nan, "looping branches",
+              "Tortuosity is infinite on a looping branch.",
+              "It is set to NAN to avoid further errors.\n")
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.
@@ -1086,8 +1147,8 @@ class KGraph:
         """
 
         current = path[-1]
-        # Checks first tif the end of the path is already on an end
-        if self.graph.degree(current) != 2:
+        # Checks first if the end of the path is already on an end
+        if(self.graph.degree(current) != 2):
             stopc = False
             return path, stopc
 
@@ -1104,7 +1165,11 @@ class KGraph:
 
         # Add the next node to the path and check stopping criteria
         path.append(nextn)
-        if self.graph.degree(nextn) != 2:
+
+        # Test for a closed loop / even if start node has degree = 2
+        testloop = path[0] == path[-1]
+
+        if((self.graph.degree(nextn) != 2) or testloop):
             stopc = False
         else:
             stopc = True
