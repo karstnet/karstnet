@@ -1259,8 +1259,8 @@ class KGraph:
             # Check all existing branches to avoid adding a branch twice
             # if starting from other extremity
             for knownbranch in branches:
-                if ((path[0] == knownbranch[-1]) & 
-                    (path[1] == knownbranch[-2])):
+                if ((path[0] == knownbranch[-1]) &
+                (path[1] == knownbranch[-2])):
                     go = False
                     break
             if go:
