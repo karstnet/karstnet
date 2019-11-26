@@ -159,9 +159,9 @@ def from_therion_sql(basename):
     # Read the SQL file and extract nodes and links data
     c = conn.cursor()
     stnames = dict()
-    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
-		st left join SURVEY su on st.SURVEY_ID = su.ID;')
-    nodes_th = []
+	c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
+	st left join SURVEY su on st.SURVEY_ID = su.ID;')
+	nodes_th = []
     stations_th = []
     stations_id = []
     for s in c.fetchall():
@@ -1261,8 +1261,8 @@ class KGraph:
             # Check all existing branches to avoid adding a branch twice
             # if starting from other extremity
             for knownbranch in branches:
-                if ((path[0] == knownbranch[-1]) &
-                    (path[1] == knownbranch[-2])):
+                if ((path[0] == knownbranch[-1]) &\
+				(path[1] == knownbranch[-2])):
                     go = False
                     break
             if go:
