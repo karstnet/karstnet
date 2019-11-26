@@ -158,10 +158,9 @@ def from_therion_sql(basename):
 
     # Read the SQL file and extract nodes and links data
     c = conn.cursor()
-    stnames = dict()
-	c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
+    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
 	st left join SURVEY su on st.SURVEY_ID = su.ID;')
-	nodes_th = []
+    nodes_th = []
     stations_th = []
     stations_id = []
     for s in c.fetchall():
@@ -514,7 +513,6 @@ class KGraph:
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
         azim_not_Nan = azim[~np.isnan(azim)]
-        plunge_not_Nan = plunge_dc[~np.isnan(azim)]
         l2d_not_Nan = l2d[~np.isnan(azim)]
 
         # import matplotlib as mpl
@@ -522,7 +520,7 @@ class KGraph:
         # Making colormap, based on Collon et al.(2017) \
         # we saturate the colormap at 40%
         from matplotlib import cm
-        from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+        from matplotlib.colors import ListedColormap
         nbint = 15
         levels = np.linspace(0, 1, nbint)
         rainbow = cm.get_cmap('rainbow')
@@ -1261,8 +1259,8 @@ class KGraph:
             # Check all existing branches to avoid adding a branch twice
             # if starting from other extremity
             for knownbranch in branches:
-                if ((path[0] == knownbranch[-1]) &\
-				(path[1] == knownbranch[-2])):
+                if ((path[0] == knownbranch[-1]) & 
+                    (path[1] == knownbranch[-2])):
                     go = False
                     break
             if go:
