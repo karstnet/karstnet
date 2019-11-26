@@ -159,7 +159,7 @@ def from_therion_sql(basename):
     # Read the SQL file and extract nodes and links data
     c = conn.cursor()
     c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
-	st left join SURVEY su on st.SURVEY_ID = su.ID;')
+    st left join SURVEY su on st.SURVEY_ID = su.ID;')
     nodes_th = []
     stations_th = []
     stations_id = []
@@ -324,6 +324,7 @@ class KGraph:
       - A voir ??? tortuosity des branches
       - A voir: ou un dico de branches ?
     """
+
     def __init__(self, edges, coordinates, properties={}):
         """
         Creates a Kgraph from nodes and edges.
@@ -892,7 +893,7 @@ class KGraph:
             # the all graph. But by the number of connected nodes (thus
             # it differs in each sub-graph)
             mean_dist_to_others += sum_dist_to_others / \
-                (len(len_spl[start_node])-1)
+                (len(len_spl[start_node]) - 1)
 
         av_SPL = mean_dist_to_others / nx.number_of_nodes(self.graph_simpl)
 
@@ -1260,7 +1261,7 @@ class KGraph:
             # if starting from other extremity
             for knownbranch in branches:
                 if ((path[0] == knownbranch[-1]) &
-                (path[1] == knownbranch[-2])):
+                        (path[1] == knownbranch[-2])):
                     go = False
                     break
             if go:
@@ -1405,7 +1406,7 @@ class KGraph:
                     azimuth[e] = np.degrees(azimuth[e])
                 else:  # azimuth is comprised between 90° and 180°
                     azimuth[e] = 90 + \
-                        np.degrees(np.arccos(abs(dx)/length2d[e]))
+                        np.degrees(np.arccos(abs(dx) / length2d[e]))
 
                 # to group 0 and 180 inside same bins
                 azimuth[e] = np.fmod(azimuth[e], 180)
