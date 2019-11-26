@@ -119,7 +119,7 @@ def from_nodlink_dat(basename):
     return Kg
 
 
-### modif PV 2019/11/25
+# modif PVernant 2019/11/25
 # add a function to read form an SQL export of Therion
 
 
@@ -160,7 +160,8 @@ def from_therion_sql(basename):
     c = conn.cursor()
     stnames = dict()
     c.execute(
-        'select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION st left join SURVEY su on st.SURVEY_ID = su.ID;'
+        'select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
+		st left join SURVEY su on st.SURVEY_ID = su.ID;'
     )
     nodes_th = []
     stations_th = []
@@ -196,7 +197,7 @@ def from_therion_sql(basename):
     return Kg
 
 
-### end of modif PV 2019/11/25
+# end of modif PVernant 2019/11/25
 
 
 def from_pline(filename):
@@ -492,13 +493,13 @@ class KGraph:
         plt.ylabel('z')
         plt.show()
 
-### modif PV 2019/11/25
+# modif PVernant 2019/11/25
 
     def stereo(self):
         """
         Density map of orientations and rose diagram of the karstic network.
 
-        The two stereo are ploted side by side. 
+        The two stereo are ploted side by side.
 
         Examples
         ---------
@@ -518,9 +519,10 @@ class KGraph:
         plunge_not_Nan = plunge_dc[~np.isnan(azim)]
         l2d_not_Nan = l2d[~np.isnan(azim)]
 
-        #import matplotlib as mpl
+        # import matplotlib as mpl
 
-        # Making colormap, based on Colon et al.(2017) we saturate the colormap at 40%
+        # Making colormap, based on Collon et al.(2017) \
+		# we saturate the colormap at 40%
         from matplotlib import cm
         from matplotlib.colors import ListedColormap, LinearSegmentedColormap
         nbint = 15
@@ -583,7 +585,7 @@ class KGraph:
         fig.tight_layout()
         plt.show()
 
-### end modif PV 2019/11/25
+# end modif PV 2019/11/25
 
 # *************************************************************
 # ----------------------- Export ------------------------------
