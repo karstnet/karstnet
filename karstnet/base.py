@@ -4,7 +4,6 @@
 #    All rights reserved.
 #    MIT license.
 #
-
 """
 Karstnet
 ========
@@ -25,7 +24,6 @@ import scipy.stats as st
 import matplotlib.pyplot as plt
 import sqlite3
 import mplstereonet
-
 
 # *************************************************************
 # -------------------Public Functions:-------------------------
@@ -93,12 +91,12 @@ def from_nodlink_dat(basename):
        >>> myKGraph = kn.from_nodlink_dat("MyKarst")
     """
 
-    link_name = basename+'_links.dat'
-    node_name = basename+'_nodes.dat'
+    link_name = basename + '_links.dat'
+    node_name = basename + '_nodes.dat'
 
     # Read data files if exist - otherwise return empty graph
     try:
-        links = np.loadtxt(link_name).astype(int)-1
+        links = np.loadtxt(link_name).astype(int) - 1
     except OSError:
         print("IMPORT ERROR: Could not import {}".format(link_name))
         return
@@ -120,8 +118,10 @@ def from_nodlink_dat(basename):
     print("Graph successfully created from file !\n")
     return Kg
 
-### modif PV 2019/11/25 
+
+### modif PV 2019/11/25
 # add a function to read form an SQL export of Therion
+
 
 def from_therion_sql(basename):
     """
@@ -145,41 +145,43 @@ def from_therion_sql(basename):
        >>> myKGraph = kn.from_therion_sql("MyKarst")
     """
 
-    sql_name = basename+'.sql'
+    sql_name = basename + '.sql'
 
     # Read data files if exist - otherwise return empty graph
     try:
-    	conn = sqlite3.connect(':memory:')
-    	conn.executescript(open(sql_name).read())
+        conn = sqlite3.connect(':memory:')
+        conn.executescript(open(sql_name).read())
 #    	conn.executescript(open('../data/g_huttes.sql').read())
     except OSError:
         print("IMPORT ERROR: Could not import {}".format(sql_name))
         return
 
-    # Read the SQL file and extract nodes and links data 
+    # Read the SQL file and extract nodes and links data
     c = conn.cursor()
     stnames = dict()
-    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION st left join SURVEY su on st.SURVEY_ID = su.ID;')
+    c.execute(
+        'select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION st left join SURVEY su on st.SURVEY_ID = su.ID;'
+    )
     nodes_th = []
     stations_th = []
     stations_id = []
     for s in c.fetchall():
-        nodes_th.append([s[3],s[4],s[5]])
+        nodes_th.append([s[3], s[4], s[5]])
         stations_th.append(s[1])
         stations_id.append(s[0])
 
     c.execute('select FROM_ID, TO_ID from SHOT;')
     links_th = []
     for s in c.fetchall():
-        links_th.append([s[0],s[1]])
+        links_th.append([s[0], s[1]])
 
-    # Remove the splay links 
-    T=[s != '.' for s in stations_th]
-    links_th = np.asarray(links_th).astype(int)-1
-    stations_id = np.asarray(stations_id).astype(int)[T]-1
+    # Remove the splay links
+    T = [s != '.' for s in stations_th]
+    links_th = np.asarray(links_th).astype(int) - 1
+    stations_id = np.asarray(stations_id).astype(int)[T] - 1
     links_ok = np.isin(links_th, stations_id)
-    links = links_th[np.logical_and(links_ok[:,0],links_ok[:,1])]
-    
+    links = links_th[np.logical_and(links_ok[:, 0], links_ok[:, 1])]
+
     # Create the dictionnary of coordinates
     nodes = np.asarray(nodes_th)
     coord = dict(enumerate(nodes[:, :3].tolist()))
@@ -193,7 +195,9 @@ def from_therion_sql(basename):
     print("Graph successfully created from file !\n")
     return Kg
 
+
 ### end of modif PV 2019/11/25
+
 
 def from_pline(filename):
     """
@@ -295,6 +299,7 @@ def from_pline(filename):
 #
 # **************************************************************
 
+
 class KGraph:
     """
     Class dedicated to the construction and manipulation of graphs
@@ -321,7 +326,6 @@ class KGraph:
       - A voir ??? tortuosity des branches
       - A voir: ou un dico de branches ?
     """
-
     def __init__(self, edges, coordinates, properties={}):
         """
         Creates a Kgraph from nodes and edges.
@@ -380,7 +384,7 @@ class KGraph:
            >>> myKGraph.plot2(1, zrotation=20, xyrotation=-30)
         """
 
-        if(graph_type == 0):
+        if (graph_type == 0):
             self._plot2(self.graph, figsize)
             plt.title('original')
             plt.show()
@@ -444,13 +448,17 @@ class KGraph:
         """
         plt.figure(figsize=(12, 5))
         plt.subplot(121)
-        nx.draw_networkx(self.graph, pos=self.pos2d,
-                         with_labels=False, node_size=0.1)
+        nx.draw_networkx(self.graph,
+                         pos=self.pos2d,
+                         with_labels=False,
+                         node_size=0.1)
         plt.xlabel('x')
         plt.ylabel('y')
         plt.subplot(122)
-        nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
-                         with_labels=False, node_size=0.1)
+        nx.draw_networkx(self.graph_simpl,
+                         pos=self.pos2d,
+                         with_labels=False,
+                         node_size=0.1)
         plt.xlabel('x')
         plt.ylabel('y')
         plt.show()
@@ -469,13 +477,17 @@ class KGraph:
         """
         plt.figure(figsize=(12, 5))
         plt.subplot(121)
-        nx.draw_networkx(self.graph, pos=self.pos2d,
-                         with_labels=False, node_size=0.1)
+        nx.draw_networkx(self.graph,
+                         pos=self.pos2d,
+                         with_labels=False,
+                         node_size=0.1)
         plt.xlabel('x')
         plt.ylabel('z')
         plt.subplot(122)
-        nx.draw_networkx(self.graph_simpl, pos=self.pos2d,
-                         with_labels=False, node_size=0.1)
+        nx.draw_networkx(self.graph_simpl,
+                         pos=self.pos2d,
+                         with_labels=False,
+                         node_size=0.1)
         plt.xlabel('x')
         plt.ylabel('z')
         plt.show()
@@ -502,11 +514,11 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'dip')).values()))
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
-        azim_not_Nan   = azim[~np.isnan(azim)]
+        azim_not_Nan = azim[~np.isnan(azim)]
         plunge_not_Nan = plunge_dc[~np.isnan(azim)]
         l2d_not_Nan = l2d[~np.isnan(azim)]
-  
-#import matplotlib as mpl
+
+        #import matplotlib as mpl
 
         # Making colormap, based on Colon et al.(2017) we saturate the colormap at 40%
         from matplotlib import cm
@@ -515,49 +527,67 @@ class KGraph:
         levels = np.linspace(0, 1, nbint)
         rainbow = cm.get_cmap('rainbow')
         newcolors = rainbow(levels)
-        white = np.array([256/256, 256/256, 256/256, 1])
+        white = np.array([256 / 256, 256 / 256, 256 / 256, 1])
         newcolors[:1, :] = white
         newcmp = ListedColormap(newcolors)
 
-        # Density map 
-        fig = plt.figure(figsize=(16,8))
+        # Density map
+        fig = plt.figure(figsize=(16, 8))
         dc = fig.add_subplot(121, projection='stereonet')
-        cdc=dc.density_contourf(plunge_dc, bearing_dc, measurement='lines',method='schmidt',levels=np.arange(0,nbint*2+1,2), extend='both', cmap=newcmp)
-        dc.set_title('Density map of orientations [Schmidt\'s projection]', y=1.10, fontsize=15)
+        cdc = dc.density_contourf(plunge_dc,
+                                  bearing_dc,
+                                  measurement='lines',
+                                  method='schmidt',
+                                  levels=np.arange(0, nbint * 2 + 1, 2),
+                                  extend='both',
+                                  cmap=newcmp)
+        dc.set_title('Density map of orientations [Schmidt\'s projection]',
+                     y=1.10,
+                     fontsize=15)
         dc.grid()
-        cbar = plt.colorbar(cdc, fraction=0.046, pad=0.04, orientation = 'horizontal')
+        cbar = plt.colorbar(cdc,
+                            fraction=0.046,
+                            pad=0.04,
+                            orientation='horizontal')
         cbar.set_label('[%]')
 
         # Rose diagram
         bin_edges = np.arange(-5, 366, 10)
-        number_of_strikes, bin_edges = np.histogram(azim_not_Nan, bin_edges, weights=l2d_not_Nan)
+        number_of_strikes, bin_edges = np.histogram(azim_not_Nan,
+                                                    bin_edges,
+                                                    weights=l2d_not_Nan)
         number_of_strikes[0] += number_of_strikes[-1]
         half = np.sum(np.split(number_of_strikes[:-1], 2), 0)
         two_halves = np.concatenate([half, half])
 
         rs = fig.add_subplot(122, projection='polar')
-        rs.bar(np.deg2rad(np.arange(0, 360, 10)), two_halves, 
-             width=np.deg2rad(10), bottom=0.0, color='.8', edgecolor='k')
+        rs.bar(np.deg2rad(np.arange(0, 360, 10)),
+               two_halves,
+               width=np.deg2rad(10),
+               bottom=0.0,
+               color='.8',
+               edgecolor='k')
         rs.set_theta_zero_location('N')
         rs.set_theta_direction(-1)
         rs.set_thetagrids(np.arange(0, 360, 10), labels=np.arange(0, 360, 10))
-        rs.set_title('Rose Diagram of the cave survey legs', y=1.10, fontsize=15)
-        cbar = plt.colorbar(cdc, fraction=0.046, pad=0.04, orientation = 'horizontal')
+        rs.set_title('Rose Diagram of the cave survey legs',
+                     y=1.10,
+                     fontsize=15)
+        cbar = plt.colorbar(cdc,
+                            fraction=0.046,
+                            pad=0.04,
+                            orientation='horizontal')
         cbar.set_label('[%]')
         cbar.remove()
 
         fig.tight_layout()
         plt.show()
 
-
 ### end modif PV 2019/11/25
 
-
-
-
-    # *************************************************************
-    # ----------------------- Export ------------------------------
-    # *************************************************************
+# *************************************************************
+# ----------------------- Export ------------------------------
+# *************************************************************
 
     def to_pline(self, basename):
         """
@@ -642,10 +672,11 @@ class KGraph:
         """
         nb_of_Nan = np.isnan(self.br_tort).sum()
         if nb_of_Nan != 0:
-            print("\n WARNING: This network contains ", nb_of_Nan,
-                  " cycles, which are not considered for the mean tortuosity ",
-                  "computation")
-        return(np.nanmean(self.br_tort))
+            print(
+                "\n WARNING: This network contains ", nb_of_Nan,
+                " cycles, which are not considered for the mean tortuosity ",
+                "computation")
+        return (np.nanmean(self.br_tort))
 
     def mean_length(self):
         """
@@ -659,7 +690,7 @@ class KGraph:
         --------
            >>> l = myKGraph.mean_length()
         """
-        return(np.mean(self.br_lengths))
+        return (np.mean(self.br_lengths))
 
     def coef_variation_length(self):
         """
@@ -675,7 +706,7 @@ class KGraph:
            >>> cvl = myKGraph.coef_variation_length()
         """
 
-        return(np.std(self.br_lengths)/np.mean(self.br_lengths))
+        return (np.std(self.br_lengths) / np.mean(self.br_lengths))
 
     def length_entropy(self):
         """
@@ -692,15 +723,17 @@ class KGraph:
 
         v = self.br_lengths
 
-        if(len(v) > 1):
+        if (len(v) > 1):
             nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
             # interval is shifted to avoid rounding error issues on edges
-            counts, _ = np.histogram(v, bins=nbins,
-                                     range=(np.min(v)*0.97, np.max(v)*1.08))
+            counts, _ = np.histogram(v,
+                                     bins=nbins,
+                                     range=(np.min(v) * 0.97,
+                                            np.max(v) * 1.08))
             freq = counts / sum(counts)  # Computes the frequencies
             entropy = st.entropy(freq, base=len(freq))
         else:
-            entropy = 0   # v contains a single value - no uncertainty
+            entropy = 0  # v contains a single value - no uncertainty
 
         return entropy
 
@@ -728,12 +761,14 @@ class KGraph:
         azim_not_Nan = azim[~np.isnan(azim)]
         l2d_not_zero = l2d[np.nonzero(l2d)]
 
-        if(len(azim_not_Nan) > 1):
+        if (len(azim_not_Nan) > 1):
             # Sturges rule to define the number of bins fron nb of samples
             nbins = int(np.ceil(1 + np.log2(len(azim_not_Nan))))
-            counts, _ = np.histogram(azim_not_Nan, bins=nbins,
-                                     range=(-0.1, 181), weights=l2d_not_zero)
-            freq = counts / sum(counts)   # Computes the frequencies
+            counts, _ = np.histogram(azim_not_Nan,
+                                     bins=nbins,
+                                     range=(-0.1, 181),
+                                     weights=l2d_not_zero)
+            freq = counts / sum(counts)  # Computes the frequencies
             entropy = st.entropy(freq, base=len(freq))
         else:
             entropy = 0
@@ -762,7 +797,7 @@ class KGraph:
         meandeg = np.mean(d)
 
         # Coefficient of variation of the degree
-        cvde = np.std(d)/np.mean(d)
+        cvde = np.std(d) / np.mean(d)
 
         return meandeg, cvde
 
@@ -815,7 +850,7 @@ class KGraph:
         """
         bet_cen = nx.betweenness_centrality(self.graph_simpl)
         bet_cen = list(bet_cen.values())
-        cpd = sum(max(bet_cen) - np.array(bet_cen))/(len(bet_cen)-1)
+        cpd = sum(max(bet_cen) - np.array(bet_cen)) / (len(bet_cen) - 1)
 
         return cpd
 
@@ -843,8 +878,8 @@ class KGraph:
         if not dist_weight:
             len_spl = dict(nx.shortest_path_length(self.graph_simpl))
         else:
-            len_spl = dict(nx.shortest_path_length(
-                self.graph_simpl, weight="length"))
+            len_spl = dict(
+                nx.shortest_path_length(self.graph_simpl, weight="length"))
 
         mean_dist_to_others = 0  # SPLi in the paper
         # Iterate on each node of the graph
@@ -941,7 +976,7 @@ class KGraph:
                 print(" %25s = %5.3f" % (key, results[key]))
             print("--------------------------------------")
 
-        return(results)
+        return (results)
 
     # *************************************************************************
     # Non Public member functions of KGraph class
@@ -964,12 +999,13 @@ class KGraph:
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            raise ImportError(
-                "karstnet.plot3 requires matpllotlib.pyplot")
+            raise ImportError("karstnet.plot3 requires matpllotlib.pyplot")
 
         plt.figure(figsize=figsize)
 
-        nx.draw_networkx(G, with_labels=True, pos=self.pos2d,
+        nx.draw_networkx(G,
+                         with_labels=True,
+                         pos=self.pos2d,
                          node_color='lightblue')
 
         return
@@ -988,13 +1024,11 @@ class KGraph:
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            raise ImportError(
-                "karstnet.plot3 requires matpllotlib.pyplot")
+            raise ImportError("karstnet.plot3 requires matpllotlib.pyplot")
         try:
             from mpl_toolkits.mplot3d import Axes3D
         except ImportError:
-            raise ImportError(
-                "karstnet.plot3 requires mpl_toolkits.mplot3d ")
+            raise ImportError("karstnet.plot3 requires mpl_toolkits.mplot3d ")
 
         fig = plt.figure(figsize=figsize)
         ax = Axes3D(fig)
@@ -1008,14 +1042,13 @@ class KGraph:
             ax.plot(x, y, z, c='black', alpha=0.5)
 
         # Set the view
-        ax.view_init(zrotation, -xyrotation-90)
+        ax.view_init(zrotation, -xyrotation - 90)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
         return
-
 
     # *******************************
     # Private function for export
@@ -1056,7 +1089,7 @@ class KGraph:
         # Header writing
         f_pline.write('GOCAD PLine 1\n')
         f_pline.write('HEADER {\n')
-        f_pline.write('name:'+output_file_name+'\n')
+        f_pline.write('name:' + output_file_name + '\n')
         f_pline.write('}\n')
         f_pline.write('GOCAD_ORIGINAL_COORDINATE_SYSTEM\n')
         f_pline.write('NAME Default\nAXIS_NAME "U" "V" "W"\n')
@@ -1088,10 +1121,10 @@ class KGraph:
                 # First, verify that this node has not already been
                 # added to choose between vrtx or atom
                 if node not in dico_added_nodes:
-                    f_pline.write('VRTX ' + str(cpt_vrtx)
-                                  + ' ' + str(self.pos3d[node][0])
-                                  + ' ' + str(self.pos3d[node][1])
-                                  + ' ' + str(self.pos3d[node][2]) + '\n')
+                    f_pline.write('VRTX ' + str(cpt_vrtx) + ' ' +
+                                  str(self.pos3d[node][0]) + ' ' +
+                                  str(self.pos3d[node][1]) + ' ' +
+                                  str(self.pos3d[node][2]) + '\n')
                     # Update dico_added_nodes to indicate that the node
                     # has already been declared
                     # and store the correct index in the pline domain
@@ -1099,15 +1132,15 @@ class KGraph:
                 # if node is in dico_added_nodes, we must build an atom
                 # refering to the vrtx number in the pline
                 else:
-                    f_pline.write('ATOM '+str(cpt_vrtx) + ' ' +
-                                  str(dico_added_nodes[node])+'\n')
+                    f_pline.write('ATOM ' + str(cpt_vrtx) + ' ' +
+                                  str(dico_added_nodes[node]) + '\n')
                 # Update vrtx counting to treat the next node of the iline
                 cpt_vrtx += 1
             # When all nodes of a branch have been written, write the list
             # of segments using new numbers
-            for i in range(len(iline)-1):
-                f_pline.write('SEG '+str(cpt_vrtx_deb+i) +
-                              ' ' + str(cpt_vrtx_deb+i+1)+'\n')
+            for i in range(len(iline) - 1):
+                f_pline.write('SEG ' + str(cpt_vrtx_deb + i) + ' ' +
+                              str(cpt_vrtx_deb + i + 1) + '\n')
             # One Iline has been written, go to next one
 
         # All ilines have been written
@@ -1133,9 +1166,9 @@ class KGraph:
         # Creation of a dictionnary to store the length of each edge
         length = {}
         for e in self.graph.edges():
-            dx = self.pos3d[e[0]][0]-self.pos3d[e[1]][0]
-            dy = self.pos3d[e[0]][1]-self.pos3d[e[1]][1]
-            dz = self.pos3d[e[0]][2]-self.pos3d[e[1]][2]
+            dx = self.pos3d[e[0]][0] - self.pos3d[e[1]][0]
+            dy = self.pos3d[e[0]][1] - self.pos3d[e[1]][1]
+            dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
             length[e] = np.sqrt(dx**2 + dy**2 + dz**2)
         # Storing the length as an edge attribute
         nx.set_edge_attributes(self.graph, length, 'length')
@@ -1177,12 +1210,12 @@ class KGraph:
 
             # Compute the length of the current edge
             l_edge = 0
-            for k in range(0, len(i)-1):
-                local_edge = (i[k], i[k+1])
+            for k in range(0, len(i) - 1):
+                local_edge = (i[k], i[k + 1])
                 if length.__contains__(local_edge):
                     l_edge += length[local_edge]
                 else:
-                    local_edge = (i[k+1], i[k])
+                    local_edge = (i[k + 1], i[k])
                     if length.__contains__(local_edge):
                         l_edge += length[local_edge]
                     else:
@@ -1206,11 +1239,11 @@ class KGraph:
         target = []
         degreeTarget = []
         for i in self.graph.nodes():
-            if(self.graph.degree(i) != 2):
+            if (self.graph.degree(i) != 2):
                 target.append(i)
                 degreeTarget.append(nx.degree(self.graph, i))
 
-        if(len(target) == 0):
+        if (len(target) == 0):
             target.append(i)
             degreeTarget.append(nx.degree(self.graph, i))
 
@@ -1228,8 +1261,8 @@ class KGraph:
             # Check all existing branches to avoid adding a branch twice
             # if starting from other extremity
             for knownbranch in branches:
-                if((path[0] == knownbranch[-1]) &
-                   (path[1] == knownbranch[-2])):
+                if ((path[0] == knownbranch[-1]) &
+                    (path[1] == knownbranch[-2])):
                     go = False
                     break
             if go:
@@ -1248,9 +1281,9 @@ class KGraph:
 
             # Computes the distance between extremities IF they are different
             if self.pos3d[br[0]] != self.pos3d[br[-1]]:
-                dx = self.pos3d[br[0]][0]-self.pos3d[br[-1]][0]
-                dy = self.pos3d[br[0]][1]-self.pos3d[br[-1]][1]
-                dz = self.pos3d[br[0]][2]-self.pos3d[br[-1]][2]
+                dx = self.pos3d[br[0]][0] - self.pos3d[br[-1]][0]
+                dy = self.pos3d[br[0]][1] - self.pos3d[br[-1]][1]
+                dz = self.pos3d[br[0]][2] - self.pos3d[br[-1]][2]
                 dist = np.sqrt(dx**2 + dy**2 + dz**2)
             else:
                 dist = 0
@@ -1259,12 +1292,12 @@ class KGraph:
             br_len = 0
             tort = 0
             # we don't want to treat the last node of the branch
-            for k in range(0, len(br)-1):
-                local_edge = (br[k], br[k+1])
+            for k in range(0, len(br) - 1):
+                local_edge = (br[k], br[k + 1])
                 if length.__contains__(local_edge):
                     br_len += length[local_edge]
                 else:
-                    local_edge = (br[k+1], br[k])
+                    local_edge = (br[k + 1], br[k])
                     if length.__contains__(local_edge):
                         br_len += length[local_edge]
                     else:
@@ -1275,7 +1308,7 @@ class KGraph:
             # dist = 0 when positions are not defined
             # or when we have a loop
             if dist != 0:
-                tort = br_len/dist
+                tort = br_len / dist
                 br_tort.append(tort)
             else:
                 # print("Warning: tortuosity is infinite on a looping branch.",
@@ -1301,7 +1334,7 @@ class KGraph:
 
         current = path[-1]
         # Checks first if the end of the path is already on an end
-        if(self.graph.degree(current) != 2):
+        if (self.graph.degree(current) != 2):
             stopc = False
             return path, stopc
 
@@ -1322,7 +1355,7 @@ class KGraph:
         # Test for a closed loop / even if start node has degree = 2
         testloop = path[0] == path[-1]
 
-        if((self.graph.degree(nextn) != 2) or testloop):
+        if ((self.graph.degree(nextn) != 2) or testloop):
             stopc = False
         else:
             stopc = True
@@ -1338,7 +1371,7 @@ class KGraph:
         path, stopc = self._nextstep(path)
         while stopc:
             path, stopc = self._nextstep(path)
-        return(path)
+        return (path)
 
     # *******************************
     # Private functions used for orientations
@@ -1357,19 +1390,19 @@ class KGraph:
         dip = {}
         azimuth = {}
         for e in self.graph.edges():
-            dx = self.pos3d[e[0]][0]-self.pos3d[e[1]][0]
-            dy = self.pos3d[e[0]][1]-self.pos3d[e[1]][1]
-            dz = self.pos3d[e[0]][2]-self.pos3d[e[1]][2]
+            dx = self.pos3d[e[0]][0] - self.pos3d[e[1]][0]
+            dy = self.pos3d[e[0]][1] - self.pos3d[e[1]][1]
+            dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
             length2d[e] = np.sqrt(dx**2 + dy**2)
 
             if length2d[e] != 0:
-                dip[e] = np.arctan(abs(dz)/length2d[e])  # returns in radians
+                dip[e] = np.arctan(abs(dz) / length2d[e])  # returns in radians
                 dip[e] = np.degrees(dip[e])
                 if (dz < 0):
                     dip[e] = -dip[e]
                 if (dx * dy > 0):  # azimuth is comprised between 0 and 90°
                     # returns in radians
-                    azimuth[e] = np.arcsin(abs(dx)/length2d[e])
+                    azimuth[e] = np.arcsin(abs(dx) / length2d[e])
                     # converts in degrees
                     azimuth[e] = np.degrees(azimuth[e])
                 else:  # azimuth is comprised between 90° and 180°
@@ -1393,9 +1426,9 @@ class KGraph:
 
 # -------------------END of KGraph class-------------------------------
 
+# -----------------------------------------------------------------
+# -----------------------------------------------------------------
 
-# -----------------------------------------------------------------
-# -----------------------------------------------------------------
 
 # **********************************
 # Functions used in KGraph class, but which are not member functions
@@ -1432,16 +1465,17 @@ def _pos_initialization(coordinates):
 
 # ******Functions used for graph simplification
 
+
 def _split2(list_):
     """
     Splits a list in 2 sublists.
     """
     list_length = len(list_)
-    if(list_length == 2):
-        return(list_, [])
+    if (list_length == 2):
+        return (list_, [])
     else:
-        midpoint = int(list_length/2)
-        return(list_[0:midpoint+1], list_[midpoint:list_length])
+        midpoint = int(list_length / 2)
+        return (list_[0:midpoint + 1], list_[midpoint:list_length])
 
 
 def _split3(list_):
@@ -1449,14 +1483,14 @@ def _split3(list_):
     Splits a list in 3 sublists.
     """
     list_length = len(list_)
-    if(list_length == 2):
-        return(list_, [], [])
-    elif(list_length == 3):
+    if (list_length == 2):
+        return (list_, [], [])
+    elif (list_length == 3):
         l1, l2 = _split2(list_)
-        return(l1, l2, [])
+        return (l1, l2, [])
     else:
-        k = int(list_length/3.)
-        return(list_[0:k+1], list_[k:2*k+1], list_[2*k:list_length])
+        k = int(list_length / 3.)
+        return (list_[0:k + 1], list_[k:2 * k + 1], list_[2 * k:list_length])
 
 
 def _split_branches(branches):
@@ -1486,14 +1520,14 @@ def _split_branches(branches):
             isloop = False
 
         # Simple case - no cycle but potential loop
-        if(nbb == 1):
+        if (nbb == 1):
             tmp = branches[list_branches[key][0]]
             if isloop:  # In the loop case, we need to split by 3 the branch
                 tmp1, tmp2, tmp3 = _split3(tmp)
                 simpl_edges.append(tmp1)
-                if(len(tmp2) > 0):
+                if (len(tmp2) > 0):
                     simpl_edges.append(tmp2)
-                    if(len(tmp3) > 0):
+                    if (len(tmp3) > 0):
                         simpl_edges.append(tmp3)
             else:
                 simpl_edges.append(tmp)
@@ -1505,15 +1539,15 @@ def _split_branches(branches):
                 if isloop:  # Case with multiple loops
                     tmp1, tmp2, tmp3 = _split3(tmp)
                     simpl_edges.append(tmp1)
-                    if(len(tmp2) > 0):
+                    if (len(tmp2) > 0):
                         simpl_edges.append(tmp2)
-                        if(len(tmp3) > 0):
+                        if (len(tmp3) > 0):
                             simpl_edges.append(tmp3)
                 else:
                     # A regular branch belonging to a cycle, need to split in 2
                     tmp1, tmp2 = _split2(tmp)
                     simpl_edges.append(tmp1)
-                    if(len(tmp2) > 0):
+                    if (len(tmp2) > 0):
                         simpl_edges.append(tmp2)
 
     return simpl_edges
