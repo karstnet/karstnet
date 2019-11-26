@@ -23,6 +23,9 @@ import numpy as np
 import networkx as nx
 import scipy.stats as st
 import matplotlib.pyplot as plt
+import sqlite3
+import mplstereonet
+
 
 # *************************************************************
 # -------------------Public Functions:-------------------------
@@ -117,6 +120,80 @@ def from_nodlink_dat(basename):
     print("Graph successfully created from file !\n")
     return Kg
 
+### modif PV 2019/11/25 
+# add a function to read form an SQL export of Therion
+
+def from_therion_sql(basename):
+    """
+    Creates the Kgraph from on SQL file exported from a Therion survey file.
+
+    Parameters
+    ----------
+    basename : string
+        The base name used for the input files.
+
+        The input file is named using the following convention:
+         - basename.sql: the containing all the needed informations
+
+    Returns
+    -------
+    KGraph
+        A KGraph object
+
+    Examples
+    --------
+       >>> myKGraph = kn.from_therion_sql("MyKarst")
+    """
+
+    sql_name = basename+'.sql'
+
+    # Read data files if exist - otherwise return empty graph
+    try:
+    	conn = sqlite3.connect(':memory:')
+    	conn.executescript(open(sql_name).read())
+#    	conn.executescript(open('../data/g_huttes.sql').read())
+    except OSError:
+        print("IMPORT ERROR: Could not import {}".format(sql_name))
+        return
+
+    # Read the SQL file and extract nodes and links data 
+    c = conn.cursor()
+    stnames = dict()
+    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION st left join SURVEY su on st.SURVEY_ID = su.ID;')
+    nodes_th = []
+    stations_th = []
+    stations_id = []
+    for s in c.fetchall():
+        nodes_th.append([s[3],s[4],s[5]])
+        stations_th.append(s[1])
+        stations_id.append(s[0])
+
+    c.execute('select FROM_ID, TO_ID from SHOT;')
+    links_th = []
+    for s in c.fetchall():
+        links_th.append([s[0],s[1]])
+
+    # Remove the splay links 
+    T=[s != '.' for s in stations_th]
+    links_th = np.asarray(links_th).astype(int)-1
+    stations_id = np.asarray(stations_id).astype(int)[T]-1
+    links_ok = np.isin(links_th, stations_id)
+    links = links_th[np.logical_and(links_ok[:,0],links_ok[:,1])]
+    
+    # Create the dictionnary of coordinates
+    nodes = np.asarray(nodes_th)
+    coord = dict(enumerate(nodes[:, :3].tolist()))
+
+    if len(nodes[0] > 3):
+        properties = dict(enumerate(nodes[:, 3:].tolist()))
+    else:
+        properties = {}
+
+    Kg = KGraph(links, coord, properties)
+    print("Graph successfully created from file !\n")
+    return Kg
+
+### end of modif PV 2019/11/25
 
 def from_pline(filename):
     """
@@ -402,6 +479,81 @@ class KGraph:
         plt.xlabel('x')
         plt.ylabel('z')
         plt.show()
+
+### modif PV 2019/11/25
+
+    def stereo(self):
+        """
+        Density map of orientations and rose diagram of the karstic network.
+
+        The two stereo are ploted side by side. 
+
+        Examples
+        ---------
+           >>> myKGraph.stereo()
+
+        """
+
+        # create an np.array of azimuths and projected lengths
+        azim = np.array(
+            list((nx.get_edge_attributes(self.graph, 'azimuth')).values()))
+        bearing_dc = np.nan_to_num(azim)
+        plunge_dc = np.array(
+            list((nx.get_edge_attributes(self.graph, 'dip')).values()))
+        l2d = np.array(
+            list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
+        azim_not_Nan   = azim[~np.isnan(azim)]
+        plunge_not_Nan = plunge_dc[~np.isnan(azim)]
+        l2d_not_Nan = l2d[~np.isnan(azim)]
+  
+#import matplotlib as mpl
+
+        # Making colormap, based on Colon et al.(2017) we saturate the colormap at 40%
+        from matplotlib import cm
+        from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+        nbint = 15
+        levels = np.linspace(0, 1, nbint)
+        rainbow = cm.get_cmap('rainbow')
+        newcolors = rainbow(levels)
+        white = np.array([256/256, 256/256, 256/256, 1])
+        newcolors[:1, :] = white
+        newcmp = ListedColormap(newcolors)
+
+        # Density map 
+        fig = plt.figure(figsize=(16,8))
+        dc = fig.add_subplot(121, projection='stereonet')
+        cdc=dc.density_contourf(plunge_dc, bearing_dc, measurement='lines',method='schmidt',levels=np.arange(0,nbint*2+1,2), extend='both', cmap=newcmp)
+        dc.set_title('Density map of orientations [Schmidt\'s projection]', y=1.10, fontsize=15)
+        dc.grid()
+        cbar = plt.colorbar(cdc, fraction=0.046, pad=0.04, orientation = 'horizontal')
+        cbar.set_label('[%]')
+
+        # Rose diagram
+        bin_edges = np.arange(-5, 366, 10)
+        number_of_strikes, bin_edges = np.histogram(azim_not_Nan, bin_edges, weights=l2d_not_Nan)
+        number_of_strikes[0] += number_of_strikes[-1]
+        half = np.sum(np.split(number_of_strikes[:-1], 2), 0)
+        two_halves = np.concatenate([half, half])
+
+        rs = fig.add_subplot(122, projection='polar')
+        rs.bar(np.deg2rad(np.arange(0, 360, 10)), two_halves, 
+             width=np.deg2rad(10), bottom=0.0, color='.8', edgecolor='k')
+        rs.set_theta_zero_location('N')
+        rs.set_theta_direction(-1)
+        rs.set_thetagrids(np.arange(0, 360, 10), labels=np.arange(0, 360, 10))
+        rs.set_title('Rose Diagram of the cave survey legs', y=1.10, fontsize=15)
+        cbar = plt.colorbar(cdc, fraction=0.046, pad=0.04, orientation = 'horizontal')
+        cbar.set_label('[%]')
+        cbar.remove()
+
+        fig.tight_layout()
+        plt.show()
+
+
+### end modif PV 2019/11/25
+
+
+
 
     # *************************************************************
     # ----------------------- Export ------------------------------
@@ -1212,6 +1364,8 @@ class KGraph:
             if length2d[e] != 0:
                 dip[e] = np.arctan(abs(dz)/length2d[e])  # returns in radians
                 dip[e] = np.degrees(dip[e])
+                if (dz < 0):
+                    dip[e] = -dip[e]
                 if (dx * dy > 0):  # azimuth is comprised between 0 and 90°
                     # returns in radians
                     azimuth[e] = np.arcsin(abs(dx)/length2d[e])
