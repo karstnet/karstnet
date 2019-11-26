@@ -159,10 +159,8 @@ def from_therion_sql(basename):
     # Read the SQL file and extract nodes and links data
     c = conn.cursor()
     stnames = dict()
-    c.execute(
-        'select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
-		st left join SURVEY su on st.SURVEY_ID = su.ID;'
-    )
+    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
+		st left join SURVEY su on st.SURVEY_ID = su.ID;')
     nodes_th = []
     stations_th = []
     stations_id = []
@@ -522,7 +520,7 @@ class KGraph:
         # import matplotlib as mpl
 
         # Making colormap, based on Collon et al.(2017) \
-		# we saturate the colormap at 40%
+        # we saturate the colormap at 40%
         from matplotlib import cm
         from matplotlib.colors import ListedColormap, LinearSegmentedColormap
         nbint = 15
