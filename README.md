@@ -18,8 +18,12 @@ Once this have been done, you can open a Python prompt (like for example Anacond
 Install from prompt:
 `pip install karstnet`
 
-Install from source (from project main directory):
+Install from source (from project main directory): 
+1) go to you directory location (ex: 
+`cd C:\Users\YourName\Documents\KARSTNET\karstnet"`
+2) then launch karstnet installation by taping:
 `pip install .`
+Do not forget the point "." at the end...
 
 If you want to run it directly from source (useful for development):
 ` pip install -e .`
