@@ -13,6 +13,11 @@ Version 0.1.0 - December 2018
 
 ## Installation
 
+Download karstnet from this Github platform : green button "clone or download". Then, unzip it on your computer. 
+Once this have been done, you can open a Python prompt (like for example Anaconda prompt) and install karstnet:
+Install from prompt:
+`pip install karstnet`
+
 Install from source (from project main directory):
 `pip install .`
 
