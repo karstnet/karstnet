@@ -414,13 +414,19 @@ class KGraph:
         >>> t = myKGraph.basic_analysis()
         
         """
-        nb_nodes = nx.number_of_nodes(self.graph)
-        nb_edges = nx.number_of_edges(self.graph)
-        nb_connected_components = nx.number_connected_components(self.graph)
+        
+        # On the complete graph
+        nb_nodes_comp = nx.number_of_nodes(self.graph)
+        nb_edges_comp = nx.number_of_edges(self.graph)
+        
+        # On the simplified graph
+        nb_nodes = nx.number_of_nodes(self.graph_simpl)
+        nb_edges = nx.number_of_edges(self.graph_simpl)
+        nb_connected_components = nx.number_connected_components(self.graph_simpl)
         
         nb_cycles = nb_edges - nb_nodes + nb_connected_components
         
-        # Compute all extremities and junction nodes (quickest on the simple graph)
+        # Compute all extremities and junction nodes (on the simple graph)
         nb_extremity_nodes = 0
         nb_junction_nodes = 0
         for i in self.graph_simpl.nodes():
@@ -430,25 +436,38 @@ class KGraph:
                 nb_junction_nodes += 1
                     
         # Print these basics
-        print("\n This network contains :", nb_nodes, 
-            " nodes (stations)\n", nb_edges,
-            "edges\n", nb_connected_components, 
-            " connected components\n", nb_cycles,
-            " cycles\n", nb_extremity_nodes, 
-            "are extremity nodes (entries or exits) and", nb_junction_nodes, 
-            "are junction nodes")  
+        print("\n This network contains :\n", nb_nodes_comp, 
+            " nodes (stations) and ", nb_edges_comp,
+            " edges.\n",
+            " On the simplified graph, there are : ", nb_nodes, 
+            " nodes (stations) and ", nb_edges,
+            " edges,\n", nb_extremity_nodes, 
+            " are extremity nodes (entries or exits) and ", nb_junction_nodes, 
+            " are junction nodes.\nThere is/are ", nb_connected_components, 
+            " connected component.s and ", nb_cycles,
+            " cycle.s.\n")  
         
         # Howard's parameters 
         # (Howard, A. D., Keetch, M. E., & Vincent, C. L. (1970). 
         # Topological and geometrical properties of braided patterns. 
         # Water Resources Research, 6(6), 1674–1688.)
-        alpha = nb_cycles / (2 * (nb_junction_nodes + nb_extremity_nodes)- 5)
-        beta = nb_edges / (nb_junction_nodes + nb_extremity_nodes)
-        gamma = nb_edges / (3 * (nb_junction_nodes  + nb_extremity_nodes - 2))
+        # Rmq: All nodes of the simplified network have to be considered, 
+        # even those of degree 2 in the cycles or, it is not becoming
+        # consistent with the exemples of braided rivers given by Howard.
+        # This is indeed consistent with what has been done in 
+        # Collon, P., Bernasconi, D., Vuilleumier, C., & Renard, P. (2017). 
+        # Statistical metrics for the characterization of karst network 
+        # geometry and topology. Geomorphology, 283, 122–142. 
+        alpha = nb_cycles / (2 * (nb_nodes)- 5)
+        beta = nb_edges / (nb_nodes)
+        gamma = nb_edges / (3 * (nb_nodes - 2))
         print("\nHoward's parameter are (Howard, 1970) :", 
             " \n alpha: ", alpha,
             "\n beta", beta, 
             "\n gamma", gamma)
+        print("\nNote that this computation considers the node of degree 2",
+              " necessary to loop preservations as Seed Nodes, in order to",
+              " stay consistent with Howard's illustrations.")
     
     def mean_tortuosity(self):
         """
