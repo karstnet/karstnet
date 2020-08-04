@@ -27,12 +27,13 @@ import sqlite3
 import mplstereonet
 
 
+
 # *************************************************************
 # -------------------Test function--------------------------
 # *************************************************************
 def test_kn():
-    print ("test ok")
-    print ("relance ok")
+    print("test ok")
+    print("relance ok")
    
 
 # **************************************************************
@@ -49,24 +50,27 @@ class KGraph:
 
     Attributes:
     -----------
-      - graph : the complete graph of the karstic network.
+        - graph : the complete graph of the karstic network.
                 Each station is a node, each line-of sigth is an edge.
                 It is a Networkx graph object, with length of edges
                 as attributes.
-      - graph_simpl: the simplified graph of the karstic network,
+        - graph_simpl: the simplified graph of the karstic network,
                 i.e. all nodes of degree 2 are removed except in loops
                 (2 types of loops)(cf Collon et al, 2017, Geomorphology)
                 graph_simple is a Networkx graph object, with length of
                 edges as attributes.
-      - pos3d : a dictionnary of the nodes with their 3d coordinates
+        - pos2d : a dictionnary of the nodes with their 2d coordinates
+                as a values [x, y]
+        - pos3d : a dictionnary of the nodes with their 3d coordinates
                 as a values [x, y, z]
-      - properties : a dictionnary of nodes with their properties in
+        - properties : a dictionnary of nodes with their properties in
                 case of importing karst data with additional information
-      - nb_branches : the number of branches
+        - branches : the list of branches
+        - br_lengths : the list of branch lengths
+        - br_tort : the list of branche tortuosities
+        - list_simpl_edges : the list of simple edges, necessary to export graph to plines
+        - graph_simpl : the simplified version (without nodes of degree 2) of a graph
 
-      - A Voir ??? branches_len : a list of the different length
-      - A voir ??? tortuosity des branches
-      - A voir: ou un dico de branches ?
     """
 
     def __init__(self, edges, coordinates, properties={}):
@@ -90,6 +94,8 @@ class KGraph:
         self.graph.add_edges_from(edges)
 
         self.pos2d, self.pos3d = _pos_initialization(coordinates) 
+        print(  "\n This network contains ", nx.number_connected_components(self.graph),
+                " connected components")
 
         # Compute graph length from the pos3d_ to initialize properly the graph
         self._set_graph_lengths()
@@ -399,7 +405,51 @@ class KGraph:
     # *************************************************************
     # -------------------Computation for Analysis------------------
     # *************************************************************
+    def basic_analysis(self) :
+        """
+        Print the basics of a karstic network graph analysis
 
+        Examples
+        --------
+        >>> t = myKGraph.basic_analysis()
+        
+        """
+        nb_nodes = nx.number_of_nodes(self.graph)
+        nb_edges = nx.number_of_edges(self.graph)
+        nb_connected_components = nx.number_connected_components(self.graph)
+        
+        nb_cycles = nb_edges - nb_nodes + nb_connected_components
+        
+        # Compute all extremities and junction nodes (quickest on the simple graph)
+        nb_extremity_nodes = 0
+        nb_junction_nodes = 0
+        for i in self.graph_simpl.nodes():
+            if (self.graph_simpl.degree(i) == 1):
+                nb_extremity_nodes += 1
+            elif (self.graph_simpl.degree(i) > 2):
+                nb_junction_nodes += 1
+                    
+        # Print these basics
+        print("\n This network contains :", nb_nodes, 
+            " nodes (stations)\n", nb_edges,
+            "edges\n", nb_connected_components, 
+            " connected components\n", nb_cycles,
+            " cycles\n", nb_extremity_nodes, 
+            "are extremity nodes (entries or exits) and", nb_junction_nodes, 
+            "are junction nodes")  
+        
+        # Howard's parameters 
+        # (Howard, A. D., Keetch, M. E., & Vincent, C. L. (1970). 
+        # Topological and geometrical properties of braided patterns. 
+        # Water Resources Research, 6(6), 1674–1688.)
+        alpha = nb_cycles / (2 * (nb_junction_nodes + nb_extremity_nodes)- 5)
+        beta = nb_edges / (nb_junction_nodes + nb_extremity_nodes)
+        gamma = nb_edges / (3 * (nb_junction_nodes  + nb_extremity_nodes - 2))
+        print("\nHoward's parameter are (Howard, 1970) :", 
+            " \n alpha: ", alpha,
+            "\n beta", beta, 
+            "\n gamma", gamma)
+    
     def mean_tortuosity(self):
         """
         Compute the mean tortuosity of a karstic network
@@ -417,7 +467,7 @@ class KGraph:
         if nb_of_Nan != 0:
             print(
                 "\n WARNING: This network contains ", nb_of_Nan,
-                " cycles, which are not considered for the mean tortuosity ",
+                " looping branche.s, which is.are not considered for the mean tortuosity ",
                 "computation")
         return (np.nanmean(self.br_tort))
 
@@ -927,6 +977,7 @@ class KGraph:
 
         Returns:
         --------
+           - list_simpl_edges : the list of simple edges (necessary for export to pline)
            - Gs: the simplified output graph object
 
         """
@@ -1056,13 +1107,13 @@ class KGraph:
             else:
                 # print("Warning: tortuosity is infinite on a looping branch.",
                 # "It is set to NAN to avoid further errors.")
-                # On real systems, this message appears too many times and let
+                # Pauline : On real systems, this message appears too many times and let
                 # the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        print("Warning: This network contains ", nb_of_Nan, "looping branches",
+        print("Warning: This network contains ", nb_of_Nan, "looping branche.s",
               "Tortuosity is infinite on a looping branch.",
-              "It is set to NAN to avoid further errors.\n")
+              "The looping branches are not considered for the mean tortuosity computation\n")
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.
