@@ -242,6 +242,7 @@ class KGraph:
         plt.show()
 
     # Member function written by Philippe Vernant 2019/11/25
+    # Modified by Pauline Collon (aug. 2020) to weight density map by lenghts
 
     def stereo(self):
         """
@@ -255,7 +256,8 @@ class KGraph:
 
         """
 
-        # create an np.array of azimuths and projected lengths
+        # create an np.array of azimuths and dips
+        # and lengths (projected(2d) and real (3d))
         azim = np.array(
             list((nx.get_edge_attributes(self.graph, 'azimuth')).values()))
         bearing_dc = np.nan_to_num(azim)
@@ -263,8 +265,13 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'dip')).values()))
         l2d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
+        l3d = np.array(
+            list((nx.get_edge_attributes(self.graph, 'length')).values()))
         azim_not_Nan = azim[~np.isnan(azim)]
-        l2d_not_Nan = l2d[~np.isnan(azim)]
+        l2d_not_Nan = l2d[~np.isnan(azim)] 
+        #Pauline: not sure it is required (?)
+        
+        
 
         # import matplotlib as mpl
 
@@ -280,7 +287,10 @@ class KGraph:
         newcolors[:1, :] = white
         newcmp = ListedColormap(newcolors)
 
-        # Density map
+
+        # Density map - Allows to consider almost vertical conduits
+        # The data are weigthted by the real length of the segments (l3d)
+        # Use the traditional "Schmidt" method : 1% count
         fig = plt.figure(figsize=(16, 8))
         dc = fig.add_subplot(121, projection='stereonet')
         cdc = dc.density_contourf(plunge_dc,
@@ -289,18 +299,22 @@ class KGraph:
                                   method='schmidt',
                                   levels=np.arange(0, nbint * 2 + 1, 2),
                                   extend='both',
-                                  cmap=newcmp)
+                                  cmap=newcmp,
+                                  weights = l3d)
         dc.set_title('Density map of orientations [Schmidt\'s projection]',
                      y=1.10,
                      fontsize=15)
         dc.grid()
+        
+        # colorbar of the density map
         cbar = plt.colorbar(cdc,
                             fraction=0.046,
                             pad=0.04,
                             orientation='horizontal')
         cbar.set_label('[%]')
-
+        
         # Rose diagram
+        # The azimuth data are weighted by the projected length (l2d)
         bin_edges = np.arange(-5, 366, 10)
         number_of_strikes, bin_edges = np.histogram(azim_not_Nan,
                                                     bin_edges,
@@ -322,12 +336,7 @@ class KGraph:
         rs.set_title('Rose Diagram of the cave survey segments',
                      y=1.10,
                      fontsize=15)
-        cbar = plt.colorbar(cdc,
-                            fraction=0.046,
-                            pad=0.04,
-                            orientation='horizontal')
-        cbar.set_label('[%]')
-        cbar.remove()
+                  
 
         fig.tight_layout()
         plt.show()
