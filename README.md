@@ -7,18 +7,21 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 
 This module is **under construction**.
 
-Version 0.1.0 - December 2018
+Version 0.1.1 - August 2020
 
 
 
 ## Installation
 
 Download karstnet from this Github platform : green button "clone or download". Then, unzip it on your computer. 
+
 Once this have been done, you can open a Python prompt (like the Anaconda prompt) to install it 
 
 Install from source (from project main directory), just to use it (e.g. in Jupyter notebooks): 
+
 1)In your prompt, go to your directory location (ex: 
 `cd C:\Users\YourName\Documents\KARSTNET\karstnet`
+
 2) then launch karstnet installation by taping:
 `pip install .`
 Do not forget the point "." at the end of the command
@@ -28,6 +31,7 @@ If you want to run it directly from source (useful for development):
 
 Both these options can also be run without moving previously in the karstnet folder. 
 In that case, just type in your Anaconda prompt :
+
 ` pip install -e your\path\to\karstnet` 
 
 ## Testing
@@ -43,7 +47,7 @@ To use **karstnet** in notebooks, you just have to write
 
 `import karstnet as kn`
 
-A call-test function is available to help you check if the package i ready to use : just type: 
+A call-test function is available to help you check if the package is ready to use : just type: 
 `kn.test_kn()`
 
 ## Documentation
