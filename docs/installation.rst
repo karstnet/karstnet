@@ -3,6 +3,7 @@ Installation guide
 
 Installation
 ------------
+Download the Karstnet folder. 
 
 Install Karstnet from source. From the project's main directory, type::
 
@@ -11,6 +12,11 @@ Install Karstnet from source. From the project's main directory, type::
 If you want to run it directly from source (useful for development)::
 
     pip install -e .
+	
+Both these options can also be run without moving previously in the karstnet folder. 
+In that case, just type in your Anaconda prompt ::
+
+	pip install -e your\path\to\karstnet
 
 
 Testing
@@ -29,3 +35,4 @@ karstnet requires the following python packages to function properly:
  * numpy
  * scipy-stats
  * matplotlib.pyplot
+ * mplstereonet
