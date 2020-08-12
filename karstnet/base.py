@@ -269,7 +269,8 @@ class KGraph:
             list((nx.get_edge_attributes(self.graph, 'length')).values()))
         azim_not_Nan = azim[~np.isnan(azim)]
         l2d_not_Nan = l2d[~np.isnan(azim)] 
-        #Pauline: not sure it is required (?)
+        # Pauline: not sure it is required (?) 
+        # + not sure it is normal that isnan is parameterised by azim for l2d
         
         
 
