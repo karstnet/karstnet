@@ -27,14 +27,13 @@ import sqlite3
 import mplstereonet
 
 
-
 # *************************************************************
 # -------------------Test function--------------------------
 # *************************************************************
 def test_kn():
     print("test ok")
     print("relance ok")
-   
+
 
 # **************************************************************
 #
@@ -68,8 +67,10 @@ class KGraph:
         - branches : the list of branches
         - br_lengths : the list of branch lengths
         - br_tort : the list of branche tortuosities
-        - list_simpl_edges : the list of simple edges, necessary to export graph to plines
-        - graph_simpl : the simplified version (without nodes of degree 2) of a graph
+        - list_simpl_edges : the list of simple edges, necessary to export
+                graph to plines
+        - graph_simpl : the simplified version (without nodes of degree 2)
+                of a graph
 
     """
 
@@ -89,13 +90,17 @@ class KGraph:
             optional properties associated to the nodes
         """
 
-        # Initialization of the complete graph - use functions of kgraph_fc module
+        # Initialization of the complete graph - use functions of kgraph_fc
+        # module
         self.graph = nx.Graph()
         self.graph.add_edges_from(edges)
 
-        self.pos2d, self.pos3d = _pos_initialization(coordinates) 
-        print(  "\n This network contains ", nx.number_connected_components(self.graph),
-                " connected components")
+        self.pos2d, self.pos3d = _pos_initialization(coordinates)
+        print(
+            "\n This network contains ",
+            nx.number_connected_components(
+                self.graph),
+            " connected components")
 
         # Compute graph length from the pos3d_ to initialize properly the graph
         self._set_graph_lengths()
@@ -268,11 +273,9 @@ class KGraph:
         l3d = np.array(
             list((nx.get_edge_attributes(self.graph, 'length')).values()))
         azim_not_Nan = azim[~np.isnan(azim)]
-        l2d_not_Nan = l2d[~np.isnan(azim)] 
-        # Pauline: not sure it is required (?) 
+        l2d_not_Nan = l2d[~np.isnan(azim)]
+        # Pauline: not sure it is required (?)
         # + not sure it is normal that isnan is parameterised by azim for l2d
-        
-        
 
         # import matplotlib as mpl
 
@@ -288,7 +291,6 @@ class KGraph:
         newcolors[:1, :] = white
         newcmp = ListedColormap(newcolors)
 
-
         # Density map - Allows to consider almost vertical conduits
         # The data are weigthted by the real length of the segments (l3d)
         # Use the traditional "Schmidt" method : 1% count
@@ -301,19 +303,19 @@ class KGraph:
                                   levels=np.arange(0, nbint * 2 + 1, 2),
                                   extend='both',
                                   cmap=newcmp,
-                                  weights = l3d)
+                                  weights=l3d)
         dc.set_title('Density map of orientations [Schmidt\'s projection]',
                      y=1.10,
                      fontsize=15)
         dc.grid()
-        
+
         # colorbar of the density map
         cbar = plt.colorbar(cdc,
                             fraction=0.046,
                             pad=0.04,
                             orientation='horizontal')
         cbar.set_label('[%]')
-        
+
         # Rose diagram
         # The azimuth data are weighted by the projected length (l2d)
         bin_edges = np.arange(-5, 366, 10)
@@ -337,7 +339,6 @@ class KGraph:
         rs.set_title('Rose Diagram of the cave survey segments',
                      y=1.10,
                      fontsize=15)
-                  
 
         fig.tight_layout()
         plt.show()
@@ -415,27 +416,28 @@ class KGraph:
     # *************************************************************
     # -------------------Computation for Analysis------------------
     # *************************************************************
-    def basic_analysis(self) :
+    def basic_analysis(self):
         """
         Print the basics of a karstic network graph analysis
 
         Examples
         --------
         >>> t = myKGraph.basic_analysis()
-        
+
         """
-        
+
         # On the complete graph
         nb_nodes_comp = nx.number_of_nodes(self.graph)
         nb_edges_comp = nx.number_of_edges(self.graph)
-        
+
         # On the simplified graph
         nb_nodes = nx.number_of_nodes(self.graph_simpl)
         nb_edges = nx.number_of_edges(self.graph_simpl)
-        nb_connected_components = nx.number_connected_components(self.graph_simpl)
-        
+        nb_connected_components = nx.number_connected_components(
+            self.graph_simpl)
+
         nb_cycles = nb_edges - nb_nodes + nb_connected_components
-        
+
         # Compute all extremities and junction nodes (on the simple graph)
         nb_extremity_nodes = 0
         nb_junction_nodes = 0
@@ -444,41 +446,50 @@ class KGraph:
                 nb_extremity_nodes += 1
             elif (self.graph_simpl.degree(i) > 2):
                 nb_junction_nodes += 1
-                    
+
         # Print these basics
-        print("\n This network contains :\n", nb_nodes_comp, 
-            " nodes (stations) and ", nb_edges_comp,
+        print(
+            "\n This network contains :\n",
+            nb_nodes_comp,
+            " nodes (stations) and ",
+            nb_edges_comp,
             " edges.\n",
-            " On the simplified graph, there are : ", nb_nodes, 
-            " nodes (stations) and ", nb_edges,
-            " edges,\n", nb_extremity_nodes, 
-            " are extremity nodes (entries or exits) and ", nb_junction_nodes, 
-            " are junction nodes.\nThere is/are ", nb_connected_components, 
-            " connected component.s and ", nb_cycles,
-            " cycle.s.\n")  
-        
-        # Howard's parameters 
-        # (Howard, A. D., Keetch, M. E., & Vincent, C. L. (1970). 
-        # Topological and geometrical properties of braided patterns. 
+            " On the simplified graph, there are : ",
+            nb_nodes,
+            " nodes (stations) and ",
+            nb_edges,
+            " edges,\n",
+            nb_extremity_nodes,
+            " are extremity nodes (entries or exits) and ",
+            nb_junction_nodes,
+            " are junction nodes.\nThere is/are ",
+            nb_connected_components,
+            " connected component.s and ",
+            nb_cycles,
+            " cycle.s.\n")
+
+        # Howard's parameters
+        # (Howard, A. D., Keetch, M. E., & Vincent, C. L. (1970).
+        # Topological and geometrical properties of braided patterns.
         # Water Resources Research, 6(6), 1674–1688.)
-        # Rmq: All nodes of the simplified network have to be considered, 
+        # Rmq: All nodes of the simplified network have to be considered,
         # even those of degree 2 in the cycles or, it is not becoming
         # consistent with the exemples of braided rivers given by Howard.
-        # This is indeed consistent with what has been done in 
-        # Collon, P., Bernasconi, D., Vuilleumier, C., & Renard, P. (2017). 
-        # Statistical metrics for the characterization of karst network 
-        # geometry and topology. Geomorphology, 283, 122–142. 
-        alpha = nb_cycles / (2 * (nb_nodes)- 5)
+        # This is indeed consistent with what has been done in
+        # Collon, P., Bernasconi, D., Vuilleumier, C., & Renard, P. (2017).
+        # Statistical metrics for the characterization of karst network
+        # geometry and topology. Geomorphology, 283, 122–142.
+        alpha = nb_cycles / (2 * (nb_nodes) - 5)
         beta = nb_edges / (nb_nodes)
         gamma = nb_edges / (3 * (nb_nodes - 2))
-        print("\nHoward's parameter are (Howard, 1970) :", 
-            " \n alpha: ", alpha,
-            "\n beta", beta, 
-            "\n gamma", gamma)
+        print("\nHoward's parameter are (Howard, 1970) :",
+              " \n alpha: ", alpha,
+              "\n beta", beta,
+              "\n gamma", gamma)
         print("\nNote that this computation considers the node of degree 2",
               " necessary to loop preservations as Seed Nodes, in order to",
               " stay consistent with Howard's illustrations.")
-    
+
     def mean_tortuosity(self):
         """
         Compute the mean tortuosity of a karstic network
@@ -495,9 +506,10 @@ class KGraph:
         nb_of_Nan = np.isnan(self.br_tort).sum()
         if nb_of_Nan != 0:
             print(
-                "\n WARNING: This network contains ", nb_of_Nan,
-                " looping branche.s, which is.are not considered for the mean tortuosity ",
-                "computation")
+                "\n WARNING: This network contains ",
+                nb_of_Nan,
+                " looping branche.s, which is.are not considered for the ",
+                "mean tortuosity computation")
         return (np.nanmean(self.br_tort))
 
     def mean_length(self):
@@ -802,7 +814,7 @@ class KGraph:
 
     # *************************************************************************
     # Non Public member functions of KGraph class
-    # **************************************************************************
+    # *************************************************************************
 
     # *******************************
     # Private functions for plots
@@ -1006,7 +1018,8 @@ class KGraph:
 
         Returns:
         --------
-           - list_simpl_edges : the list of simple edges (necessary for export to pline)
+           - list_simpl_edges : the list of simple edges (necessary for export
+                to pline)
            - Gs: the simplified output graph object
 
         """
@@ -1136,13 +1149,17 @@ class KGraph:
             else:
                 # print("Warning: tortuosity is infinite on a looping branch.",
                 # "It is set to NAN to avoid further errors.")
-                # Pauline : On real systems, this message appears too many times and let
-                # the user thinks something goes wrong
+                # Pauline : On real systems, this message appears too many
+                # times and let the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        print("Warning: This network contains ", nb_of_Nan, "looping branche.s",
-              "Tortuosity is infinite on a looping branch.",
-              "The looping branches are not considered for the mean tortuosity computation\n")
+        print(
+            "Warning: This network contains ",
+            nb_of_Nan,
+            "looping branche.s",
+            "Tortuosity is infinite on a looping branch.",
+            "The looping branches are not considered for the mean tortuosity",
+            "computation\n")
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.
@@ -1375,4 +1392,3 @@ def _split_branches(branches):
                         simpl_edges.append(tmp2)
 
     return simpl_edges
-

@@ -18,7 +18,7 @@ Released under the MIT license:
    Pauline Collon <pauline.collon@univ-lorraine.fr>
 """
 
-#----External librairies importations
+# ----External librairies importations
 import numpy as np
 import networkx as nx
 import scipy.stats as st
@@ -26,9 +26,8 @@ import matplotlib.pyplot as plt
 import sqlite3
 import mplstereonet
 
-#----Internal module dependancies
+# ----Internal module dependancies
 from karstnet.base import *
-
 
 
 # *************************************************************
@@ -199,6 +198,7 @@ def from_therion_sql(basename):
 
 # end of modif PVernant 2019/11/25
 # --------------------------------
+
 
 def from_pline(filename):
     """
