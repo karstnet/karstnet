@@ -62,9 +62,9 @@ The karstnet package implements the statistical metrics that were
 investigated and discussed in:
 Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical
 metrics for the characterization of karst network geometry and topology.
-Geomorphology. 283: 122-142 `doi:10.1016/j.geomorph.2017.01.034
-<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>`_
+Geomorphology. 283: 122-142 doi:10.1016/j.geomorph.2017.01.034
+<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>
 
-The paper can be downloaded `here
-<http://members.unine.ch/philippe.renard/articles/collon2017.pdf>` or `here <https://hal.univ-lorraine.fr/hal-01468055v1>`_. 
+The paper can be downloaded here
+<http://members.unine.ch/philippe.renard/articles/collon2017.pdf> or here <https://hal.univ-lorraine.fr/hal-01468055v1>. 
 
