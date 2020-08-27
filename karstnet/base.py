@@ -249,15 +249,18 @@ class KGraph:
     # Member function written by Philippe Vernant 2019/11/25
     # Modified by Pauline Collon (aug. 2020) to weight density map by lenghts
 
-    def stereo(self):
+    def stereo(self, weighted=True):
         """
         Density map of orientations and rose diagram of the karstic network.
 
         The two stereo are ploted side by side.
 
+        By default, stereo and Rose diagram are weighted by lengths.
+
         Examples
         ---------
            >>> myKGraph.stereo()
+           >>> myKGraph.stereo(weighted = False)
 
         """
 
@@ -265,15 +268,22 @@ class KGraph:
         # and lengths (projected(2d) and real (3d))
         azim = np.array(
             list((nx.get_edge_attributes(self.graph, 'azimuth')).values()))
+        azim_not_Nan = azim[~np.isnan(azim)]
         bearing_dc = np.nan_to_num(azim)
         plunge_dc = np.array(
             list((nx.get_edge_attributes(self.graph, 'dip')).values()))
-        l2d = np.array(
-            list((nx.get_edge_attributes(self.graph, 'length2d')).values()))
-        l3d = np.array(
-            list((nx.get_edge_attributes(self.graph, 'length')).values()))
-        azim_not_Nan = azim[~np.isnan(azim)]
-        l2d_not_Nan = l2d[~np.isnan(azim)]
+        if (weighted):
+            l2d = np.array(
+                list((nx.get_edge_attributes(self.graph,
+                                             'length2d')).values()))
+
+            l3d = np.array(
+                list((nx.get_edge_attributes(self.graph, 'length')).values()))
+
+            l2d_not_Nan = l2d[~np.isnan(azim)]
+        else:
+            l2d_not_Nan = None
+            l3d = None
         # Pauline: not sure it is required (?)
         # + not sure it is normal that isnan is parameterised by azim for l2d
 
