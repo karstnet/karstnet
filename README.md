@@ -6,7 +6,7 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 [![Build Status](https://travis-ci.org/UniNE-CHYN/karstnet.svg?branch=master)](https://travis-ci.org/UniNE-CHYN/karstnet)
 
 
-Version 1.1.1 - August 2020
+Version 1.1.0 - August 2020
 
 
 
