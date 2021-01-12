@@ -1071,17 +1071,28 @@ class KGraph:
         Compute lengths and tortuosities
         """
 
-        # Identifies all the extremeties of the branches (nodes of degree != 2)
+        # Initialisations
         target = []
         degreeTarget = []
-        for i in self.graph.nodes():
-            if (self.graph.degree(i) != 2):
-                target.append(i)
-                degreeTarget.append(nx.degree(self.graph, i))
-
-        if (len(target) == 0):
-            target.append(i)
-            degreeTarget.append(nx.degree(self.graph, i))
+        
+        #Create one subgraph per connected component to get isolated loops as branches
+        #Return a list of connected graphs
+        list_sub_gr = [self.graph.subgraph(c).copy() for c in nx.connected_components(self.graph)]
+        
+        for sub_gr in list_sub_gr:
+            local_counter = 0
+            last_node_index = 0
+            # Identifies all the extremeties of the branches (nodes of degree != 2)
+            for i in sub_gr.nodes():
+                if (sub_gr.degree(i) != 2):
+                    target.append(i)
+                    degreeTarget.append(nx.degree(sub_gr, i))
+                    local_counter += 1
+                last_node_index = i
+            #to manage cases where a subgraph is only composed of nodes of degree 2
+            if (local_counter == 0):
+                target.append(last_node_index)
+                degreeTarget.append(nx.degree(sub_gr, last_node_index))
 
         # Identifies all the neighbors of those nodes,
         # to create all the initial paths
