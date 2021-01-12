@@ -1085,7 +1085,7 @@ class KGraph:
         target = []
         degreeTarget = []
 
-        # Create one subgraph per connected component to get isolated loops as branches
+        # Create one subgraph per conn. comp. to get isolated loops as branches
         # Return a list of connected graphs
         list_sub_gr = [self.graph.subgraph(c).copy()
                        for c in nx.connected_components(self.graph)]
