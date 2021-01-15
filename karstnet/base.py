@@ -550,7 +550,8 @@ class KGraph:
            >>> cvl = myKGraph.coef_variation_length()
         """
 
-        return (np.std(self.br_lengths) / np.mean(self.br_lengths))
+        # std is used with ddof =1 to use the estimate of std (divides by N-1)
+        return (np.std(self.br_lengths, ddof=1) / np.mean(self.br_lengths))
 
     def length_entropy(self):
         """
@@ -640,8 +641,9 @@ class KGraph:
         # Mean degree
         meandeg = np.mean(d)
 
-        # Coefficient of variation of the degree
-        cvde = np.std(d) / np.mean(d)
+        # Coefficient of variation of the degrees : std is used with ddof =1 to
+        # use the estimate of std (divides by N-1)
+        cvde = np.std(d, ddof=1) / np.mean(d)
 
         return meandeg, cvde
 
@@ -1085,7 +1087,8 @@ class KGraph:
         target = []
         degreeTarget = []
 
-        # Create one subgraph per conn. comp. to get isolated loops as branches
+        # Create one subgraph per connected components
+        # to get isolated loops as branches
         # Return a list of connected graphs
         list_sub_gr = [self.graph.subgraph(c).copy()
                        for c in nx.connected_components(self.graph)]

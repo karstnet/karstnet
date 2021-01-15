@@ -100,7 +100,7 @@ def assortative():
         aspl = 2.947
         cpd = 0.155
         mean degree = 3.520
-        cv degree = 0.648
+        cv degree = 0.662
         correlation vertex degree = 0.353
     """
     pos = {0: [0.0, 0.0], 1: [0.0, 1.0], 2: [1.0, 0.0], 3: [0.0, -1.0],
@@ -203,11 +203,11 @@ def test_mean_degree_and_CV(periodic, assortative, complete, semibinary):
 
     md, cvde = assortative.mean_degree_and_CV()
     assert float_eq(md, 3.520)
-    assert float_eq(cvde, 0.648)
+    assert float_eq(cvde, 0.662)
 
     md, cvde = semibinary.mean_degree_and_CV()
     assert float_eq(md, 1.846)  # Lower than 2 for a tree
-    assert float_eq(cvde, 0.595)
+    assert float_eq(cvde, 0.619)
 
     md, cvde = complete.mean_degree_and_CV()
     assert md == 9
