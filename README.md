@@ -55,9 +55,9 @@ The html documentation is available in the sub directory:  ``docs/_build/html/in
 
 Also available online at: https://karstnet.readthedocs.io/
 
-## Reference
+## Reference and Corrigendum
 
-The karstnet package implements the statistical metrics that were
+The karstnet package implements some of the statistical metrics that were
 investigated and discussed in:
 Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical
 metrics for the characterization of karst network geometry and topology.
@@ -66,4 +66,18 @@ Geomorphology. 283: 122-142 doi:10.1016/j.geomorph.2017.01.034
 
 The paper can be downloaded here
 <http://members.unine.ch/philippe.renard/articles/collon2017.pdf> or here <https://hal.univ-lorraine.fr/hal-01468055v1>. 
+
+**Concerning this publication, important remarks should be made :** 
+
+- There was an **error** in the Matlab implementation of **Correlation of Vertex Degrees** used for the 2017 paper. 
+The Karstnet implementation corrects this, and, as a result, all studied karstic networks appears to be disassortative ( rk < 0)
+contrary to what was initially found. We wait to finish identify all potential errors before sendin a corrigendum to the Journal.
+
+- The **implementation of the entropy is not the same** in Karstnet that the ones used in the paper. For the moment in Karstnet, 
+the number of bins is computed using Sturges'rule and is thus varying between networks. As a result, the values obtained with Karstnet 
+are different from the ones presented in the paper. We are studying the possibility of including an option for the user 
+to choose between various implementations. 
+
+- Some unitary tests are still under development. The **results** obtained on the same networks than the ones used for the paper but 
+with the **implementation of Karstnet** are proposed for information in the **doc part**. 
 
