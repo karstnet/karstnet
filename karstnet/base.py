@@ -768,21 +768,17 @@ class KGraph:
         --------
            >>> aspl = myKGraph.average_SPL()
         """
-        av_SPL = 0
-        # Compute all shortest path lengths
-        # len_SPL is a dictionary of dictionary of shortest path lengths
-        if not dist_weight:
-            len_spl = dict(nx.shortest_path_length(self.graph_simpl))
-        else:
-            len_spl = dict(
-                nx.shortest_path_length(self.graph_simpl, weight="length"))
 
         sum_aspl = 0  # initialize the sum
         # Compute average spl on each connected component with Networkx
         for c in (self.graph_simpl.subgraph(c).copy()
                   for c in nx.connected_components(self.graph_simpl)):
-            sum_aspl += nx.average_shortest_path_length(
-                c) * nx.number_of_nodes(c)
+            if not dist_weight:
+                sum_aspl += nx.average_shortest_path_length(
+                    c) * nx.number_of_nodes(c)
+            else:
+                sum_aspl += nx.average_shortest_path_length(
+                    c, weight="length") * nx.number_of_nodes(c)
 
         av_SPL = sum_aspl / nx.number_of_nodes(self.graph_simpl)
 
