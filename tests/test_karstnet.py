@@ -95,8 +95,8 @@ def assortative():
 
     Used to test:
         mean length = 1.118
-        length entropy = 0.533
-        orientation entropy = 0.891
+        length entropy = 0.206
+        orientation entropy = 0.698
         aspl = 2.947
         cpd = 0.155
         mean degree = 3.520
@@ -130,7 +130,8 @@ def complete():
         The graph contains a core central grid and lateral branches.
 
         Used to test:
-        length entropy = 0.751
+        length entropy = 0.635
+        orientation entropy = 0.841
         aspl = 1.0
         cpd = 0.0
         mean degree = 9.0
@@ -239,10 +240,10 @@ def test_coef_variation_length(disassortative):
 
 def test_length_entropy(disassortative, assortative, complete):
     assert disassortative.length_entropy() == 0
-    assert float_eq(assortative.length_entropy(), 0.533)
-    assert float_eq(complete.length_entropy(), 0.751)
+    assert float_eq(assortative.length_entropy(), 0.206)
+    assert float_eq(complete.length_entropy(), 0.635)
 
 
 def test_orientation_entropy(assortative, complete):
-    assert float_eq(assortative.orientation_entropy(), 0.891)
-    assert float_eq(complete.orientation_entropy(), 0.971)
+    assert float_eq(assortative.orientation_entropy(), 0.698)
+    assert float_eq(complete.orientation_entropy(), 0.841)

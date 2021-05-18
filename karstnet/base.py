@@ -355,9 +355,9 @@ class KGraph:
 
     # end modif PV 2019/11/25
 
-# *************************************************************
-# ----------------------- Export ------------------------------
-# *************************************************************
+    # *************************************************************
+    # ----------------------- Export ------------------------------
+    # *************************************************************
 
     def to_pline(self, basename):
         """
@@ -553,9 +553,21 @@ class KGraph:
         # std is used with ddof =1 to use the estimate of std (divides by N-1)
         return (np.std(self.br_lengths, ddof=1) / np.mean(self.br_lengths))
 
-    def length_entropy(self):
+    def length_entropy(self, mode="default"):
         """
         Compute the entropy of lengths of the branches of a karstic network
+
+        Parameters
+        ----------
+        mode : string
+            the mode style should be equal to "default" or "sturges"
+            The property is normalized as compared to the
+            maximum observed value
+            If mode= "default", the entropy is computed according to the
+            implementation proposed in Collon et al. 2017 :
+            using a fixed bin number of 10 and ranging from 0 to 100
+            If mode = "Sturges" : alternative calculation using Sturges
+            rules to define the number of bins
 
         Returns
         -------
@@ -567,25 +579,48 @@ class KGraph:
         """
 
         v = self.br_lengths
+        # In the paper of 2017, we normalize the length to get comparble
+        # results between networks
+        v = v[np.nonzero(v)]
+        v_normalized = v / np.amax(v) * 100
 
         if (len(v) > 1):
-            nbins = int(np.ceil(1 + np.log2(len(v))))  # Sturges rule
-            # interval is shifted to avoid rounding error issues on edges
-            counts, _ = np.histogram(v,
+            if mode == "sturges":
+                # Sturges rule to define the number of bins fron nb of samples
+                nbins = int(np.ceil(1 + np.log2(len(v_normalized))))
+            else:
+                # Fixed nb of bins to facilitate comparison,
+                # as done in Collon et al 2017 and other papers on roads
+                # orientation entropy
+                nbins = 10
+
+            # Pauline : range should be 0 and 100 or we get very different
+            # results from what we should have
+            # (I verify that 0 and 100 are included in the counts)
+            counts, _ = np.histogram(v_normalized,
                                      bins=nbins,
-                                     range=(np.min(v) * 0.97,
-                                            np.max(v) * 1.08))
+                                     range=(0, 100))
             freq = counts / sum(counts)  # Computes the frequencies
-            entropy = st.entropy(freq, base=len(freq))
+            entropy = st.entropy(freq, base=nbins)
         else:
             entropy = 0  # v contains a single value - no uncertainty
 
         return entropy
 
-    def orientation_entropy(self):
+    def orientation_entropy(self, mode="default"):
         """
         Computes the entropy of orientation of the segments of a
         karstic network.
+
+        Parameters
+        ----------
+        mode : string
+            the mode style should be equal to "default" or "sturges"
+            If mode= "default", the entropy is computed according to
+            the implementation proposed in Collon et al. 2017 :
+            using a fixed bin number of 18 and ranging from 0 to 180
+            If mode = "Sturges" : alternative calculation using Sturges
+            rules to define the number of bins
 
         Returns
         -------
@@ -593,7 +628,7 @@ class KGraph:
 
         Example:
         --------
-           >>> entropy = myKGraph.orientation_entropy()
+           >>> or_entropy = myKGraph.orientation_entropy()
         """
 
         # create an np.array of azimuths and projected lengths
@@ -607,14 +642,26 @@ class KGraph:
         l2d_not_zero = l2d[np.nonzero(l2d)]
 
         if (len(azim_not_Nan) > 1):
-            # Sturges rule to define the number of bins fron nb of samples
-            nbins = int(np.ceil(1 + np.log2(len(azim_not_Nan))))
+
+            if mode == "sturges":
+                # Sturges rule to define the number of bins fron nb of samples
+                nbins = int(np.ceil(1 + np.log2(len(azim_not_Nan))))
+            else:
+                # Fixed nb of bins to facilitate comparison,
+                # as done in Collon et al 2017 and other papers on roads
+                # orientation entropy
+                nbins = 18
+
+            # Pauline : range should be 0 and 180 or we get very different
+            # results from what we had (change the position of bin borders).
+            # Also, I verified that it is consistent :
+            # 0 and 180 are counted, not excluded
             counts, _ = np.histogram(azim_not_Nan,
                                      bins=nbins,
-                                     range=(-0.1, 181),
+                                     range=(0, 180),
                                      weights=l2d_not_zero)
             freq = counts / sum(counts)  # Computes the frequencies
-            entropy = st.entropy(freq, base=len(freq))
+            entropy = st.entropy(freq, base=nbins)
         else:
             entropy = 0
 
@@ -708,6 +755,9 @@ class KGraph:
         The function handles the case of several connected components
         which is not the case for the Networkx function
         "average_shortest_path_length".
+        In case of several connected components, the average_SPL
+        is the average of each SPL weighted by the number of nodes of each
+        connected component
 
         Returns
         -------
@@ -720,29 +770,21 @@ class KGraph:
         """
         av_SPL = 0
         # Compute all shortest path lengths
-        # len_SPL is a dictionnary of dictionnary of shortest path lengths
+        # len_SPL is a dictionary of dictionary of shortest path lengths
         if not dist_weight:
             len_spl = dict(nx.shortest_path_length(self.graph_simpl))
         else:
             len_spl = dict(
                 nx.shortest_path_length(self.graph_simpl, weight="length"))
 
-        mean_dist_to_others = 0  # SPLi in the paper
-        # Iterate on each node of the graph
-        for start_node in len_spl.keys():
-            sum_dist_to_others = 0
-            # Iterate on each other node of the graph
-            for end_node in len_spl[start_node]:
+        sum_aspl = 0  # initialize the sum
+        # Compute average spl on each connected component with Networkx
+        for c in (self.graph_simpl.subgraph(c).copy()
+                  for c in nx.connected_components(self.graph_simpl)):
+            sum_aspl += nx.average_shortest_path_length(
+                c) * nx.number_of_nodes(c)
 
-                if start_node != end_node:
-                    sum_dist_to_others += len_spl[start_node][end_node]
-            # Here I do not divide by N-1 with N the number of nodes of
-            # the all graph. But by the number of connected nodes (thus
-            # it differs in each sub-graph)
-            mean_dist_to_others += sum_dist_to_others / \
-                (len(len_spl[start_node]) - 1)
-
-        av_SPL = mean_dist_to_others / nx.number_of_nodes(self.graph_simpl)
+        av_SPL = sum_aspl / nx.number_of_nodes(self.graph_simpl)
 
         return av_SPL
 
@@ -1015,7 +1057,7 @@ class KGraph:
             dx = self.pos3d[e[0]][0] - self.pos3d[e[1]][0]
             dy = self.pos3d[e[0]][1] - self.pos3d[e[1]][1]
             dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
-            length[e] = np.sqrt(dx**2 + dy**2 + dz**2)
+            length[e] = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
         # Storing the length as an edge attribute
         nx.set_edge_attributes(self.graph, length, 'length')
 
@@ -1147,7 +1189,7 @@ class KGraph:
                 dx = self.pos3d[br[0]][0] - self.pos3d[br[-1]][0]
                 dy = self.pos3d[br[0]][1] - self.pos3d[br[-1]][1]
                 dz = self.pos3d[br[0]][2] - self.pos3d[br[-1]][2]
-                dist = np.sqrt(dx**2 + dy**2 + dz**2)
+                dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
             else:
                 dist = 0
 
@@ -1260,7 +1302,7 @@ class KGraph:
             dx = self.pos3d[e[0]][0] - self.pos3d[e[1]][0]
             dy = self.pos3d[e[0]][1] - self.pos3d[e[1]][1]
             dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
-            length2d[e] = np.sqrt(dx**2 + dy**2)
+            length2d[e] = np.sqrt(dx ** 2 + dy ** 2)
 
             if length2d[e] != 0:
                 dip[e] = np.arctan(abs(dz) / length2d[e])  # returns in radians
