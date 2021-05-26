@@ -6,7 +6,7 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 [![Build Status](https://travis-ci.org/UniNE-CHYN/karstnet.svg?branch=master)](https://travis-ci.org/UniNE-CHYN/karstnet)
 
 
-Version 1.1.0 - August 2020
+Version 1.2.0 - May 2021 - Updated by Pauline Collon
 
 
 
@@ -64,20 +64,38 @@ metrics for the characterization of karst network geometry and topology.
 Geomorphology. 283: 122-142 doi:10.1016/j.geomorph.2017.01.034
 <http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>
 
-The paper can be downloaded here
-<http://members.unine.ch/philippe.renard/articles/collon2017.pdf> or here <https://hal.univ-lorraine.fr/hal-01468055v1>. 
+An **updated paper** (see remarks below) is available in the "doc" folder of this github and 
+can be downloaded here  <https://hal.univ-lorraine.fr/hal-01468055v2/document>. 
+ (complete link : <https://hal.univ-lorraine.fr/hal-01468055>)
 
-**Concerning this publication, important remarks should be made :** 
+**Concerning the paper, important remarks should be made :** 
 
-- There was an **error** in the Matlab implementation of **Correlation of Vertex Degrees** used for the 2017 paper. 
-The Karstnet implementation corrects this, and, as a result, all studied karstic networks appears to be disassortative ( rk < 0)
-contrary to what was initially found. We wait to finish identify all potential errors before sendin a corrigendum to the Journal.
+There was some **errors** in the old Matlab implementation (the one used for the paper) that have been corrected in Karstnet. 
+A **corrigendum** is currently submitted to the journal but the updated author version of the paper has 
+already been downloaded on the HAL platform (link above).
+The **results** obtained on the same 34 networks than the ones used for the paper but 
+with the **implementation of Karstnet** are proposed for information in the **doc part** (New_Statistics_results.xls). 
 
-- The **implementation of the entropy is not the same** in Karstnet that the ones used in the paper. For the moment in Karstnet, 
-the number of bins is computed using Sturges'rule and is thus varying between networks. As a result, the values obtained with Karstnet 
-are different from the ones presented in the paper. We are studying the possibility of including an option for the user 
-to choose between various implementations. 
+Here we summarize the main differences : 
 
-- Some unitary tests are still under development. The **results** obtained on the same networks than the ones used for the paper but 
-with the **implementation of Karstnet** are proposed for information in the **doc part**. 
+	- **Correlation of Vertex Degrees** : contrary to what was previously computed, all studied karstic networks appear to be disassortative ( rk < 0). 
+	
+	- **Branch lengths entropy** : in the old matlab code, we computed entropy on 11 bins instead of the 10 wanted bins. 
+The Karstnet values are now correct. 
 
+Note that, by default, Karstnet computes Entropies as described in the paper (mode = "default") : 
+on normalized values ranged on 10 bins for branch lengths and on 18 bins of 10° for orientations
+If you want to compute entropies using Sturges'rule use : 
+l_entrop = myKGraph.length_entropy(mode = "sturges")
+or_entropy = myKGraph.orientation_entropy(mode = "sturges")
+
+	- **CVlengths** : just an error of transcription in the table 2 of the paper where CVlen was supposed to be provided in %, 
+	but was provided in standard number
+
+	- **branch lengths** : in the previous Matlab code, loops were ignore to compute the average branch lengths
+	or the CV lengths, this induces very slight differences on some networks computation (ex : Agen Allwed)
+	
+	- **SPL** : slight differences are also noticeable for some networks as isolated connected components were ignored
+	in the previous code, while we decided to keep them in this clean updated Python version (ex :  Agen Allwed is now 11.17 instead 11.72)
+
+We are sorry for any inconvenience.
