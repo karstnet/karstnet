@@ -85,7 +85,8 @@ The Karstnet values are now correct.
 
 Note that, by default, Karstnet computes Entropies as described in the paper (mode = "default") : 
 on normalized values ranged on 10 bins for branch lengths and on 18 bins of 10° for orientations
-If you want to compute entropies using Sturges'rule use : 
+
+**If you want to compute entropies using Sturges'rule use** : 
 l_entrop = myKGraph.length_entropy(mode = "sturges")
 or_entropy = myKGraph.orientation_entropy(mode = "sturges")
 
