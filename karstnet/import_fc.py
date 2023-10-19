@@ -1,4 +1,4 @@
-#    Copyright (C) 2018 by
+#    Copyright (C) 2018-2023 by
 #    Philippe Renard <philippe.renard@unine.ch>
 #    Pauline Collon <pauline.collon@univ-lorraine.fr>
 #    All rights reserved.
@@ -13,7 +13,7 @@ Karstnet is a Python package for the analysis of karstic networks.
 License
 -------
 Released under the MIT license:
-   Copyright (C) 2018 Karstnet Developers
+   Copyright (C) 2018-2023 Karstnet Developers
    Philippe Renard <philippe.renard@unine.ch>
    Pauline Collon <pauline.collon@univ-lorraine.fr>
 """
@@ -35,7 +35,7 @@ from karstnet.base import *
 # -------------------GRAPH GENERATORS--------------------------
 # *************************************************************
 
-def from_nxGraph(nxGraph, coordinates, properties={}):
+def from_nxGraph(nxGraph, coordinates, properties={}, verbose=True):
     """
     Creates a Karst graph from a Networkx graph.
 
@@ -65,12 +65,12 @@ def from_nxGraph(nxGraph, coordinates, properties={}):
     """
     # Initialization of the complete graph
     edges = nx.to_edgelist(nxGraph)
-    Kg = KGraph(edges, coordinates, properties)
+    Kg = KGraph(edges, coordinates, properties, verbose=verbose)
 
     return Kg
 
 
-def from_nodlink_dat(basename):
+def from_nodlink_dat(basename, verbose=True):
     """
     Creates the Kgraph from two ascii files (nodes, and links).
 
@@ -118,15 +118,17 @@ def from_nodlink_dat(basename):
     else:
         properties = {}
 
-    Kg = KGraph(links, coord, properties)
-    print("Graph successfully created from file !\n")
+    Kg = KGraph(links, coord, properties, verbose=verbose)
+
+    if verbose:
+        print("Graph successfully created from file !\n")
     return Kg
 
 
 # modif PVernant 2019/11/25
 # add a function to read form an SQL export of Therion
 
-def from_therion_sql(basename):
+def from_therion_sql(basename, verbose=True):
     """
     Creates the Kgraph from on SQL file exported from a Therion survey file.
 
@@ -171,13 +173,14 @@ def from_therion_sql(basename):
         stations_th.append(s[1])
         stations_id.append(s[0])
 
+
     c.execute('select FROM_ID, TO_ID from SHOT;')
     links_th = []
     for s in c.fetchall():
         links_th.append([s[0], s[1]])
 
     # Remove the splay links
-    T = [s != '.' for s in stations_th]
+    T = [((s != '.') & (s != '-')) for s in stations_th]
     links_th = np.asarray(links_th).astype(int) - 1
     stations_id = np.asarray(stations_id).astype(int)[T] - 1
     links_ok = np.isin(links_th, stations_id)
@@ -192,15 +195,17 @@ def from_therion_sql(basename):
     else:
         properties = {}
 
-    Kg = KGraph(links, coord, properties)
-    print("Graph successfully created from file !\n")
+    Kg = KGraph(links, coord, properties, verbose=verbose)
+
+    if verbose:
+        print("Graph successfully created from file !\n")
     return Kg
 
 # end of modif PVernant 2019/11/25
 # --------------------------------
 
 
-def from_pline(filename):
+def from_pline(filename, verbose=True):
     """
     Creates a KGraph from a Pline (Gocad ascii object)
 
@@ -286,9 +291,10 @@ def from_pline(filename):
             # Add the edge with the correct node indices
             edges.append((i, j))
 
-    Kg = KGraph(edges, coord, prop)
+    Kg = KGraph(edges, coord, prop, verbose=verbose)
 
-    print("Graph successfully created from file !\n")
+    if verbose:
+        print("Graph successfully created from file !\n")
     f_pline.close()
 
     return Kg
