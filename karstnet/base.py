@@ -1,4 +1,4 @@
-#    Copyright (C) 2018 by
+#    Copyright (C) 2018-2023 by
 #    Philippe Renard <philippe.renard@unine.ch>
 #    Pauline Collon <pauline.collon@univ-lorraine.fr>
 #    All rights reserved.
@@ -13,7 +13,7 @@ Karstnet is a Python package for the analysis of karstic networks.
 License
 -------
 Released under the MIT license:
-   Copyright (C) 2018 Karstnet Developers
+   Copyright (C) 2018-2023 Karstnet Developers
    Philippe Renard <philippe.renard@unine.ch>
    Pauline Collon <pauline.collon@univ-lorraine.fr>
 """
@@ -75,7 +75,8 @@ class KGraph:
 
     """
 
-    def __init__(self, edges, coordinates, properties=None):
+    def __init__(self, edges, coordinates, properties=None, verbose=True):
+
         """
         Creates a Kgraph from nodes and edges.
 
@@ -99,13 +100,15 @@ class KGraph:
         # module
         self.graph = nx.Graph()
         self.graph.add_edges_from(edges)
+        self.verbose = verbose
 
         self.pos2d, self.pos3d = _pos_initialization(coordinates)
-        print(
-            "\n This network contains ",
-            nx.number_connected_components(
-                self.graph),
-            " connected components")
+        if self.verbose:
+            print(
+                "\n This network contains ",
+                nx.number_connected_components(
+                    self.graph),
+                " connected components")
 
         # Compute graph length from the pos3d_ to initialize properly the graph
         self._set_graph_lengths()
@@ -520,12 +523,15 @@ class KGraph:
            >>> t = myKGraph.mean_tortuosity()
         """
         nb_of_Nan = np.isnan(self.br_tort).sum()
-        if nb_of_Nan != 0:
-            print(
-                "\n WARNING: This network contains ",
-                nb_of_Nan,
-                " looping branche.s, which is.are not considered for the ",
-                "mean tortuosity computation")
+
+        if self.verbose:
+            if nb_of_Nan != 0:
+                print(
+                    "\n WARNING: This network contains ",
+                    nb_of_Nan,
+                    " looping branche.s, which is.are not considered for the ",
+                    "mean tortuosity computation")
+                
         return (np.nanmean(self.br_tort))
 
     def mean_length(self):
@@ -823,42 +829,58 @@ class KGraph:
 
         results = {}
 
-        print('Computing:')
-        print(' - mean length', end='', flush=True)
+        if verbose:
+            print('Computing:')
+            print(' - mean length', end='', flush=True)
+
         results["mean length"] = self.mean_length()
 
-        print(',cv length', end='', flush=True)
+        if verbose:
+            print(',cv length', end='', flush=True)
+
         results["cv length"] = self.coef_variation_length()
 
-        print(',length entropy', end='', flush=True)
+        if verbose:
+            print(',length entropy', end='', flush=True)
+
         results["length entropy"] = self.length_entropy()
 
-        print(',mean tortuosity', end='', flush=True)
+        if verbose:
+            print(',mean tortuosity', end='', flush=True)
+
         results["tortuosity"] = self.mean_tortuosity()
 
-        print('', end='\n', flush=True)
+        if verbose:
+            print('', end='\n', flush=True)
+            print(' - orientation entropy', end='', flush=True)
 
-        print(' - orientation entropy', end='', flush=True)
         results["orientation entropy"] = self.orientation_entropy()
 
-        print(',aspl', end='', flush=True)
+        if verbose:
+            print(',aspl', end='', flush=True)
+
         results["aspl"] = self.average_SPL()
 
-        print(',cpd', end='', flush=True)
+        if verbose:
+            print(',cpd', end='', flush=True)
+
         results["cpd"] = self.central_point_dominance()
 
-        print(',md,cv degree', end='', flush=True)
+        if verbose:
+            print(',md,cv degree', end='', flush=True)
+
         md, cvde = self.mean_degree_and_CV()
         results["mean degree"] = md
         results["cv degree"] = cvde
+        
+        if verbose:
+            print(',cvd', end='', flush=True)
 
-        print(',cvd', end='', flush=True)
         cvd = self.correlation_vertex_degree(cvde=cvde)
         results["correlation vertex degree"] = cvd
 
-        print('', end='\n', flush=True)
-
         if verbose:
+            print('', end='\n', flush=True)
             print("--------------------------------------")
             for key in results.keys():
                 print(" %25s = %5.3f" % (key, results[key]))
@@ -1034,7 +1056,9 @@ class KGraph:
         # All ilines have been written
         f_pline.write('END\n')
 
-        print('File created')
+
+        if self.verbose:
+            print('File created')
 
         # Close the file
         f_pline.close()
@@ -1109,7 +1133,9 @@ class KGraph:
                     if length.__contains__(local_edge):
                         l_edge += length[local_edge]
                     else:
-                        print("Warning: could not find ",
+
+                        if self.verbose:
+                            print("Warning: could not find ",
                               "1 edge when computing length")
 
             edges_length[(i[0], i[-1])] = l_edge
@@ -1222,13 +1248,16 @@ class KGraph:
                 # times and let the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        print(
-            "Warning: This network contains ",
-            nb_of_Nan,
-            "looping branche.s",
-            "Tortuosity is infinite on a looping branch.",
-            "The looping branches are not considered for the mean tortuosity",
-            "computation\n")
+        
+        if self.verbose:        
+            print(
+                "Warning: This network contains ",
+                nb_of_Nan,
+                "looping branche.s",
+                "Tortuosity is infinite on a looping branch.",
+                "The looping branches are not considered for the mean tortuosity",
+                "computation\n")
+            
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.

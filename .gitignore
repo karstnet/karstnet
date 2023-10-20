@@ -5,3 +5,5 @@ notebooks/.ipynb_checkpoints/
 */__pycache__/*
 venv/
 .idea/
+env/
+build/
