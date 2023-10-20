@@ -18,12 +18,13 @@ Released under the MIT license:
    Pauline Collon <pauline.collon@univ-lorraine.fr>
 """
 
-# ----External librairies importations
+# ----External libraries importations
 import numpy as np
 import networkx as nx
 import scipy.stats as st
 import matplotlib.pyplot as plt
 import sqlite3
+# noinspection PyUnresolvedReferences
 import mplstereonet
 
 
@@ -74,7 +75,8 @@ class KGraph:
 
     """
 
-    def __init__(self, edges, coordinates, properties={}, verbose=True):
+    def __init__(self, edges, coordinates, properties=None, verbose=True):
+
         """
         Creates a Kgraph from nodes and edges.
 
@@ -88,6 +90,10 @@ class KGraph:
 
         properties : dictionnary
             optional properties associated to the nodes
+
+        Examples
+        --------
+           >>> myKGraph = KGraph([],{})
         """
 
         # Initialization of the complete graph - use functions of kgraph_fc
@@ -136,6 +142,7 @@ class KGraph:
 
         Examples
         --------
+           >>> myKGraph = KGraph([],{})
            >>> myKGraph.plot2()
            >>> myKGraph.plot2(1, zrotation=20, xyrotation=-30)
         """
@@ -666,11 +673,9 @@ class KGraph:
                                      range=(0, 180),
                                      weights=l2d_not_zero)
             freq = counts / sum(counts)  # Computes the frequencies
-            entropy = st.entropy(freq, base=nbins)
+            return st.entropy(freq, base=nbins)
         else:
-            entropy = 0
-
-        return entropy
+            return 0
 
     def mean_degree_and_CV(self):
         """
@@ -1340,7 +1345,7 @@ class KGraph:
                     azimuth[e] = np.degrees(azimuth[e])
                 else:  # azimuth is comprised between 90° and 180°
                     azimuth[e] = 90 + \
-                        np.degrees(np.arccos(abs(dx) / length2d[e]))
+                                 np.degrees(np.arccos(abs(dx) / length2d[e]))
 
                 # to group 0 and 180 inside same bins
                 azimuth[e] = np.fmod(azimuth[e], 180)
