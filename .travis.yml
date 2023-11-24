@@ -12,6 +12,8 @@ install:
   - pip install pycodestyle
   - pip install scipy
   - pip install mplstereonet
+  - pip install pandas
+  - pip install openpyxl
   - pip install -e .
 script:
   - pytest --cov=karstnet

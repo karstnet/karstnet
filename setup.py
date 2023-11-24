@@ -9,5 +9,6 @@ setuptools.setup(
     author="Philippe Renard & Pauline Collon",
     description="Statistical characterization of karstic network",
     long_description=long_description,
-    packages=setuptools.find_packages()
+    packages=setuptools.find_packages(),
+    install_requires = ['numpy','scipy','matplotlib','networkx','mplstereonet','pandas','openpyxl']
 )

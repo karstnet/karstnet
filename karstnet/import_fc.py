@@ -18,16 +18,16 @@ Released under the MIT license:
    Pauline Collon <pauline.collon@univ-lorraine.fr>
 """
 
-# ----External librairies importations
+# ----External libraries importations
 import numpy as np
 import networkx as nx
-import scipy.stats as st
-import matplotlib.pyplot as plt
+# import scipy.stats as st
+# import matplotlib.pyplot as plt
 import sqlite3
-import mplstereonet
 
-# ----Internal module dependancies
-from karstnet.base import *
+# ----Internal module dependent
+from karstnet.base import KGraph
+import karstnet as kn
 
 
 # *************************************************************
@@ -35,7 +35,7 @@ from karstnet.base import *
 # -------------------GRAPH GENERATORS--------------------------
 # *************************************************************
 
-def from_nxGraph(nxGraph, coordinates, properties={}, verbose=True):
+def from_nxGraph(nxGraph, coordinates, properties=None, verbose=True):
     """
     Creates a Karst graph from a Networkx graph.
 
@@ -60,10 +60,15 @@ def from_nxGraph(nxGraph, coordinates, properties={}, verbose=True):
 
     Examples
     --------
-       >>> myKGraph = kn.from_nxGraph(G, coord)
-       >>> myKGraph = kn.from_nxGraph(G, coord, prop)
+       >>> G = KGraph([],{})
+       >>> myKGraph = kn.from_nxGraph(G, {})
+       >>> myKGraph_with_prop = kn.from_nxGraph(G, {}, {})
     """
     # Initialization of the complete graph
+    if properties is None:
+        properties = dict()
+    else:
+        properties = properties
     edges = nx.to_edgelist(nxGraph)
     Kg = KGraph(edges, coordinates, properties, verbose=verbose)
 
@@ -98,6 +103,16 @@ def from_nodlink_dat(basename, verbose=True):
     link_name = basename + '_links.dat'
     node_name = basename + '_nodes.dat'
 
+    # Determinate the number of columns of the intial sheet
+    data_node = open(node_name, 'r')
+    first_line = data_node.readline()
+    param_number = len(first_line.split())
+    convert = dict()
+    for i in range(3):
+        convert[i] = _check_type_coord
+    for i in range(3, param_number):
+        convert[i] = _check_type_prop
+
     # Read data files if exist - otherwise return empty graph
     try:
         links = np.loadtxt(link_name).astype(int) - 1
@@ -106,11 +121,11 @@ def from_nodlink_dat(basename, verbose=True):
         return
 
     try:
-        nodes = np.loadtxt(node_name)
+        nodes = np.loadtxt(node_name, converters=convert)
     except OSError:
         print("IMPORT ERROR: Could not import {}".format(node_name))
         return
-    # Create the dictionnary of coordinates
+    # Create the dictionary of coordinates
     coord = dict(enumerate(nodes[:, :3].tolist()))
 
     if len(nodes[0] > 3):
@@ -266,6 +281,7 @@ def from_pline(filename, verbose=True):
             coord[cpt_nodes] = (float(data[2]), float(data[3]), float(data[4]))
             # store properties if exist (relating to node index)
             prop[cpt_nodes] = dict(enumerate(list(np.float_(data[5:]))))
+
         if 'ATOM ' in line:
             cle, num, ref = line.split()
             # Atom must link to node index, not the index of the VTRX
@@ -298,3 +314,62 @@ def from_pline(filename, verbose=True):
     f_pline.close()
 
     return Kg
+
+# **************************************************************
+#
+# -----------LH2022--NON public functions used by import_fc-----
+#
+# **************************************************************
+
+
+def _check_type_prop(s):
+    """
+    Check if the value input is a positive float.
+
+    Parameters
+    ----------
+        s : every type
+            An object to check
+
+    Returns:
+    --------
+        The object as float if it is a positive float initially
+        As no definite object NAN if the input object is not a float,
+        or a negative float
+    """
+
+    try:
+        s = float(s)
+        if s > 0.:
+            return s
+        return np.nan
+    except ValueError:
+        return np.nan
+
+
+def _check_type_coord(s):
+    """
+    Check if the value input is a positive float.
+
+    Parameters
+    ----------
+        s : every type
+            An object to check
+
+    Returns:
+    --------
+        The object as float if it is a postiv float intially
+        As no definite object NAN if the input object is not a float,
+        or a negativ float
+    """
+
+    try:
+        return float(s)
+    except ValueError:
+        return np.nan
+
+# **************************************************************
+#
+# -----------End Louise HOUBRE 2022----
+#
+# **************************************************************
