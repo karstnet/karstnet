@@ -143,7 +143,7 @@ def from_nodlink_dat(basename, verbose=True):
 # modif PVernant 2019/11/25
 # add a function to read form an SQL export of Therion
 
-def from_therion_sql(basename, verbose=True):
+def from_therion_sql(basename, verbose=True, properties=None):
     """
     Creates the Kgraph from on SQL file exported from a Therion survey file.
 
@@ -171,49 +171,73 @@ def from_therion_sql(basename, verbose=True):
     try:
         conn = sqlite3.connect(':memory:')
         conn.executescript(open(sql_name).read())
-#    	conn.executescript(open('../data/g_huttes.sql').read())
+    #    	conn.executescript(open('../data/g_huttes.sql').read())
     except OSError:
         print("IMPORT ERROR: Could not import {}".format(sql_name))
-        return
+    #    return
 
-    # Read the SQL file and extract nodes and links data
+    # Read the SQL file
     c = conn.cursor()
-    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION\
-    st left join SURVEY su on st.SURVEY_ID = su.ID;')
-    nodes_th = []
-    stations_th = []
+
+
+    # load flags
+    ############
+    # flags will be used to ignore duplicate and surface points
+    # duplicates are integreted in therion coordinates calculations,
+    # but they should not be loaded for the graph.
+    # this is the list of graphs 
+    # 'dpl' = duplicate, 'srf' = surface shots
+    # 'ent' = entrance, 'con' = continuation, 'fix' = fixed, 
+    # 'spr' = spring, 'sin' = sink, 'dol' = doline, 'dig' = dig, 
+    # 'air' =air-draught, 'ove' = overhang, 'arc' = arch attributes
+
+    shot_flags_id = []
+    c.execute('select SHOT_ID, FLAG from SHOT_FLAG where FLAG="srf" or FLAG="dpl"')
+    for fl in c.fetchall():
+        shot_flags_id.append(fl[0])
+
+    station_flags_id = []
+    c.execute('select STATION_ID, FLAG from STATION_FLAG where FLAG="srf" or FLAG="dpl"')
+    for fl in c.fetchall():
+        station_flags_id.append(fl[0])
+
+
+    #import nodes without the splays
+    #prevents extraction of anonymous survey point symbol (- or .) 
+    #prevents extraction of surface and duplicate points (shot_flags_id)
+    string_station_flags_id = ",".join(map(str,station_flags_id))
+    c.execute('select st.ID, st.NAME, FULL_NAME, X, Y, Z from STATION \
+                st left join SURVEY su on st.SURVEY_ID = su.ID \
+                where st.NAME not in (".") and st.NAME not in ("-") and st.ID not in (%s)' % string_station_flags_id)
+    #            where st.NAME not in (".","-") and st.ID not in (%s)' % string_station_flags_id)
+
+    nodes_coord = []
     stations_id = []
     for s in c.fetchall():
-        nodes_th.append([s[3], s[4], s[5]])
-        stations_th.append(s[1])
+        #extract x,y,z nodes coordinates
+        nodes_coord.append([s[3], s[4], s[5]])
+        #extract unique node id from Therion
         stations_id.append(s[0])
+    #create dictionnary of the nodes coordinates
+    coord = dict(zip(stations_id,nodes_coord))
 
+    string_shot_flags_id = ",".join(map(str,shot_flags_id))
+    #import links only for the nodes we exported
+    string_id = ",".join(map(str,stations_id))
+    c.execute('select FROM_ID, TO_ID from SHOT \
+            where FROM_ID not in (%s) and FROM_ID in (%s) and TO_ID in (%s)' % (string_shot_flags_id,string_id,string_id))
 
-    c.execute('select FROM_ID, TO_ID from SHOT;')
-    links_th = []
-    for s in c.fetchall():
-        links_th.append([s[0], s[1]])
+    links = []
+    for l in c.fetchall():
+        links.append([l[0], l[1]])
+    links = np.asarray(links).astype(int)
 
-    # Remove the splay links
-    T = [((s != '.') & (s != '-')) for s in stations_th]
-    links_th = np.asarray(links_th).astype(int) - 1
-    stations_id = np.asarray(stations_id).astype(int)[T] - 1
-    links_ok = np.isin(links_th, stations_id)
-    links = links_th[np.logical_and(links_ok[:, 0], links_ok[:, 1])]
-
-    # Create the dictionnary of coordinates
-    nodes = np.asarray(nodes_th)
-    coord = dict(enumerate(nodes[:, :3].tolist()))
-
-    if len(nodes[0] > 3):
-        properties = dict(enumerate(nodes[:, 3:].tolist()))
-    else:
-        properties = {}
-
-    Kg = KGraph(links, coord, properties, verbose=verbose)
+    Kg = kn.KGraph(links, coord, verbose=verbose, properties=properties)
 
     if verbose:
         print("Graph successfully created from file !\n")
+#    return Kg
+
     return Kg
 
 # end of modif PVernant 2019/11/25
