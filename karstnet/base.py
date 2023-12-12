@@ -107,7 +107,7 @@ class KGraph:
         self.graph.add_edges_from(edges)
         self.verbose = verbose
 
-        self.pos2d, self.pos3d, self.nodes_xz = _pos_initialization(coordinates)
+        self.pos2d, self.pos3d, self.nodes_xz, self.nodes_yz = _pos_initialization(coordinates)
         if self.verbose:
             print(
                 "\n This network contains ",
@@ -2213,6 +2213,9 @@ def _pos_initialization(coordinates: Dict[int, List[float]]) -> (
     dict
         nodes_xz : a dictionary of x and z coordinates for each node.
                     If only x and y are provide, z is set to 0
+    dict
+        nodes_yz : a dictionary of y and z coordinates for each node.
+                    If only x and y are provide, z is set to 0
     """
 
     coord_are_3d = True
@@ -2225,6 +2228,7 @@ def _pos_initialization(coordinates: Dict[int, List[float]]) -> (
     pos3d = {}
     pos2d = {}
     nodes_xz = {}
+    nodes_yz = {}
 
     #  if coordinates are 3d
     if coord_are_3d:
@@ -2232,6 +2236,7 @@ def _pos_initialization(coordinates: Dict[int, List[float]]) -> (
         for key, coord in coordinates.items():
             pos2d[key] = [coord[0], coord[1]]
             nodes_xz[key] = [coord[0], coord[2]]
+            nodes_yz[key] = [coord[1], coord[2]]
 
     # if only x and y are provided, set a z value = 0
     else:
@@ -2239,8 +2244,9 @@ def _pos_initialization(coordinates: Dict[int, List[float]]) -> (
             pos2d[key] = [coord[0], coord[1]]
             pos3d[key] = [coord[0], coord[1], 0.]
             nodes_xz[key] = [coord[0], 0.]
+            nodes_yz[key] = [coord[1], 0.]
     # noinspection PyTypeChecker
-    return pos2d, pos3d, nodes_xz
+    return pos2d, pos3d, nodes_xz, nodes_yz
 
 
 # ******Functions used for graph simplification
