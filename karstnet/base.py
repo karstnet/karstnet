@@ -524,7 +524,7 @@ class KGraph:
                     nb_of_Nan,
                     " looping branche.s, which is.are not considered for the ",
                     "mean tortuosity computation")
-                
+
         return (np.nanmean(self.br_tort))
 
     def mean_length(self):
@@ -877,7 +877,7 @@ class KGraph:
         md, cvde = self.mean_degree_and_CV()
         results["mean degree"] = md
         results["cv degree"] = cvde
-        
+
         if verbose:
             print(',cvd', end='', flush=True)
 
@@ -1061,7 +1061,6 @@ class KGraph:
         # All ilines have been written
         f_pline.write('END\n')
 
-
         if self.verbose:
             print('File created')
 
@@ -1141,7 +1140,7 @@ class KGraph:
 
                         if self.verbose:
                             print("Warning: could not find ",
-                              "1 edge when computing length")
+                                  "1 edge when computing length")
 
             edges_length[(i[0], i[-1])] = l_edge
 
@@ -1253,16 +1252,16 @@ class KGraph:
                 # times and let the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        
-        if self.verbose:        
+
+        if self.verbose:
             print(
                 "Warning: This network contains ",
                 nb_of_Nan,
                 "looping branche.s",
                 "Tortuosity is infinite on a looping branch.",
-                "The looping branches are not considered for the mean tortuosity",
-                "computation\n")
-            
+                "The looping branches are not considered",
+                "for the mean tortuosity computation\n")
+
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.
