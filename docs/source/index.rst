@@ -3,11 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Karstnet documentation
-======================
+Karstnet
+========
 
-Karstnet is a python 3 toolbox for the statistical analysis of karstic
-networks. It considers a network of karstic conduits as a graph (an ensemble
+Karstnet is a python 3 package for the statistical analysis of 
+the geometry and topology of karstic networks. 
+It considers a network of karstic conduits as a graph (an ensemble
 of nodes and edges).
 
 The package is a work in progress. Karstnet slowly expands to include
