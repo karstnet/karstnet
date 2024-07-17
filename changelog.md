@@ -1,3 +1,7 @@
+## V1.2.2 (19/07/2024) - Philippe Renard
+
+- Updated the automated construction of the documentation
+
 ## V1.2.1 (19/10/2023) - Philippe Renard
 
 - Added verbosity option in creator functions

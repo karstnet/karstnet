@@ -6,10 +6,9 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 [![Build Status](https://travis-ci.org/UniNE-CHYN/karstnet.svg?branch=master)](https://travis-ci.org/UniNE-CHYN/karstnet)
 
 
-Version 1.2.1 - October 2023 
+Version 1.2.2 - July 2024 
 
 Please check the file [changelog.md](changelog.md) to track the novel functionalities of karstnet.
-
 
 
 ## Installation
@@ -53,9 +52,13 @@ A call-test function is available to help you check if the package is ready to u
 
 ## Documentation
 
-The html documentation is available in the sub directory:  ``docs/_build/html/index.html``
+The html documentation is available in the sub directory:  [docs/_build/html/index.html](docs/_build/html/index.html)
 
 Also available online at: https://karstnet.readthedocs.io/
+
+A french version of a guide for students willing to code karstnet extensions is available :
+[FR_GuideDebutant_karstnet_jupyter_github.pdf](docs/pdf/FR_GuideDebutant_karstnet_jupyter_github.pdf)
+
 
 **Remark on ENTROPIES**:
 Note that, by default, Karstnet computes Entropies as described in the paper (mode = "default") : 
