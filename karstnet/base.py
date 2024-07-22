@@ -1,21 +1,18 @@
-#    Copyright (C) 2018-2023 by
+#    Copyright (C) 2018-2024 by
 #    Philippe Renard <philippe.renard@unine.ch>
 #    Pauline Collon <pauline.collon@univ-lorraine.fr>
 #    All rights reserved.
 #    MIT license.
 #
 """
-Karstnet
-========
+Karstnet Base
+=============
 
 Karstnet is a Python package for the analysis of karstic networks.
 
-License
--------
-Released under the MIT license:
-   Copyright (C) 2018-2023 Karstnet Developers
-   Philippe Renard <philippe.renard@unine.ch>
-   Pauline Collon <pauline.collon@univ-lorraine.fr>
+The base module contains all the classes and tools to manipulate
+graphs and compute statistics.
+
 """
 
 # ----External libraries importations
@@ -48,8 +45,8 @@ class KGraph:
     Class dedicated to the construction and manipulation of graphs
     representing Karstic network.
 
-    Attributes:
-    -----------
+    Attributes
+    ----------
         - graph : the complete graph of the karstic network.
                 Each station is a node, each line-of sigth is an edge.
                 It is a Networkx graph object, with length of edges
@@ -205,7 +202,7 @@ class KGraph:
         to check rapidly the data after an import for example.
 
         Examples
-        ---------
+        --------
            >>> myKGraph.plot()
 
         """
@@ -234,7 +231,7 @@ class KGraph:
         to check rapidly the data after an import for example.
 
         Examples
-        ---------
+        --------
            >>> myKGraph.plot()
 
         """
@@ -267,7 +264,7 @@ class KGraph:
         By default, stereo and Rose diagram are weighted by lengths.
 
         Examples
-        ---------
+        --------
            >>> myKGraph.stereo()
            >>> myKGraph.stereo(weighted = False)
 
@@ -375,8 +372,7 @@ class KGraph:
         Manages the colocated vertices indicated by the mention "ATOM" in
         the ASCII file.
 
-        `Warning`: this version does not export (for the time) the
-        properties on the nodesself.
+        `Warning`: this version does not export the properties on the nodes.
 
         Parameters
         ----------
@@ -400,13 +396,10 @@ class KGraph:
         """
         Export the simplified graph to pline (GOCAD ASCII object)
 
-        Arguments:
-        ----------
-            basename: A string containing the base name used for output file.
-            Manage the colocated vertices indicated by the mention "ATOM"
-            in the ASCII file
-            Warning: this version does not export (for the time) the
-            properties on the nodes
+        Manages the colocated vertices indicated by the mention "ATOM"
+        in the ASCII file.
+
+        `Warning`: this version does not export the properties on the nodes.
 
         Parameters
         ----------
@@ -437,7 +430,7 @@ class KGraph:
     # *************************************************************
     def basic_analysis(self):
         """
-        Print the basics of a karstic network graph analysis
+        Print the basic statistics of a karstic network graph analysis.
 
         Examples
         --------
@@ -531,7 +524,7 @@ class KGraph:
                     nb_of_Nan,
                     " looping branche.s, which is.are not considered for the ",
                     "mean tortuosity computation")
-                
+
         return (np.nanmean(self.br_tort))
 
     def mean_length(self):
@@ -542,7 +535,7 @@ class KGraph:
         -------
             l :  Mean length of the branches
 
-        Example:
+        Examples
         --------
            >>> l = myKGraph.mean_length()
         """
@@ -557,7 +550,7 @@ class KGraph:
         -------
             cvl :  Coefficient of variation of the length of the branches
 
-        Example:
+        Examples
         --------
            >>> cvl = myKGraph.coef_variation_length()
         """
@@ -585,7 +578,7 @@ class KGraph:
         -------
             entropy :  Entropy of the lengths of the branches
 
-        Example:
+        Examples
         --------
            >>> l_entrop = myKGraph.length_entropy()
         """
@@ -638,7 +631,7 @@ class KGraph:
         -------
             entropy:  Entropy of the segment orientation
 
-        Example:
+        Examples
         --------
            >>> or_entropy = myKGraph.orientation_entropy()
         """
@@ -713,6 +706,7 @@ class KGraph:
         Parameters
         ----------
         cvde : float
+
             Optional input: coefficient of variation of the degree.
             If not provided, it is computed automatically internally.
 
@@ -759,20 +753,31 @@ class KGraph:
 
     def average_SPL(self, dist_weight=False):
         """
-        Computes average shortest path lengths.
+        Computes the average shortest path length.
+
+        Notes
+        -----
 
         The computation is done on the simplified graph.
+
         The function handles the case of several connected components
         which is not the case for the Networkx function
         "average_shortest_path_length".
+
         In case of several connected components, the average_SPL
         is the average of each SPL weighted by the number of nodes of each
-        connected component
+        connected component.
+
+        Parameters
+        ----------
+        dist_weight : boolean
+            By default it is False.
+            If it is True, the average is weighted by the distance.
 
         Returns
         -------
         float
-            average shortest path lengths
+            average shortest path length
 
         Examples
         --------
@@ -872,7 +877,7 @@ class KGraph:
         md, cvde = self.mean_degree_and_CV()
         results["mean degree"] = md
         results["cv degree"] = cvde
-        
+
         if verbose:
             print(',cvd', end='', flush=True)
 
@@ -969,7 +974,7 @@ class KGraph:
         Creates a Pline (Gocad ascii object) from a list of ilines
         Used to export either complete or simplified graph
 
-        Arguments:
+        Parameters
         ----------
             G: the name of the graph to export
             (allows having a single function for complete or simplified graph)
@@ -987,7 +992,7 @@ class KGraph:
         --------
             Write a output pline file called: MyKarst_exported.pl
 
-        Example:
+        Examples
         --------
            >>> myKGraph.to_Pline("MyKarst" )
         """
@@ -1055,7 +1060,6 @@ class KGraph:
 
         # All ilines have been written
         f_pline.write('END\n')
-
 
         if self.verbose:
             print('File created')
@@ -1136,7 +1140,7 @@ class KGraph:
 
                         if self.verbose:
                             print("Warning: could not find ",
-                              "1 edge when computing length")
+                                  "1 edge when computing length")
 
             edges_length[(i[0], i[-1])] = l_edge
 
@@ -1248,16 +1252,16 @@ class KGraph:
                 # times and let the user thinks something goes wrong
                 br_tort.append(np.nan)
                 nb_of_Nan += 1
-        
-        if self.verbose:        
+
+        if self.verbose:
             print(
                 "Warning: This network contains ",
                 nb_of_Nan,
                 "looping branche.s",
                 "Tortuosity is infinite on a looping branch.",
-                "The looping branches are not considered for the mean tortuosity",
-                "computation\n")
-            
+                "The looping branches are not considered",
+                "for the mean tortuosity computation\n")
+
         return branches, np.array(br_lengths), np.array(br_tort)
 
     # ***********Functions relating to branches of graphs.

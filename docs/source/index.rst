@@ -3,14 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Karstnet documentation
-======================
+Karstnet
+========
 
-Karstnet is a python 3 toolbox for the statistical analysis of karstic
-networks. It considers a network of karstic conduits as a graph (an ensemble
+Karstnet is a python 3 package for the statistical analysis of 
+the geometry and topology of karstic networks. 
+It considers a network of karstic conduits as a graph (an ensemble
 of nodes and edges).
 
-The package is a work in progress. The plan is to extend it to include
+The package is a work in progress. Karstnet slowly expands to include
 several features including plausibility test, additional input/output
 interfaces, data base of network data, etc. Please contact us (see below)
 if you need further information.
@@ -48,7 +49,12 @@ investigated and discussed in:
 Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical
 metrics for the characterization of karst network geometry and topology.
 Geomorphology. 283: 122-142 `doi:10.1016/j.geomorph.2017.01.034
-<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>`_
+<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>`. 
 
-The paper can be downloaded `here
-<http://members.unine.ch/philippe.renard/articles/collon2017.pdf>`_ or `here <https://hal.univ-lorraine.fr/hal-01468055v1>`_. 
+License
+=======
+
+Released under the MIT license:
+   Copyright (C) 2018-2024 Karstnet Developers:
+   Philippe Renard <philippe.renard@unine.ch>
+   Pauline Collon <pauline.collon@univ-lorraine.fr>

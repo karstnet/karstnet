@@ -5,17 +5,14 @@
 #    MIT license.
 #
 """
-Karstnet
-========
+Karstnet Import FC
+==================
 
 Karstnet is a Python package for the analysis of karstic networks.
 
-License
--------
-Released under the MIT license:
-   Copyright (C) 2018-2023 Karstnet Developers
-   Philippe Renard <philippe.renard@unine.ch>
-   Pauline Collon <pauline.collon@univ-lorraine.fr>
+The Import FC module contains functions for import and exports
+in various formats.
+
 """
 
 # ----External librairies importations
@@ -172,7 +169,6 @@ def from_therion_sql(basename, verbose=True):
         nodes_th.append([s[3], s[4], s[5]])
         stations_th.append(s[1])
         stations_id.append(s[0])
-
 
     c.execute('select FROM_ID, TO_ID from SHOT;')
     links_th = []
