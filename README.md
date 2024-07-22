@@ -3,7 +3,7 @@
 Karstnet is a python3 project providing tools for the statistical analysis of karstic networks.
 
 [![Documentation Status](https://readthedocs.org/projects/karstnet/badge/?version=latest)](https://karstnet.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://travis-ci.org/UniNE-CHYN/karstnet.svg?branch=master)](https://travis-ci.org/UniNE-CHYN/karstnet)
+[![Build Status](https://travis-ci.org/karstnet/karstnet.svg?branch=master)](https://travis-ci.org/karstnet/karstnet)
 
 
 Version 1.2.2 - July 2024 
