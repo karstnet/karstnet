@@ -556,7 +556,12 @@ class KGraph:
         """
 
         # std is used with ddof =1 to use the estimate of std (divides by N-1)
-        return (np.std(self.br_lengths, ddof=1) / np.mean(self.br_lengths))
+        # The test below is to avoid an error with np.std computation 
+        # for networks having a single branch.
+        if len(self.br_lengths) > 1: 
+            return (np.std(self.br_lengths, ddof=1) / np.mean(self.br_lengths))
+        else:
+            return 0 # No 
 
     def length_entropy(self, mode="default"):
         """
