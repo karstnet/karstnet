@@ -6,7 +6,7 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 
 
 
-Version 1.2.3 - July 2024 
+Version 1.2.4 - July 2024 
 
 Please check the file [changelog.md](changelog.md) to track the novel functionalities of karstnet.
 
