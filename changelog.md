@@ -1,6 +1,7 @@
-## V1.2.2 (19/07/2024) - Philippe Renard
+## V1.2.4 (23/07/2024) - Philippe Renard
 
 - Updated the automated construction of the documentation
+- Minor bug fix in the computation of the cv length
 
 ## V1.2.1 (19/10/2023) - Philippe Renard
 
