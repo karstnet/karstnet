@@ -5,7 +5,7 @@ with open("README.md", "r") as file_handle:
 
 setuptools.setup(
     name='karstnet',
-    version='1.2.3',
+    version='1.2.4',
     author="Philippe Renard & Pauline Collon",
     description="Statistical characterization of karstic network",
     long_description=long_description,
