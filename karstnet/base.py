@@ -206,7 +206,7 @@ class KGraph:
            >>> myKGraph.plot()
 
         """
-        plt.figure(figsize=(12, 5))
+        fig = plt.figure(figsize=(12, 5))
         plt.subplot(121)
         nx.draw_networkx(self.graph,
                          pos=self.pos2d,
@@ -222,6 +222,8 @@ class KGraph:
         plt.xlabel('x')
         plt.ylabel('y')
         plt.show()
+
+        return fig
 
     def plotxz(self):
         """
@@ -235,7 +237,7 @@ class KGraph:
            >>> myKGraph.plot()
 
         """
-        plt.figure(figsize=(12, 5))
+        fig = plt.figure(figsize=(12, 5))
         plt.subplot(121)
         nx.draw_networkx(self.graph,
                          pos=self.pos2d,
@@ -251,6 +253,8 @@ class KGraph:
         plt.xlabel('x')
         plt.ylabel('z')
         plt.show()
+
+        return fig
 
     # Member function written by Philippe Vernant 2019/11/25
     # Modified by Pauline Collon (aug. 2020) to weight density map by lenghts
@@ -358,6 +362,8 @@ class KGraph:
 
         fig.tight_layout()
         plt.show()
+
+        return fig
 
     # end modif PV 2019/11/25
 
@@ -921,14 +927,14 @@ class KGraph:
         except ImportError:
             raise ImportError("karstnet.plot3 requires matpllotlib.pyplot")
 
-        plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize)
 
         nx.draw_networkx(G,
                          with_labels=True,
                          pos=self.pos2d,
                          node_color='lightblue')
 
-        return
+        return fig
 
     def _plot3(self, G, zrotation=30, xyrotation=0, figsize=(6, 3)):
         """
@@ -968,7 +974,7 @@ class KGraph:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
 
-        return
+        return fig
 
     # *******************************
     # Private function for export
