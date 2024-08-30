@@ -3,7 +3,12 @@ Installation guide
 
 Installation
 ------------
-Download the Karstnet folder. 
+
+Install Karstnet from pypi.org. From your command line, type::
+
+    pip install karstnet
+
+Otherwise, you can download the Karstnet package from github.
 
 Install Karstnet from source. From the project's main directory, type::
 

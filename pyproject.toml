@@ -1,0 +1,56 @@
+# Choosing the build backend:
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# Project metadata
+[project]
+name = "karstnet"
+description = "Statistical characterization of karst networks"
+version = "1.2.5"
+authors = [
+  { name="Philippe Renard", email="philippe.renard@unine.ch"},
+  { name="Pauline Collon", email="pauline.collon@univ-lorraine.fr"}
+]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["geomorphology", "karst", "graph", "statistics"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+# Dependencies and requirements
+requires-python = ">=3.8"
+
+# Base dependencies
+dependencies = [
+    'numpy',
+    'matplotlib',
+    'networkx',
+    'scipy',
+    'mplstereonet',
+]
+
+# Optional dependencies to install a development environment
+# Install with:
+# > pip install karstnet[dev]
+[project.optional-dependencies]
+dev = [
+    'pycodestyle',
+    'pytest',
+    'pytest-cov',
+    'coveralls',
+    'sphynx',
+    'numpydoc',
+    'sphinx_rtd_theme',
+    'build',
+    'twine'
+]
+
+# Links to web ressources
+[project.urls]
+Documentation = "https://karstnet.readthedocs.org"
+Repository = "https://github.com/karstnet/karstnet"
+Issues = "https://github.com/karstnet/karstnet/issues"

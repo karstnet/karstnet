@@ -1,4 +1,4 @@
-#    Copyright (C) 2018 by
+#    Copyright (C) 2018-2024 by
 #    Philippe Renard <philippe.renard@unine.ch>
 #    Pauline Collon <pauline.collon@univ-lorraine.fr>
 #    All rights reserved.
