@@ -1,3 +1,8 @@
+## V1.2.5 (30/08/2024) - Philippe Renard
+
+- Modifying package structure for distribution via pypi
+- Replacing setup.py by pyproject.toml
+
 ## V1.2.4 (23/07/2024) - Philippe Renard
 
 - Updated the automated construction of the documentation

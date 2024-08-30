@@ -6,37 +6,57 @@ Karstnet is a python3 project providing tools for the statistical analysis of ka
 
 
 
-Version 1.2.4 - July 2024 
+Version 1.2.5 - August 2024 
 
 Please check the file [changelog.md](changelog.md) to track the novel functionalities of karstnet.
 
 
-## Installation
+## Simple installation from pypi.org
 
-Download karstnet from this Github platform : green button "clone or download". Then, unzip it on your computer. 
+If you just need to use karstnet (e.g. in Jupyter notebooks), the simplest way to install it is to get it from [Pypi.org](https://pypi.org/) by typing the command:
 
-Once this have been done, you can open a Python prompt (like the Anaconda prompt) to install it 
+`pip install karstnet`
 
-Install from source (from project main directory), just to use it (e.g. in Jupyter notebooks): 
+This command should install directly all the required dependencies for a fully functional version of karstnet and you do not need to download manually anything.
 
-1)In your prompt, go to your directory location (ex: 
-`cd C:\Users\YourName\Documents\KARSTNET\karstnet`
+## Installation from github
 
-2) then launch karstnet installation by taping:
+If you want to access the source code and potentially contribute. You should follow the following steps.
+
+### 1. Download
+
+Download karstnet from the [Github repository](https://github.com/karstnet/karstnet): green button "clone or download". Then, unzip it on your computer. 
+
+
+### 2. Go in the directory
+
+Once this has been done, open a Python prompt (like the Anaconda prompt), and go to your directory location (ex: 
+`cd C:\Users\YourName\Documents\KARSTNET\karstnet`).
+
+### 3. Launch the local installation
+
+You have three options: the minimal one will install the code.
+
 `pip install .`
+
 Do not forget the point "." at the end of the command
 
-If you want to run it directly from source (useful for development):
+If you want to run it directly from the source files (useful for development):
+
 ` pip install -e .`
 
-Both these options can also be run without moving previously in the karstnet folder. 
+You can also install all the dependencies used in karstnet to have complete development environment:
+
+` pip install -e .[dev]`
+
+All these options can also be run without moving previously in the karstnet folder. 
 In that case, just type in your Anaconda prompt :
 
 ` pip install -e your\path\to\karstnet` 
 
-## Testing
+### 4. Testing
 
-From source directory, and after instaling **karstnet** run:
+If you start modifying the code, you should regularly check that you did not break some key features. For that you can run the unit tests.  From source directory, and after instaling **karstnet** run:
 
 `pytest tests/test_karstnet.py`
 
@@ -53,10 +73,9 @@ A call-test function is available to help you check if the package is ready to u
 ## Documentation
 
 The html documentation is available in the sub directory:  [docs/_build/html/index.html](docs/_build/html/index.html)
+ and it is available online at: https://karstnet.readthedocs.io/
 
-Also available online at: https://karstnet.readthedocs.io/
-
-A french version of a guide for students willing to code karstnet extensions is available :
+A french version of a guide for students willing to code karstnet extensions is available:
 [FR_GuideDebutant_karstnet_jupyter_github.pdf](docs/pdf/FR_GuideDebutant_karstnet_jupyter_github.pdf)
 
 
