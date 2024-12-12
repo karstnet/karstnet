@@ -1348,23 +1348,20 @@ class KGraph:
             dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
             length2d[e] = np.sqrt(dx ** 2 + dy ** 2)
 
-            if length2d[e] != 0:
-                dip[e] = np.arctan(abs(dz) / length2d[e])  # returns in radians
+            if length2d[e] > 1e-2:
+                dip[e] = np.arctan(dz / length2d[e])  # returns in radians
                 dip[e] = np.degrees(dip[e])
-                if (dz < 0):
-                    dip[e] = -dip[e]
-                if (dx * dy > 0):  # azimuth is comprised between 0 and 90°
-                    # returns in radians
-                    azimuth[e] = np.arcsin(abs(dx) / length2d[e])
-                    # converts in degrees
-                    azimuth[e] = np.degrees(azimuth[e])
-                else:  # azimuth is comprised between 90° and 180°
-                    azimuth[e] = 90 + \
-                                 np.degrees(np.arccos(abs(dx) / length2d[e]))
+                azimuth[e] = np.pi / 2 - np.arctan2(dy, dx) # returns in radians
+                azimuth[e] = np.degrees(azimuth[e]) % 360 
 
-                # to group 0 and 180 inside same bins
-                azimuth[e] = np.fmod(azimuth[e], 180)
-            else:  # would arrive for pure vertical segments
+                if (dz < 0):
+                    # negative cave gradients yield positive plunges in a stereonet
+                    dip[e] = -dip[e] 
+                else:
+                    # positive cave gradients have bearings 180 apart for the stereonet
+                    azimuth[e] = (azimuth[e] + 180) % 360 
+
+            else:  # case of nearly pure vertical segments
                 azimuth[e] = np.nan
                 # azimuth[e] = 0.0 #Convention
                 dip[e] = 90  # degrees
