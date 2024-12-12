@@ -1348,7 +1348,7 @@ class KGraph:
             dz = self.pos3d[e[0]][2] - self.pos3d[e[1]][2]
             length2d[e] = np.sqrt(dx ** 2 + dy ** 2)
 
-            if length2d[e] > 1e-2:
+            if length2d[e] != 0:
                 dip[e] = np.arctan(dz / length2d[e])  # returns in radians
                 dip[e] = np.degrees(dip[e])
                 azimuth[e] = np.pi / 2 - np.arctan2(dy, dx) # returns in radians
