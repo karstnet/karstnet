@@ -303,6 +303,8 @@ class KGraph:
         # we saturate the colormap at 40%
         from matplotlib import cm
         from matplotlib.colors import ListedColormap
+        from matplotlib.gridspec import GridSpec
+
         nbint = 15
         levels = np.linspace(0, 1, nbint)
         rainbow = cm.get_cmap('rainbow')
@@ -314,8 +316,9 @@ class KGraph:
         # Density map - Allows to consider almost vertical conduits
         # The data are weigthted by the real length of the segments (l3d)
         # Use the traditional "Schmidt" method : 1% count
+        gs = GridSpec(nrows=20, ncols =2)
         fig = plt.figure(figsize=(16, 8))
-        dc = fig.add_subplot(121, projection='stereonet')
+        dc = fig.add_subplot(gs[:-2, 0], projection='stereonet')
         cdc = dc.density_contourf(plunge_dc,
                                   bearing_dc,
                                   measurement='lines',
@@ -328,11 +331,19 @@ class KGraph:
                      y=1.10,
                      fontsize=15)
         dc.grid()
+        dc._polar.set_position(dc.get_position())
+        dc.set_azimuth_ticks(np.arange(0, 351, 10))
 
+        dc_cb = fig.add_subplot(gs[-1:, 0]) # axe for the colorbar, made invisible
+        for spine in ["top", "bottom", "left", "right"]:
+            dc_cb.spines[spine].set_visible(False)
+            dc_cb.set_xticks([])
+            dc_cb.set_yticks([])
+            
         # colorbar of the density map
-        cbar = plt.colorbar(cdc,
-                            fraction=0.046,
-                            pad=0.04,
+        cbar = plt.colorbar(cdc, ax = dc_cb
+                            fraction=0.95,
+                            pad=0.01,
                             orientation='horizontal')
         cbar.set_label('[%]')
 
@@ -346,7 +357,8 @@ class KGraph:
         half = np.sum(np.split(number_of_strikes[:-1], 2), 0)
         two_halves = np.concatenate([half, half])
 
-        rs = fig.add_subplot(122, projection='polar')
+        # rose diagram on right hand side of picture
+        rs = fig.add_subplot(gs[:-2,1], projection='polar')
         rs.bar(np.deg2rad(np.arange(0, 360, 10)),
                two_halves,
                width=np.deg2rad(10),
@@ -1349,22 +1361,19 @@ class KGraph:
             length2d[e] = np.sqrt(dx ** 2 + dy ** 2)
 
             if length2d[e] != 0:
-                dip[e] = np.arctan(abs(dz) / length2d[e])  # returns in radians
+                dip[e] = np.arctan(dz / length2d[e])  # returns in radians
                 dip[e] = np.degrees(dip[e])
-                if (dz < 0):
-                    dip[e] = -dip[e]
-                if (dx * dy > 0):  # azimuth is comprised between 0 and 90°
-                    # returns in radians
-                    azimuth[e] = np.arcsin(abs(dx) / length2d[e])
-                    # converts in degrees
-                    azimuth[e] = np.degrees(azimuth[e])
-                else:  # azimuth is comprised between 90° and 180°
-                    azimuth[e] = 90 + \
-                                 np.degrees(np.arccos(abs(dx) / length2d[e]))
+                azimuth[e] = np.pi / 2 - np.arctan2(dy, dx) # returns in radians
+                azimuth[e] = np.degrees(azimuth[e]) % 360 
 
-                # to group 0 and 180 inside same bins
-                azimuth[e] = np.fmod(azimuth[e], 180)
-            else:  # would arrive for pure vertical segments
+                if (dz < 0):
+                    # negative cave gradients yield positive plunges in a stereonet
+                    dip[e] = -dip[e] 
+                else:
+                    # positive cave gradients have bearings 180 apart for the stereonet
+                    azimuth[e] = (azimuth[e] + 180) % 360 
+
+            else:  # case of nearly pure vertical segments
                 azimuth[e] = np.nan
                 # azimuth[e] = 0.0 #Convention
                 dip[e] = 90  # degrees
