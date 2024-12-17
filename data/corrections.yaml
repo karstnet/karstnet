@@ -1,0 +1,161 @@
+Migovec:
+  fullname: System Migovec
+  crs: epsg:3912
+  rights: CC BY-NC-SA 4.0
+  datatype: therion
+  citation: 'ICCC, & JSDPT. (2024). Survey Data for the Tolminski Migovec Cave Exploration project (Version 2024.03.13) [Dataset]. Zenodo. https://doi.org/DOI: 10.5281/ZENODO.10813021'
+  status: clean (V1)
+
+  edge_flags:
+    add: [['system_migovec.vrtnarija_vilinska.vrtnarija.xanadont.2',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.cuckoos_nest.35'],
+          ['system_migovec.vrtnarija_vilinska.vrtnarija.highway32.12',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.gravity.2'],
+          ['system_migovec.m2m16m18.M16.glory.5', 'system_migovec.m2m16m18.M16.god.27'],
+          ['system_migovec.m2m16m18.M16.god.19',
+            'system_migovec.m2m16m18.M16.glory.11'],
+          ['system_migovec.primadona_ubend_mona_tip.mona_tip.mona_tip2.31',
+            'system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.49'],
+          ['system_migovec.m2m16m18.M16.glory.16',
+            'system_migovec.m2m16m18.M16.god.15'],
+          ['system_migovec.m2m16m18.M16.teotihuacan.13',
+            'system_migovec.m2m16m18.M16.god.17'],
+          ['system_migovec.vrtnarija_vilinska.vrtnarija.keti.8',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.intravenus_de_milo.1'],
+          ['system_migovec.vrtnarija_vilinska.vrtnarija.kill_em_all.12',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.metal_aven.10'],
+          ['system_migovec.vrtnarija_vilinska.vilinska.vilcon.4',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.judge.8'],
+          ['system_migovec.vrtnarija_vilinska.vrtnarija.perfidia.14',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.cow.1'],
+          ['system_migovec.vrtnarija_vilinska.vrtnarija.perfidia.7',
+            'system_migovec.vrtnarija_vilinska.vrtnarija.republica.16'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.polnoletna.26',
+            'system_migovec.primadona_ubend_mona_tip.primadona.milanova.8'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.entirely_my_fault.16',
+            'system_migovec.primadona_ubend_mona_tip.primadona.karstaway.7'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.more_like_welding.3',
+            'system_migovec.primadona_ubend_mona_tip.primadona.mfi.3'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.TTTr.3',
+            'system_migovec.primadona_ubend_mona_tip.primadona.what_a_coincidence.1'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.ajdovscina.1',
+            'system_migovec.primadona_ubend_mona_tip.primadona.TTTr.8'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.milanova.9',
+            'system_migovec.primadona_ubend_mona_tip.primadona.polnoletna.26'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.poseidon_rift.6',
+            'system_migovec.primadona_ubend_mona_tip.primadona.street-wise_hercules.8'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.sweet_baby_jesus.22',
+            'system_migovec.primadona_ubend_mona_tip.primadona.hallelujah.1'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.upotyn.8',
+            'system_migovec.primadona_ubend_mona_tip.primadona.plumbers_paradise.24'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.plumbers_paradise.25',
+            'system_migovec.primadona_ubend_mona_tip.primadona.fenestrator.8'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.apple_crumble.22',
+            'system_migovec.primadona_ubend_mona_tip.primadona.pov.15'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.dejavu.1',
+            'system_migovec.primadona_ubend_mona_tip.primadona.zima00.17'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.jack_of_hearts.29',
+            'system_migovec.primadona_ubend_mona_tip.primadona.smer0.37'],
+          ['system_migovec.primadona_ubend_mona_tip.primadona.pivnica_resurvey.12',
+            'system_migovec.primadona_ubend_mona_tip.primadona.zima00.3']]
+    rmv: [['system_migovec.vrtnarija_vilinska.vrtnarija.xanadont.2',
+              'system_migovec.vrtnarija_vilinska.vrtnarija.xanadont.1'],
+            ['system_migovec.primadona_ubend_mona_tip.mona_tip.mona_tip2.35',
+              'system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.45'],
+            ['system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.45',
+              'system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.46'],
+            ['system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.46',
+              'system_migovec.primadona_ubend_mona_tip.mona_tip.cloacamaxima.47']]
+
+ReveEveille:
+  # number: '006'
+  # crs: epsg:32718
+  # rights: CC-BY-NC-SA 4.0 ?
+  # citation: 'Centre Terre. (2024). Survey Data for the Ultima Patagonia Cave Exploration project [Dataset]. https://github.com/tr1813/ultima-patagonia-topo'
+  # datatype: therion
+  # status: clean (v1)
+      
+
+  node_flags:
+    con:
+      - ReveEveille.cpff.23
+      - ReveEveille.Suite.9
+    inl: 
+      - ReveEveille.CPF.4
+      - ReveEveille.cpff.4
+      - ReveEveille.cpff.38
+      - ReveEveille.cpff.30
+    oul: 
+      - ReveEveille.Suite.16
+    smp: 
+    - ReveEveille.Suite.24
+    str: 
+      - ReveEveille.Suite.0
+      - ReveEveille.cpff.1
+      - ReveEveille.cpff.2
+      - ReveEveille.cpff.3
+      - ReveEveille.cpff.4
+      - ReveEveille.cpff.5
+      - ReveEveille.cpff.6
+      - ReveEveille.cpff.7
+      - ReveEveille.cpff.8
+      - ReveEveille.cpff.9
+      - ReveEveille.cpff.10
+      - ReveEveille.cpff.11
+      - ReveEveille.cpff.12
+      - ReveEveille.cpff.13
+      - ReveEveille.cpff.14
+      - ReveEveille.cpff.15
+      - ReveEveille.cpff.16
+      - ReveEveille.cpff.17
+      - ReveEveille.cpff.18
+      - ReveEveille.cpff.19
+      - ReveEveille.cpff.20
+      - ReveEveille.cpff.21
+      - ReveEveille.cpff.22
+      - ReveEveille.cpff.23
+      - ReveEveille.cpff.24
+      - ReveEveille.cpff.25
+      - ReveEveille.cpff.26
+      - ReveEveille.cpff.27
+      - ReveEveille.cpff.29
+      - ReveEveille.cpff.30
+      - ReveEveille.cpff.31
+      - ReveEveille.cpff.32
+      - ReveEveille.cpff.33
+      - ReveEveille.cpff.34
+      - ReveEveille.cpff.35
+      - ReveEveille.cpff.36
+      - ReveEveille.cpff.37
+      - ReveEveille.cpff.38
+      - ReveEveille.cpff.39
+      - ReveEveille.cpff.40
+      - ReveEveille.cpff.41
+      - ReveEveille.cpff.42
+      - ReveEveille.cpff.43
+      - ReveEveille.cpff.44
+      - ReveEveille.cpff.45
+      - ReveEveille.Suite.1
+      - ReveEveille.Suite.2
+      - ReveEveille.Suite.3
+      - ReveEveille.Suite.4
+      - ReveEveille.Suite.5
+      - ReveEveille.Suite.6
+      - ReveEveille.Suite.7
+      - ReveEveille.Suite.8
+      - ReveEveille.Suite.9
+      - ReveEveille.Suite.10
+      - ReveEveille.Suite.11
+      - ReveEveille.Suite.12
+      - ReveEveille.Suite.13
+      - ReveEveille.Suite.15
+      - ReveEveille.Suite.16
+      - ReveEveille.Suite.17
+      - ReveEveille.Suite.18
+      - ReveEveille.Suite.19
+      - ReveEveille.Suite.21
+      - ReveEveille.Suite.22
+      - ReveEveille.Suite.23
+      - ReveEveille.Suite.24
+    wtf: 
+      - ReveEveille.Suite.14
