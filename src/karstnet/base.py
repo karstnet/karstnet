@@ -341,7 +341,7 @@ class KGraph:
             dc_cb.set_yticks([])
             
         # colorbar of the density map
-        cbar = plt.colorbar(cdc, ax = dc_cb
+        cbar = plt.colorbar(cdc, ax = dc_cb,
                             fraction=0.95,
                             pad=0.01,
                             orientation='horizontal')
