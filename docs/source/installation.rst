@@ -41,3 +41,4 @@ karstnet requires the following python packages to function properly:
  * scipy-stats
  * matplotlib.pyplot
  * mplstereonet
+ * pyvista

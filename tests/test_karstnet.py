@@ -44,11 +44,17 @@ def periodic():
         tortuosity = 1,
 
     """
+    # pos = {1: (-1, 0), 2: (-0.2, -0.2), 3: (1, 0), 4: (-1.5, 1.5), 5: (0, 1),
+    #        6: (1.5, 1.5), 7: (-1.5, -1.5), 8: (0, -1), 9: (1.5, -1.5)}
+    # edges = [(1, 2), (2, 3), (4, 5), (5, 6), (7, 8), (8, 9), (1, 4), (1, 7),
+    #          (2, 5), (2, 8), (3, 6), (3, 9), (5, 8), (1, 3), (6, 4), (4, 7),
+    #          (6, 9), (9, 7)]
+    # Set a string for a node label to also test the "robustness" of the code
     pos = {1: (-1, 0), 2: (-0.2, -0.2), 3: (1, 0), 4: (-1.5, 1.5), 5: (0, 1),
-           6: (1.5, 1.5), 7: (-1.5, -1.5), 8: (0, -1), 9: (1.5, -1.5)}
-    edges = [(1, 2), (2, 3), (4, 5), (5, 6), (7, 8), (8, 9), (1, 4), (1, 7),
-             (2, 5), (2, 8), (3, 6), (3, 9), (5, 8), (1, 3), (6, 4), (4, 7),
-             (6, 9), (9, 7)]
+           'x': (1.5, 1.5), 7: (-1.5, -1.5), 8: (0, -1), 9: (1.5, -1.5)}
+    edges = [(1, 2), (2, 3), (4, 5), (5, 'x'), (7, 8), (8, 9), (1, 4), (1, 7),
+             (2, 5), (2, 8), (3, 'x'), (3, 9), (5, 8), (1, 3), ('x', 4), (4, 7),
+             ('x', 9), (9, 7)]
     k = kn.KGraph(edges, pos)
     return k
 
@@ -123,6 +129,35 @@ def assortative():
     return k
 
 
+# @pytest.fixture
+# def complete():
+#     """ Returns a complete graph with 10 nodes
+
+#         The graph contains a core central grid and lateral branches.
+
+#         Used to test:
+#         length entropy = 0.635
+#         orientation entropy = 0.841
+#         aspl = 1.0
+#         cpd = 0.0
+#         mean degree = 9.0
+#         cv degree = 0.0
+#         correlation vertex degree = 1.0
+#     """
+#     npt = 10
+#     pos = {}
+#     edges = []
+
+#     for i in range(npt):
+#         angle = 2*np.pi * i / (npt - 1)
+#         pos[i] = (np.cos(angle), np.sin(angle))
+
+#     for i in range(npt):
+#         for j in range(npt):
+#             if i != j:
+#                 edges.append((i, j))
+
+#     return kn.KGraph(edges, pos)
 @pytest.fixture
 def complete():
     """ Returns a complete graph with 10 nodes
@@ -130,8 +165,8 @@ def complete():
         The graph contains a core central grid and lateral branches.
 
         Used to test:
-        length entropy = 0.635
-        orientation entropy = 0.841
+        length entropy = 0.595
+        orientation entropy = 0.797
         aspl = 1.0
         cpd = 0.0
         mean degree = 9.0
@@ -143,7 +178,7 @@ def complete():
     edges = []
 
     for i in range(npt):
-        angle = 2*np.pi * i / (npt - 1)
+        angle = 2*np.pi * i / npt
         pos[i] = (np.cos(angle), np.sin(angle))
 
     for i in range(npt):
@@ -241,9 +276,11 @@ def test_coef_variation_length(disassortative):
 def test_length_entropy(disassortative, assortative, complete):
     assert disassortative.length_entropy() == 0
     assert float_eq(assortative.length_entropy(), 0.206)
-    assert float_eq(complete.length_entropy(), 0.635)
+    # assert float_eq(complete.length_entropy(), 0.635)
+    assert float_eq(complete.length_entropy(), 0.595)
 
 
 def test_orientation_entropy(assortative, complete):
     assert float_eq(assortative.orientation_entropy(), 0.698)
-    assert float_eq(complete.orientation_entropy(), 0.841)
+    # assert float_eq(complete.orientation_entropy(), 0.841)
+    assert float_eq(complete.orientation_entropy(), 0.797)

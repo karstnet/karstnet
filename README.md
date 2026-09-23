@@ -2,11 +2,11 @@
 
 Karstnet is a python3 project providing tools for the statistical analysis of karstic networks.
 
-[![Documentation Status](https://readthedocs.org/projects/karstnet/badge/?version=latest)](https://karstnet.readthedocs.io/en/latest/?badge=latest)
+<!-- [![Documentation Status](https://readthedocs.org/projects/karstnet/badge/?version=latest)](https://karstnet.readthedocs.io/en/latest/?badge=latest) -->
 
 
 
-Version 1.2.5 - August 2024 
+Version 1.4.4 - July 2025
 
 Please check the file [changelog.md](changelog.md) to track the novel functionalities of karstnet.
 

@@ -2,8 +2,11 @@ karstnet.egg-info/
 .nbgrader.log
 notebooks/.ipynb_checkpoints/
 .pytest_cache/*
-*/__pycache__/*
+__pycache__/
 venv/
 .idea/
 env/
 build/
+
+zzz*
+.DS_Store

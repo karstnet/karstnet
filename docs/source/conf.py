@@ -16,17 +16,19 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../src/karstnet/'))
 
+from karstnet import __version__
+
 
 # -- Project information -----------------------------------------------------
 
 project = 'Karstnet'
-copyright = '2018-2024, Karstnet team'
+copyright = '2018-2025, Karstnet team'
 author = 'Karstnet team'
 
 # The short X.Y version
-version = '1.2'
+version = '.'.join(__version__.split('.')[:2])
 # The full version, including alpha/beta/rc tags
-release = '1.2.1'
+release = __version__
 
 
 
@@ -48,6 +50,7 @@ extensions = ['sphinx.ext.autodoc',
               'numpydoc']
 
 autosummary_generate = True
+# autosummary_imported_members = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

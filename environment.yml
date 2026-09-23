@@ -1,0 +1,35 @@
+name: karstnet-erc
+channels:
+  # - defaults
+  - conda-forge
+  # - agd-lbr
+  # - anaconda
+dependencies:
+  - python = 3.11
+  - pip
+  - pip:
+    - .
+    - pyvista[all]
+  # - python
+  - geopandas>=1.0
+  # - numpy
+  # - pandas
+  # - matplotlib
+  - pyyaml
+  # - scipy
+  # - plotly
+  - shapely
+  # - networkx
+  - mplstereonet
+  # - pyvista[all]
+  - jupyter
+  - jupyterlab
+  - sphinx
+  - numpydoc
+  - trame
+  - ipywidgets
+  - ipympl
+  # - os
+
+
+

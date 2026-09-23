@@ -1,3 +1,10 @@
+## V1.3.0 (...) - Julien Straubhaar & Celia Trunz
+- Extract functions that apply to Kg.graph only to make the functions usable outside of the Kg object. While keeping it in the method
+- Add new packages:
+	- io: import export and functions (previous import export functions used as methods exist now as functions under different names, but are still callable as the original method)
+	- clean: functions used to clean the graph before initating the kg object. 
+	- view: function for plotting or other viewing tools, that are applied to the graph only. Previously existing methods are transformed in functions with a different name, but methods is kept by calling the function in the 
+
 ## V1.2.5 (30/08/2024) - Philippe Renard
 
 - Modifying package structure for distribution via pypi

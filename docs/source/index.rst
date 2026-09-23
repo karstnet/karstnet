@@ -18,6 +18,7 @@ if you need further information.
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
    installation
    example1_simple_graph
@@ -37,9 +38,12 @@ Authors
 =======
 
 Karstnet is developped by the Karstnet team:
-`Philippe Renard <https://www.unine.ch/philippe.renard/home/the-team/philippe-renard.html>`_
+`Philippe Renard <https://www.unine.ch/chyn/fr/biographie/philippe-renard.html>`_,
+`Pauline Collon <http://www.ring-team.org/index.php/home/team?view=user&limitstart=0&id=189>`_
+`Celia Trunz`,
 and
-`Pauline Collon <http://www.ring-team.org/index.php/home/team?view=user&limitstart=0&id=189>`_.
+`Julien Straubhaar`.
+
 
 Reference
 =========
@@ -55,6 +59,8 @@ License
 =======
 
 Released under the MIT license:
-   Copyright (C) 2018-2024 Karstnet Developers:
+   Copyright (C) 2018-2025 Karstnet Developers:
    Philippe Renard <philippe.renard@unine.ch>
    Pauline Collon <pauline.collon@univ-lorraine.fr>
+   Celia Trunz <celia.trunz@unine.ch>
+   Julien Straubhaar <julien.straubhaar@unine.ch>
