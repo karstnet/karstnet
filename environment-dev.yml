@@ -1,0 +1,37 @@
+name: karstnet-dev
+channels:
+  - agd-lbr
+dependencies:
+  - python = 3.11
+  - hfm
+  - pip
+  - pip:
+    - pyvista==0.44.2
+    - . #install the cureent repository of karstnet
+    # - git+https://github.com/ERC-Karst/Karstnet-ERC.git#egg=karstnet
+    - geopandas>=1.0
+    - jupyter
+    - ipykernel==6.*
+    # - sphinx
+    # - numpydoc
+    - ipympl 
+    - pyqt6
+    - pypardiso
+    - geone
+
+# # --------------------------------------------------------------------------------------------------------
+# # Note
+# # ----
+# # If ssh access to the git repositories is not available, you can use https instead:
+# # i.e. replace "git+ssh://git@github.com" by "git+https://github.com" in the lines above
+# # --------------------------------------------------------------------------------------------------------
+
+# # --------------------------------------------------------------------------------------------------------
+# # Important note once installed 
+# # -----------------------------
+# # If kernel crashes when plotting with pyvista in jupyter, try this (update the paths)
+# rm  /home/julien/anaconda3/envs/erckarst/lib/libstdc++.so.6
+# ln -s  /usr/lib/x86_64-linux-gnu/libstdc++.so.6  /home/julien/anaconda3/envs/erckarst/lib/libstdc++.so.6
+#
+# # Then close and relaunch jupyter (not only restart the kernel), and try again
+# # --------------------------------------------------------------------------------------------------------
