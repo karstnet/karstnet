@@ -1,3 +1,38 @@
+V2.0.0 TODOLIST
+
+Notebooks:
+- [x] notebooks\Read_and_clean_therionSQL.ipynb
+- [ ] notebooks\Read_and_write_shapefile.ipynb
+- [ ] notebooks\Read_and_write_yamlfile_graph.ipynb
+- [ ] notebooks\Read_therionSQL_simple_example.ipynb
+
+Functions:
+- [ ] src\karstnet\_io_func\yamlfile.py
+- [ ] src\karstnet\_geom\geom.py
+- [ ] src\karstnet\_io_func\aven.py
+- [ ] src\karstnet\_io_func\compass.py
+- [ ] src\karstnet\_io_func\export.csv
+- [ ] src\karstnet\_io_func\gocad.py
+- [ ] src\karstnet\_io_func\jason.py
+- [ ] src\karstnet\_io_func\kndata_csvfile.py
+- [ ] src\karstnet\_io_func\pline.py
+- [ ] src\karstnet\_io_func\shapefile.py
+- [ ] src\karstnet\_io_func\text_files.py
+- [ ] src\karstnet\_io_func\therion.py
+- [ ] src\karstnet\_io_func\yamlfile.py
+- [ ] src\karstnet\_misc\gen_network.py
+- [ ] src\karstnet\_view\plot_fc_celia_toclean.py
+- [ ] src\karstnet\_view\plot.py
+- [ ] src\karstnet\tools.py
+- [ ] src\karstnet\utils.py
+- [ ] src\karstnet\_version.py
+
+Update:
+- [ ] readme
+- [ ] changelog
+- [ ] environment-dev (should replace the previous environnement) 
+- [ ] documentation
+
 # Karstnet - statistics of karstic networks
 
 Karstnet is a python3 project providing tools for the statistical analysis of karstic networks.
