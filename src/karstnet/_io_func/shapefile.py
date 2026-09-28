@@ -4,29 +4,6 @@ import geopandas as gpd
 from shapely.geometry import Point, LineString
 
 
-# def networkx_to_shapefile(G,
-#               crs,
-#               outputdir='',
-#               name=''):
-#     '''
-#     Transform graph data into an esri shapefile. Function written by Ana Tanaka
-#     crs OxBelHa: 'EPSG:32616'
-#     '''
-
-
-#     #create shapefile with points
-#     positions = nx.get_node_attributes(G, 'pos')
-#     node_data = {'id': list(positions.keys()), 'geometry': [Point(pos) for pos in positions.values()]}
-#     node_gdf = gpd.GeoDataFrame(node_data, crs=crs)
-#     node_gdf.to_file(os.path.join(outputdir,f'{name}nodes.shp'))
-
-#     #create associated shapefile with lines connecting the points.
-#     edge_data = []
-#     for u, v in G.edges():
-#         edge_data.append({'geometry': LineString([positions[u], positions[v]]), 'source': u, 'target': v})
-
-#     edge_gdf = gpd.GeoDataFrame(edge_data, crs=crs)   
-#     edge_gdf.to_file(os.path.join(outputdir,f'{name}edges.shp'))
 
 
 def networkx_to_shapefile(G,
@@ -69,11 +46,6 @@ def networkx_to_shapefile(G,
         list of edges to export. By default None.
     pos_attr: string
         name of the dictionnary key containing the coordinates. By default 'pos'. 
-        
-
-
-
-
     """
 
     #format node data for shapefile export, and save a list of edges
@@ -113,11 +85,22 @@ def networkx_to_shapefile(G,
 
 
 def networkx_from_shapefile(basename,
-                        #   pos_attr='pos',
                           precision=1,
-                        #   elevation = None
                           ):
-    
+    """_summary_
+
+    Parameters
+    ----------
+    basename : str
+        path to the shapefile, including the extension .shp in the filepath
+    precision : int
+        precision of the coordinates, by default 1 meter
+
+    Returns
+    -------
+    G : networkx graph based on a line shapefile
+        
+    """
     gdf = gpd.read_file(basename)
  
     #Create graph from shapefile
