@@ -16,7 +16,7 @@ Functions:
 - [ ] src\karstnet\_io_func\jason.py
 - [ ] src\karstnet\_io_func\kndata_csvfile.py
 - [ ] src\karstnet\_io_func\pline.py
-- [ ] src\karstnet\_io_func\shapefile.py
+- [x] src\karstnet\_io_func\shapefile.py (updated docstring)
 - [ ] src\karstnet\_io_func\text_files.py
 - [ ] src\karstnet\_io_func\therion.py
 - [ ] src\karstnet\_io_func\yamlfile.py
