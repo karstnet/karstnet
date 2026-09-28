@@ -1,0 +1,56 @@
+erc-id: '001'
+cavename: GouffreDejaVu
+cave_info:
+  full_name: Gouffre Déjà Vu
+  country: Chile
+  state: .nan
+  area: .nan
+  locality: .nan
+  grotto_id: .nan
+  country_cave_id: .nan
+  local_id: .nan
+  length_approx_meter: 150.0
+  length_official_meter: .nan
+  denivelation: .nan
+  latitude: .nan
+  longitude: .nan
+  altitude: .nan
+  cave_url: .nan
+  supplemental_links: .nan
+  comments_cave_info: .nan
+dataset_sharing_info:
+  license: CC BY-NC-SA 4.0
+  citation: Centre Terre. (2024). Survey Data for the Ultima Patagonia Cave Exploration
+    project [Dataset]. https://github.com/tr1813/ultima-patag
+  thanks: .nan
+  start_contract: .nan
+  end_contract: .nan
+  cave_survey_owner: .nan
+  sharing_conditions: .nan
+  rawdata_rights: .nan
+  clean_graph_rights: .nan
+  anonymised_graph_rights: .nan
+  statistical_results: .nan
+  sample_figures: .nan
+  data_reception_date: .nan
+  data_received_by: .nan
+  contract_file: .nan
+  email_correspondant: .nan
+dataset_info:
+  id_dataset: GH3
+  original_format: Therion
+  length_dataset: .nan
+  connected_components: single cave
+  geometry: splays
+  units: meter
+  crs: local
+  crs_other: local
+  original_filename: .nan
+  original_encoding: UTF-8
+  all_data_format: Therion
+  website: .nan
+  comments_dataset: .nan
+processing:
+  status: in github (cleaning in progress)
+  type_of_correction: no correction
+  last_processing_date: 03 Mar 2025
