@@ -2,7 +2,7 @@ V2.0.0 TODOLIST
 
 Notebooks:
 - [x] notebooks\Read_and_clean_therionSQL.ipynb
-- [ ] notebooks\Read_and_write_shapefile.ipynb
+- [x] notebooks\Read_and_write_shapefile.ipynb
 - [ ] notebooks\Read_and_write_yamlfile_graph.ipynb
 - [ ] notebooks\Read_therionSQL_simple_example.ipynb
 
@@ -30,8 +30,12 @@ Functions:
 Update:
 - [ ] readme
 - [ ] changelog
-- [ ] environment-dev (should replace the previous environnement) 
 - [ ] documentation
+
+Environment:
+- [ ] (should replace the previous environnement
+- [ ] verify if all the packages are needed
+- [ ] is geone needed?
 
 # Karstnet - statistics of karstic networks
 
