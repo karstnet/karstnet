@@ -1,4 +1,5 @@
-## V1.3.0 (...) - Julien Straubhaar & Celia Trunz
+
+## V2.0.0 (...) - Julien Straubhaar & Celia Trunz
 - Extract functions that apply to Kg.graph only to make the functions usable outside of the Kg object. While keeping it in the method
 - Add new packages:
 	- io: import export and functions (previous import export functions used as methods exist now as functions under different names, but are still callable as the original method)
