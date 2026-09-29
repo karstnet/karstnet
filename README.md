@@ -2,9 +2,13 @@ V2.0.0 TODOLIST
 
 test Notebooks:
 - [x] notebooks\Read_and_clean_therionSQL.ipynb 
+	-[ ] mettre à jour import data pour seefehole
 - [x] notebooks\Read_and_write_shapefile.ipynb
+	-[ ] mettre à jour import data pour seefehole
 - [ ] notebooks\Read_and_write_yamlfile_graph.ipynb
+	-[ ] mettre à jour import data pour seefehole
 - [ ] notebooks\Read_therionSQL_simple_example.ipynb
+	-[ ] mettre à jour import data pour seefehole
 
 add for all an intro part that says this notebook does this ... list
 - [ ] notebooks\Read_and_clean_therionSQL.ipynb 
