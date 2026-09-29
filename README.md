@@ -50,9 +50,10 @@ update READ THE DOC:
 - [ ] installation.rst
 
 Environment:
-- [ ] (should replace the previous environnement
+- [ ] dev should replace the previous environnement?
 - [ ] verify if all the packages are needed
-- [ ] is geone needed?
+- [ ] is geone needed? do we want to keep krigeage?
+- [ ] geopandas is only used for shapefile import/export function
 
 # Karstnet - statistics of karstic networks
 
