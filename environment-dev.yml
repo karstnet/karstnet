@@ -7,7 +7,7 @@ dependencies:
   - pip
   - pip:
     - pyvista==0.44.2
-    - . #install the cureent repository of karstnet
+    - .[dev] #install the cureent repository of karstnet
     # - git+https://github.com/ERC-Karst/Karstnet-ERC.git#egg=karstnet
     - geopandas>=1.0 #only for the shapefile import export function
     - jupyter
