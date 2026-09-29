@@ -1,0 +1,4 @@
+source 047_Seefeldhoele_000_clean.th
+export model -o  047_Seefeldhoele_000_clean.3d
+export model -o  047_Seefeldhoele_000_clean.lox
+export model -o  047_Seefeldhoele_000_shapefiles_clean -fmt esri 

@@ -1,0 +1,58 @@
+id_dataset: '002'
+short_name: Migovec
+id_subset: '000'
+status: clean
+type_of_correction: manual correction
+last_processing_date: 11 Nov 2025
+license: CC BY-NC-SA 4.0
+citation: 'ICCC, & JSDPT. (2024). Survey Data for the Tolminski Migovec Cave Exploration
+  project (Version 2024.03.13) [Dataset]. Zenodo. https://doi.org/DOI: 10.5281/ZENODO.108130'
+thanks: .nan
+sharing_conditions: .nan
+total_length: 46317
+total_depth: 968.62
+percentage_csdim: 13
+number_connected_components: 1
+number_nodes: 7163
+number_edges: 7206
+mean_degree: 2.09
+min_degree: 1.0
+max_degree: 6.0
+cv_degree: 0.53
+number_cycles: 44
+mean_length: 49.7
+cv_length: 1.26
+length_entropy: 0.42
+orientation_3d_entropy: 0.902
+aspl: 35.94
+cpd: 0.555
+correlation_vertex_degree: -0.304
+original_format: Therion
+comments_cave_info: .nan
+full_name: System Migovec
+geometry: splays
+units: meter
+country: Slovenia
+state: Čadrg
+area: .nan
+locality: Tolminske Ravne
+grotto_id: '88328'
+country_cave_id: '6001'
+local_id: .nan
+local_coordinate_system: .nan
+latitude: 46.25198
+longitude: 13.76394
+altitude: '1854'
+cave_url: https://grottocenter.org/ui/entrances/88328
+supplemental_links: https://www.katasterjam.si/caves/6001?activeTab=data
+data_reception_date: .nan
+data_received_by: .nan
+start_contract: '-'
+end_contract: '-'
+cave_survey_owner: .nan
+website: https://github.com/iccaving/migovec-survey-data
+email_correspondant: .nan
+rawdata_rights: .nan
+clean_graph_rights: .nan
+anonymised_graph_rights: .nan
+comments_dataset: .nan

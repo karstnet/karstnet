@@ -1,0 +1,4 @@
+source 002_Migovec_000_clean.th
+export model -o  002_Migovec_000_clean.3d
+export model -o  002_Migovec_000_clean.lox
+export model -o  002_Migovec_000_shapefiles_clean -fmt esri 

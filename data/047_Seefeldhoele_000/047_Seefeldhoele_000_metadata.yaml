@@ -1,0 +1,57 @@
+id_dataset: '047'
+short_name: Seefeldhoele
+id_subset: '000'
+status: clean
+type_of_correction: manual correction
+last_processing_date: 11 Nov 2025
+license: CC BY-NC-SA 4.0
+citation: .nan
+thanks: .nan
+sharing_conditions: .nan
+total_length: 2240
+total_depth: 35.71
+percentage_csdim: 100
+number_connected_components: 1
+number_nodes: 748
+number_edges: 899
+mean_degree: 2.78
+min_degree: 1.0
+max_degree: 5.0
+cv_degree: 0.399
+number_cycles: 152
+mean_length: 4.25
+cv_length: 0.84
+length_entropy: 0.54
+orientation_3d_entropy: 0.774
+aspl: 17.91
+cpd: 0.434
+correlation_vertex_degree: -0.069
+original_format: Toporobot
+comments_cave_info: .nan
+full_name: Seefeldhoele
+geometry: lrud
+units: meter
+country: Switzerland
+state: Berne
+area: Oberland bernois
+locality: Beatenberg
+grotto_id: /
+country_cave_id: .nan
+local_id: .nan
+local_coordinate_system: CH1903/LV03
+latitude: 46.7573
+longitude: 7.8339
+altitude: '1792'
+cave_url: https://www.showcaves.com/english/ch/caves/Seefeld.html
+supplemental_links: .nan
+data_reception_date: .nan
+data_received_by: .nan
+start_contract: .nan
+end_contract: .nan
+cave_survey_owner: .nan
+website: .nan
+email_correspondant: .nan
+rawdata_rights: .nan
+clean_graph_rights: .nan
+anonymised_graph_rights: .nan
+comments_dataset: .nan
