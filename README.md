@@ -38,6 +38,17 @@ Update:
 - [ ] changelog
 - [ ] documentation
 
+update READ THE DOC:
+- [ ] api.rst
+- [ ] conf.py
+- [ ] data.rst
+	- [ ] celia updated the datasets info
+ 	- [ ] verify info 
+- [ ] example1
+- [ ] example2
+- [ ] index.rst
+- [ ] installation.rst
+
 Environment:
 - [ ] (should replace the previous environnement
 - [ ] verify if all the packages are needed
