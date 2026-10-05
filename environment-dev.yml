@@ -3,7 +3,7 @@ channels:
   - agd-lbr
 dependencies:
   - python = 3.11
-  - hfm
+ # - hfm
   - pip
   - pip:
     - pyvista==0.44.2
