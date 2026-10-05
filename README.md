@@ -24,12 +24,12 @@ Functions:
 - [ ] src\karstnet\_io_func\export.csv
 - [ ] src\karstnet\_io_func\gocad.py
 - [ ] src\karstnet\_io_func\jason.py
-- [ ] src\karstnet\_io_func\kndata_csvfile.py
+- [x] src\karstnet\_io_func\kndata_csvfile.py
 - [ ] src\karstnet\_io_func\pline.py
 - [x] src\karstnet\_io_func\shapefile.py (updated docstring)
 - [ ] src\karstnet\_io_func\text_files.py
 - [ ] src\karstnet\_io_func\therion.py
-- [ ] src\karstnet\_io_func\yamlfile.py
+- [x] src\karstnet\_io_func\yamlfile.py (commented and everything)
 - [ ] src\karstnet\_misc\gen_network.py
 - [ ] src\karstnet\_view\plot_fc_celia_toclean.py
 - [ ] src\karstnet\_view\plot.py
