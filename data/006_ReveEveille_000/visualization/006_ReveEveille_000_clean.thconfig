@@ -1,0 +1,4 @@
+source 006_ReveEveille_000_clean.th
+export model -o  006_ReveEveille_000_clean.3d
+export model -o  006_ReveEveille_000_clean.lox
+export model -o  006_ReveEveille_000_shapefiles_clean -fmt esri 

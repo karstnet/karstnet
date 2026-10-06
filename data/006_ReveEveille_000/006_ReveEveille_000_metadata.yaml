@@ -1,0 +1,58 @@
+id_dataset: '006'
+short_name: ReveEveille
+id_subset: '000'
+status: clean
+type_of_correction: manual correction
+last_processing_date: 11 Nov 2025
+license: CC BY-NC-SA 4.0
+citation: Centre Terre. (2024). Survey Data for the Ultima Patagonia Cave Exploration
+  project [Dataset]. https://github.com/tr1813/ultima-patag
+thanks: .nan
+sharing_conditions: .nan
+total_length: 330
+total_depth: 124.5
+percentage_csdim: 98
+number_connected_components: 1
+number_nodes: 78
+number_edges: 77
+mean_degree: 1.5
+min_degree: 1.0
+max_degree: 3.0
+cv_degree: 0.667
+number_cycles: 0
+mean_length: 110.2
+cv_length: 1.31
+length_entropy: 0.48
+orientation_3d_entropy: 0.722
+aspl: 1.5
+cpd: 1.0
+correlation_vertex_degree: -1.0
+original_format: Therion
+comments_cave_info: .nan
+full_name: Rêve Eveillé
+geometry: splays
+units: meter
+country: Chile
+state: Región de Magallanes y de la Antártica Chilena
+area: Natales
+locality: Archipiélago Madre de Dios
+grotto_id: /
+country_cave_id: .nan
+local_id: .nan
+local_coordinate_system: Local
+latitude: -50.0657
+longitude: -75.1592
+altitude: '145'
+cave_url: .nan
+supplemental_links: .nan
+data_reception_date: .nan
+data_received_by: .nan
+start_contract: '-'
+end_contract: '-'
+cave_survey_owner: .nan
+website: https://github.com/tr1813/ultima-patagonia-topo
+email_correspondant: .nan
+rawdata_rights: .nan
+clean_graph_rights: .nan
+anonymised_graph_rights: .nan
+comments_dataset: .nan
