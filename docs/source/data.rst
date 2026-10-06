@@ -5,10 +5,11 @@ A few data sets are provided with karstnet. They are under the the licence Creat
 More datasets can be found in the `KNdata-public github repository <https://github.com/ERC-Karst/KNdata-public>`_.
 
 ================   ================   ======================================================================================================================================================================================
-Cave name          ID KNdata          Citation
+ID                 Cave name          Citation
 ================   ================   ======================================================================================================================================================================================
-Seefeldhoele       047                Alex Hof and Florian Hof (2022), Seefeldhöhle (alias Tropfloch) und Umgebung: Sieben Hengste, Höhleninventar der Zone G 6, published by the Höhlenforschergemeinschaft Region Hohgant.
-Migovec            002                ICCC. & JSDPT. (2024). Survey Data for the Tolminski Migovec Cave Exploration project (Version 2024.03.13) [Dataset]. Zenodo. <https://doi.org/DOI: 10.5281/ZENODO.108130> 
+002                Migovec             ICCC. & JSDPT. (2024). Survey Data for the Tolminski Migovec Cave Exploration project (Version 2024.03.13) [Dataset]. Zenodo. <https://doi.org/DOI: 10.5281/ZENODO.108130> 
+006                ReveEveille         Centre Terre. (2024). Survey Data for the Ultima Patagonia Cave Exploration project [Dataset]. https://github.com/tr1813/ultima-patagonia-topo
+047                Seefeldhoele        Alex Hof and Florian Hof (2022), Seefeldhöhle (alias Tropfloch) und Umgebung: Sieben Hengste, Höhleninventar der Zone G 6, published by the Höhlenforschergemeinschaft Region Hohgant.
 ================   ================   ======================================================================================================================================================================================
 
 
