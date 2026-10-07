@@ -165,7 +165,7 @@ def networkx_to_pline(G,
     properties : list of string(s)
         List containing the name of all the graph attributes to add to the Gocad output, by default []
         For now, the properties can have up to 2 values per node. 
-        example: if the graph has a node attribute called 'csdim' that is a list of 2 values, then the properties list should be ['csdim_1','csdim_2']
+        example: if the graph has a node attribute called 'csdim' that is a list of 2 values, then the properties list will be displayed in the file as ['csdim_1','csdim_2']
     nodata_value : string
         by default '-999999999'
     name : str, optional
