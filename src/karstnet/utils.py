@@ -656,7 +656,8 @@ def pca_of_node_position(G, pos_attr='pos'):
     cov_mat = np.cov(pos.T)
 
     #  Diagonalization
-    pca_var, pca_axes = np.linalg.eig(cov_mat)
+    pca_var, pca_axes = np.linalg.eigh(cov_mat)
+    # pca_var, pca_axes = np.linalg.eig(cov_mat)
     # -> pca_var: (1d-array) eigen values, variances along prinicpal axes
     # -> pca_axes: matrix whose columns are the eigen vectors (of norm 1), i.e. principal axes
 

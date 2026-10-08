@@ -1270,8 +1270,37 @@ def pv_plot_graph(
                 options_nodes['above_color'] = above_color
 
             if scale_point:
+                # Workaround for accounting of below and above colors when `actor.mapper.scale_array` is used (for scaling point size)
+                if below_color is not None or above_color is not None:                  
+                    # - get colors (256) from cmap
+                    base_cmap = pv.plotting.colors.get_cmap_safe(cmap)
+                    base_colors = base_cmap(np.linspace(0, 1, 256))
+
+                    if below_color is not None:
+                        # - prepend the below_color to the base_colors
+                        below_rgba = matplotlib.colors.to_rgba(below_color)
+                        base_colors = np.vstack([below_rgba, base_colors])
+                        # - truncate the below values to be plotted to a single value just below the limit clim[0]
+                        meshp[node_attr][meshp[node_attr] < clim[0]] = clim[0] - 1e-6
+
+
+                    if above_color is not None:
+                        # - append the above_color to the base_colors
+                        above_rgba = matplotlib.colors.to_rgba(above_color)
+                        base_colors = np.vstack([base_colors, above_rgba])
+                        # - truncate the above values to be plotted to a single value just above the limit clim[1]
+                        meshp[node_attr][meshp[node_attr] > clim[1]] = clim[1] + 1e-6
+
+                    # - change the colormap to the new colormap object
+                    new_cmap = matplotlib.colors.ListedColormap(base_colors)
+                    options_nodes['cmap'] = new_cmap
+
                 actor = pp.add_mesh(meshp, style='points_gaussian', emissive=False, render_points_as_spheres=True, **options_nodes, show_scalar_bar=False)
                 actor.mapper.scale_array = '__point_size__'
+
+                # Restore the colormap to the options_nodes dictionary
+                options_nodes['cmap'] = cmap
+
             else:
                 pp.add_mesh(meshp, render_points_as_spheres=True, **options_nodes, show_scalar_bar=False)
 
