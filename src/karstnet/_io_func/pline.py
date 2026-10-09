@@ -225,6 +225,7 @@ def networkx_to_pline(G,
                         properties_list.append(attribute)
                 else:
                     # in the case there is no data
+                    # print(f'no properties "{properties}" for node: {node}')
                     string_attribute += nodata_value
             
             #create a list of lines containing the notes attributes  
@@ -251,8 +252,9 @@ def networkx_to_pline(G,
         #write lines containing pline information
         #Gocad only read the pline right by single branch, with points in the right order
         dataset = []
+        properties_list = []  
         if nx.is_connected(H) == False:
-            #iterate through the connectec components to find nodes where disconnection occured
+            #iterate through the connected components to find nodes where disconnection occured
             #search for the nodes that used to be degree >1 and are now degree 1.
             for i, subgraph_index in enumerate(nx.connected_components(H)):
                 subgraph = nx.subgraph(H, subgraph_index)
@@ -303,17 +305,17 @@ def networkx_to_pline(G,
                     #write attribute string ex: 'att1 att2 atti'
                     string_attribute = ''
 
-                    properties_list = []              
+                                
                     for attribute in properties:
                         if subgraph.nodes(attribute)[node] is not None:
-
-                            if type(subgraph.nodes(attribute)[node])==list:
-                                if len(subgraph.nodes(attribute)[node])==2:
+                            if type(G.nodes(attribute)[node])==list:
+                                if len(G.nodes(attribute)[node])==2:
                                     # for example csdim
                                     string_attribute += str(G.nodes(attribute)[node][0]) + ' '
                                     string_attribute += str(G.nodes(attribute)[node][1]) + ' '
                                     properties_list.append(f'{attribute}_1')
                                     properties_list.append(f'{attribute}_2')
+
                                 if len(subgraph.nodes(attribute)[node])!=2:
                                     print(f'The chosen properties --{attribute}-- cannot be written to Gocad file')
                             else:
@@ -321,11 +323,11 @@ def networkx_to_pline(G,
                                 properties_list.append(attribute)
                         else:
                             # in the case there is no data
-                            print('no properties for node: ', node )
+                            # print(f'no properties "{properties}" for node: {node}')
                             string_attribute += nodata_value
                     
                     #create a list of lines  
-                    pvrtx.append('PVRTX '+ str(node) +  ' ' + string_coordinates + ' ' + string_attribute)
+                    pvrtx.append('PVRTX '+ str(node) +  ' ' + string_coordinates + ' ' + str(node) + ' ' + string_attribute)
                 # create each branch text    
                 dataset += ['ILINE'] + pvrtx + seg
            
@@ -337,7 +339,7 @@ def networkx_to_pline(G,
                     'GOCAD_ORIGINAL_COORDINATE_SYSTEM',
                     'ZPOSITIVE Elevation',
                     'END_ORIGINAL_COORDINATE_SYSTEM',
-                    'PROPERTIES ' + " ".join(str(item) for item in list(dict.fromkeys(properties_list))),  
+                    'PROPERTIES ID ' + " ".join(str(item) for item in list(dict.fromkeys(properties_list))),  
                     nodata_string,
                     header_dataset] + dataset + ['END']
                
