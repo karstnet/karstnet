@@ -140,7 +140,7 @@ def networkx_from_pline(
 
 
 def networkx_to_pline(G, 
-                    data_type = 'lines', #or 'points'
+                    data_type = 'lines-points', #or 'points_only'
                     properties = [], #
                     nodata_value = '-999999999',
                     name = 'graph_gocad_export',
@@ -161,7 +161,9 @@ def networkx_to_pline(G,
     G : networkx graph
         Graph with coordinates position
     data_type : str, optional
-        Choose data type between 'lines' and 'points', by default 'lines'
+        Choose data type between 'network' and 'points_only', by default 'network'
+        'lines-points' : export the edges and the points of the graph as lines
+        'points-only' : export only the points of the graph as a point cloud without the edges
     properties : list of string(s)
         List containing the name of all the graph attributes to add to the Gocad output, by default []
         For now, the properties can have up to 2 values per node. 
@@ -185,7 +187,7 @@ def networkx_to_pline(G,
     #the properties have to be a single value per node
     nodata_string = 'NO_DATA_VALUES ' + " ".join(str(item) for item in [nodata_value] * (len(properties)+3))
     
-    if data_type=='points':
+    if data_type=='points-only':
         header = 'GOCAD VSet 1.0'
         header_dataset = 'SUBVSET'
         
@@ -243,7 +245,7 @@ def networkx_to_pline(G,
                 nodata_string,
                 header_dataset] + dataset + ['END']
     
-    if data_type=='lines':
+    if data_type=='lines-points':
         header = 'GOCAD PLine 1'
         header_dataset = ''
         
