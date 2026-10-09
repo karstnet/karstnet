@@ -10,3 +10,4 @@ build/
 
 zzz*
 .DS_Store
+.ipynb_checkpoints/changelog-checkpoint.md
