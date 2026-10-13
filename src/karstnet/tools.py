@@ -237,7 +237,9 @@ def remove_simple_cycles(
 
         # --- End for loop iter ---
                 
+
     # Set node attributes (according to `node_attr_list` and `node_attr_mode`)
+    failed_attr_list = [] # attributes in node_attr_list that could not be set in the output graph
     for attr, mode in zip(node_attr_list, node_attr_mode):
         d = nx.get_node_attributes(G, attr, default=np.nan) # dictionary node_label:value_of_attribute in input graph
         if mode == 'first':
@@ -248,7 +250,7 @@ def remove_simple_cycles(
 
         elif mode == 'mean':
             v0 = list(d.values())[0] # value of one node in G
-            if hasattr(v0, '__len__'):
+            try:
                 if node_weight is None:
                     for u, u_list in node_merging_list_dict.items():
                         if len(u_list) <= 1:
@@ -263,21 +265,42 @@ def remove_simple_cycles(
                         ind = np.all(~np.isnan(values), axis=1)
                         G_out.nodes[u][attr] = np.sum(values[ind]*w[ind], axis=0)/np.sum(w[ind])
 
-            else:
-                if node_weight is None:
-                    for u, u_list in node_merging_list_dict.items():
-                        if len(u_list) <= 1:
-                            continue
-                        G_out.nodes[u][attr] = np.nanmean(np.asarray([np.atleast_1d(d[v]) for v in u_list]), axis=0)[0]
+                if isinstance(v0, list):
+                    for u in G_out.nodes():
+                        G_out.nodes[u][attr] = list(G_out.nodes[u][attr])
+
+                elif isinstance(v0, np.ndarray):
+                    for u in G_out.nodes():
+                        G_out.nodes[u][attr] = np.asarray(G_out.nodes[u][attr])
+
+                elif isinstance(v0, tuple):
+                    for u in G_out.nodes():
+                        G_out.nodes[u][attr] = tuple(float(x) for x in G_out.nodes[u][attr])
+
                 else:
-                    for u, u_list in node_merging_list_dict.items():
-                        if len(u_list) <= 1:
-                            continue
-                        values = np.asarray([np.atleast_1d(d[v]) for v in u_list])
-                        w = np.asarray([G.nodes[v][node_weight] for v in u_list]).reshape(-1, 1)
-                        ind = np.all(~np.isnan(values), axis=1)
-                        G_out.nodes[u][attr] = (np.sum(values[ind]*w[ind], axis=0)/np.sum(w[ind]))[0]
- 
+                    for u in G_out.nodes():
+                        G_out.nodes[u][attr] = float(G_out.nodes[u][attr][0])
+
+            except:
+                print(f'Warning: attribute {attr} could not be set in the output graph')
+                failed_attr_list.append(attr)
+                pass
+
+    # Remove node attributes that are not in `node_attr_list` or that failed to be set in the output graph
+    remove_node_attr_list = failed_attr_list
+    # for attr in kn.utils.get_node_attribute_names(G_out):
+    #     if attr not in node_attr_list:
+    #         remove_node_attr_list.append(attr)
+    for attr in set([k for n in G_out.nodes for k in G_out.nodes[n].keys()]):
+        if attr not in node_attr_list:
+            remove_node_attr_list.append(attr)
+    
+    for attr in remove_node_attr_list:
+        # kn.utils.remove_node_attribute(G_out, attr)
+        for u in G_out.nodes():
+            if attr in G_out.nodes[u].keys():
+                del G_out.nodes[u][attr]
+
     out = [G_out]
     if return_node_merging_count_dict:
         node_merging_count_dict = {u:len(u_list) for u, u_list in node_merging_list_dict.items()}
@@ -285,7 +308,7 @@ def remove_simple_cycles(
 
     if return_node_merging_list_dict:
         out.append(node_merging_list_dict)
-    
+
     if len(out) == 1:
         out = out[0]
     else:
@@ -2712,7 +2735,6 @@ def reduce_graph_spectral_kmeans(
                             **kmeans_kwargs)
     except Exception as exc:
         raise ValueError(f'exc')
-
 
 
     # Set dictionary `nodes_orig_id_dict` according to cluster index
