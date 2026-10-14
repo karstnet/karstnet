@@ -2,54 +2,38 @@ import numpy as np
 import networkx as nx
 import karstnet as kn
 
-def calc_projected_splay(conduit_direction,splay_direction):
-    """Projects a splay (disto measurement from a station to the surrounding wall) 
-    in the u,v plan perpendicular to the cave conduit direction.
+
+#% SPLAYS TO CONDUIT DIMENSIONS
 
 
-    Args:
-        conduit_direction (numpy.ndarray, list): list or array of [x,y,z] values 
-            of the direction vector of the conduit at the point of interest.
-            vector origins has to be (0,0,0).
-            use function ... to determin the right direction of the vector.
-        splay_direction (numpy.ndarray, list): list or array of [x,y,z] values 
-            of the direction of splay. Splay values - node.
-            vector origins has to be (0,0,0).
+    
 
-    Returns:
-        numpy.ndarray: projected splay length in the u and v direction. 
-            (splay vector projectedin the uv plan)
-            array of two values [u,v]. 
-            u is in horizontal x,y plane, and v is orthogonal to u in the uv plan.
+def get_conduit_direction(G, pos_attr='pos'):
+    """Calculates a vector direction of the conduit at each node in the graph G. 
+    The direction is determined based on the positions of neighboring nodes and the degree of the node 
+    and based on the sequence of survey by the cavers. The direction is calculated as follows:
+    - for nodes with degree 1, the direction is calculated as the vector from the node to its neighbor.
+    - for nodes with degree 2, the direction is calculated as the difference between the vectors from the node to its two neighbors.
+    - for nodes with degree greater than 2, the direction is set to an empty list. In this case, the direction is not defined, 
+    as the node is an intersection of multiple conduits, and the dimension of the conduit will be calculated as the mean of the splays 
+    instead of the projection in the uv plan.
+
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        Input graph containing the cave network with nodes and edges.
+        Nodes must have 'pos' attribute for 3D coordinates.
+
+    pos_attr : str, optional
+        The name of the node attribute that contains the 3D coordinates, by default 'pos'
+        
+    Returns
+    -------
+    dictionnary
+        Dictionnary with keys: node id, values: array[x,y,z]) direction
+    
     """
-    #normalize vector w
-    w = np.array(conduit_direction)
-    w /= np.linalg.norm(w)
-    #find normalized vector u in the horizontal plan, orthogonal to vector w
-    if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
-        #checks that x is not equal to zero and that its longer than y
-        u = np.array([-w[1]/w[0],1,0])
-    elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
-        u = np.array([1,-w[0]/w[1],0])
-
-    else:
-        print('%s and %s are equal to zero. Normalize vector cannot be calculated'%(w[0],w[1]))
-        return np.array([0,0])    
-
-    u /= np.linalg.norm(u)
-    #find normalized vector v, orthogonal to u, in the uv plan
-    v = np.cross(u,w)
-    #calculate the length of the projected vector w in the u and v direction
-    s_u = np.dot(u,splay_direction)
-    s_v = np.dot(v,splay_direction)
-
-    return np.array([s_u,s_v])
-    
-    
-
-
-
-def get_conduit_direction(G):
     keys = list(G.nodes()) #list(dict(G.degree()).keys())
     conduit_directions = {}
     
@@ -64,8 +48,8 @@ def get_conduit_direction(G):
         if degree == 1:           
             #if node is the start or end of the cave
             neighbors = list(G.neighbors(key))#[n for n in G.neighbors(key)]
-            conduit_directions[key] = np.array(G.nodes('pos')[key]) - np.array(G.nodes('pos')[neighbors[0]])   
-            if all(v == 0 for v in conduit_directions[key]): print(conduit_directions[key])        
+            conduit_directions[key] = np.array(G.nodes(pos_attr)[key]) - np.array(G.nodes(pos_attr)[neighbors[0]])   
+            if all(v == 0 for v in conduit_directions[key]): print(f'Conduit direction for node {key} is zero: {conduit_directions[key]}')
 
         #calc w in the middle of a conduit
         elif degree == 2:
@@ -73,16 +57,16 @@ def get_conduit_direction(G):
             #conduit_directions[key] = np.array(pos3d[keys[i+1]])-np.array(pos3d[keys[i-1]])
             neighbors = [n for n in G.neighbors(key)]
             #find length of each vector, to transform in unit vector
-            pos = np.array(G.nodes('pos')[key])
-            pos_before = np.array(G.nodes('pos')[neighbors[0]])
-            pos_after = np.array(G.nodes('pos')[neighbors[1]])
+            pos = np.array(G.nodes(pos_attr)[key])
+            pos_before = np.array(G.nodes(pos_attr)[neighbors[0]])
+            pos_after = np.array(G.nodes(pos_attr)[neighbors[1]])
             vector_0 = pos - pos_before
             vector_1 = pos_after - pos
             length_0 = np.linalg.norm(vector_0)
             length_1 = np.linalg.norm(vector_1)
             #normalize (to prevent a change in direction)
             conduit_directions[key] = vector_0/length_0 - vector_1/length_1
-            #conduit_directions[key] = np.array(G.nodes('pos')[neighbors[0]])/length_0 - np.array(G.nodes('pos')[neighbors[1]])/length_1
+            #conduit_directions[key] = np.array(G.nodes(pos_attr)[neighbors[0]])/length_0 - np.array(G.nodes(pos_attr)[neighbors[1]])/length_1
             if all(v == 0 for v in conduit_directions[key]): print(conduit_directions[key])
     
         elif degree > 2:
@@ -92,39 +76,164 @@ def get_conduit_direction(G):
 
     return conduit_directions
 
+def get_splay_vectors(G,pos_attr='pos',splay_attr='splays'):
+    """The projected splay direction is calculated by subtracting the node position from the splay position, 
+    resulting in a vector that points from the node to the splay.
 
-def get_splay_direction(G):
-    splays_direction = {} 
-    splays = dict(G.nodes('splays'))
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        Input graph containing the cave network with nodes and edges.
+        Nodes must have 'pos' attribute for 3D coordinates and 'splays' attribute for splay measurements.
+
+    pos_attr : str, optional
+        The name of the node attribute that contains the 3D coordinates, by default 'pos'
+
+    splay_attr : str, optional
+        The name of the node attribute that contains the splay measurements, by default 'splays'
+        The splay measurements are expected to be a list of one or more sets of 3D coordinates for each node.
+        ex: {node_id:[[x1,y1,z1], [x2,y2,z2], ...], ...}
+
+    Returns
+    -------
+    dictionnary
+        Dictionnary with keys: node id, values: list of projected splay [x,y,z] direction in the uv plan.
+        id: [[xi,yi,zi], ...]
+    """
+
+
+    projected_splay_vectors = {} 
+    splays = dict(G.nodes(splay_attr))
     keys = list(splays.keys())
-    pos3d = nx.get_node_attributes(G,'pos')
+    pos3d = nx.get_node_attributes(G,pos_attr)
     for key in keys:
     #calculate the splay direction relative to its node
         #if the node exists. some nodes were survey duplicate, removed from the main graph
-        if key in pos3d.keys():
+        if key in pos3d: #key in pos3d.keys():
             list_temp = []
             if splays[key]:
                 for j in np.arange(len(splays[key])):
                     list_temp.append(np.array(splays[key][j])-np.array(pos3d[key]))
-                splays_direction[key] = list_temp
+                projected_splay_vectors[key] = list_temp
 
-    return splays_direction
+    return projected_splay_vectors
 
-def calc_conduit_dimensions(G, output = 'all'):#conduit_directions,splays_direction):
-    '''
-    FROM SPLAYS
-    #possible outputs: 
-        'geometric mean': np.sqrt((cs_width/2)*(cs_height/2))
-        'cs_dimensions': {[cs_width, cs_height]}
-        'projections': project splay in u, projected splay in v
-        'all': geometric mean, cs_width, cs_height, project splay in u, projected splay in v
+def calc_projected_splay_lengths(conduit_directions,splay_vectors,add_vector=False):
+    """Projects a splay (disto measurement from a station to the surrounding wall) 
+    in the u,v plan perpendicular to the cave conduit direction.
+
+
+    Args:
+        conduit_directions (numpy.ndarray, list): list or array of [x,y,z] values 
+            of the direction vector of the conduit at the point of interest.
+            vector origins has to be (0,0,0).
+            use function ... to determin the right direction of the vector.
+        splay_vectors (numpy.ndarray, list): list or array of [x,y,z] values 
+            of the direction of splay. Splay values - node.
+            vector origins has to be (0,0,0).
+
+    Returns:
+        numpy.ndarray: projected splay length in the u and v direction. 
+            (splay vector projectedin the uv plan)
+            array of two values [u,v]. 
+            u is in horizontal x,y plane, and v is orthogonal to u in the uv plan.
+    """
+    #normalize vector w
+    w = np.array(conduit_directions)
+    w /= np.linalg.norm(w)
+    #find normalized vector u in the horizontal plan, orthogonal to vector w
+    if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
+        #checks that x is not equal to zero and that its longer than y
+        u = np.array([-w[1]/w[0],1,0])
+    elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
+        u = np.array([1,-w[0]/w[1],0])
+
+    else:
+        print(f'{w[0]} and {w[1]} are equal to zero. Normalize vector cannot be calculated')
+        return np.array([0,0])    
+
+    u /= np.linalg.norm(u)
+    #find normalized vector v, orthogonal to u, in the uv plan
+    v = np.cross(u,w)
+    #calculate the length of the projected vector w in the u and v direction
+    s_u = float(np.dot(u,splay_vectors))
+    s_v = float(np.dot(v,splay_vectors))
+    if add_vector==False:
+        return np.array([s_u,s_v])
+    else:
+        return np.array([s_u,s_v]),u,v
+
+
+def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_attr='splays'):#conduit_directions,splays_direction):
+    """Estimate the cross-section dimensions of the conduits in the cave network represented by the graph G.
+    The cross-sectional dimensions are calculated based on the projected splay lengths in the u and v directions, 
+    which are perpendicular to the conduit direction at each node. Different outputs can be requested, 
+    including the geometric mean of the cross-section radius, the cross-section width and height, 
+    and the projected splay lengths in the u and v directions. The function returns a dictionary 
+    with the requested geometric properties for each node in the graph. 
+    The cross-sectional dimensions are calculated as follows:
+    - The projected splay lengths in the u and v directions are calculated using the `calc_projected_splay_lengths` function, which projects the splay vectors onto the u and v axes.
+    - The cross-sectional width is calculated as the difference between the maximum and minimum projected splay lengths in the u direction.
+    - The cross-sectional height is calculated as the difference between the maximum and minimum projected splay lengths in the v direction.
+    - The geometric mean of the cross-section radius is calculated as the square root of the product of half the cross-section width and half the cross-section height.  
+
+    Some caveats to consider:
+    -------------------------
+    - Depending on the survey data, some nodes may have no splays or only one splay, which can result in zero cross-sectional dimensions or biased estimates. 
+    - The splay measurements may not be uniformly distributed around the node, which can also affect the accuracy of the cross-sectional dimensions. 
+    - Some cavers measure splays in the front and back of the station, sometime far away from the station and the projection of those splays may not 
+    be representative of the actual cross-section.
+    - For nodes with degree greater than 2 (intersections), the cross-sectional dimensions are  calculated as 
+    the mean of the projected splay lengths, rather than the projections in the u and v directions. 
+
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        Input graph containing the cave network with nodes and edges.
+        Nodes must have 'pos' attribute for 3D coordinates and 'splays' attribute for splay measurements.
+
+    Returns
+    -------
+    dictionnary
+        Depending on the 'output' parameter, returns different geometric properties of the conduits:
+        
+        'cs_dimensions': dictionnary 
+            Dictionnary with keys: node id, values: [cs_width, cs_height]
+            Cross-sectional dimensions, width and height, calculated as the difference 
+            between the maximum and minimum projected splay lengths in the u and v directions, respectively.
+            ex: cs_dimensions = kn.geom.calc_conduit_dimensions(G, output = 'cs_dimensions')
+
+        'geometric mean': dictionnary 
+            Dictionnary with keys: node id, values: geometric mean of the cross-section radius calculated as
+            np.sqrt((cs_width/2)*(cs_height/2))
+
+        'cs_width': dictionnary
+            Cross-sectional width calculated as the difference between the maximum and minimum projected splay lengths in the u direction.
+            Dictionnary with keys: node id, values: cross-section width calculated as max value of projected splay in u direction - min value of projected splay in u direction
+
+        'cs_height': dictionnary
+            Cross-sectional height calculated as the difference between the maximum and minimum projected splay lengths in the v direction.
+            Dictionnary with keys: node id, values: cross-section height calculated as max value of projected splay in v direction - min value of projected splay in v direction
+
+        'projected_splays_u': dictionnary
+            Length of the projected splay in the u direction, calculated as the dot product of the splay vector and the u vector.
+            Dictionnary with keys: node id, values: list of projected splay lengths in u direction
+
+        'projected_splays_v': dictionnary
+            Length of the projected splay in the v direction, calculated as the dot product of the splay vector and the v vector.
+            Dictionnary with keys: node id, values: list of projected splay lengths in v direction
+
+        'all': tuple of dictionnaries
+            Exports all the outputs at the same time: geometric_mean, cs_width, cs_height, projected_splays_u, projected_splays_v
+            ex: geommean_radius, width, height, projected_splays_u, projected_splays_v = kn.geom.calc_conduit_dimensions(G, output = 'all')
+    """
     
-    '''
     
     
-    
-    conduit_directions = get_conduit_direction(G)
-    splays_direction = get_splay_direction(G)
+    conduit_directions = get_conduit_direction(G, pos_attr)
+    projected_splay_vectors = get_splay_vectors(G,pos_attr,splay_attr)
 
     projected_splays_u = {}
     projected_splays_v = {}
@@ -133,66 +242,77 @@ def calc_conduit_dimensions(G, output = 'all'):#conduit_directions,splays_direct
     cs_height = {}
     geommean_radius = {}
 
-    keys = list(splays_direction.keys())
+    keys = list(projected_splay_vectors.keys())
     for key in keys:
     #calculate the projected splay length component in u and v direction
         #sometimes there is splays that were duplicates. 
         if key in conduit_directions:
-            su=[]
-            sv=[]
+            su_len=[]
+            sv_len=[]
             if len(conduit_directions[key])>0:
-                for splay_direction in splays_direction[key]:       
-                    s = calc_projected_splay(conduit_directions[key],splay_direction)
+                for splay_vectors in projected_splay_vectors[key]:       
+                    s = calc_projected_splay_lengths(conduit_directions[key],splay_vectors)
                     # print('s:', s)
                     if s is None:
                         pass
                     else:
-                        su.append(s[0])
-                        sv.append(s[1])
+                        su_len.append(float(s[0]))
+                        sv_len.append(float(s[1]))
                 # # store su and vs in a dictionnary
                 # # this is only interesting for plots...
-                projected_splays_u[key] = su
-                projected_splays_v[key] = sv   
+                projected_splays_u[key] = su_len
+                projected_splays_v[key] = sv_len           
 
                 # add zero to the array, in case all splays have been taken in the same direction
-                su.append(0)
-                sv.append(0)
+                su_len.append(float(0))
+                sv_len.append(float(0))
                 # print(key, '---', su, sv)
                 # # extract the futherst coordinate on each side
                 # print(key, '---', max(su), min(su), max(sv), min(sv))
             
                 
-                cs_width[key]  = float(np.round(max(su)-min(su),2))
-                cs_height[key]  = float(np.round(max(sv)-min(sv),2))
+                cs_width[key]  = float(np.round(max(su_len)-min(su_len),2))
+                cs_height[key]  = float(np.round(max(sv_len)-min(sv_len),2))
                 geommean_radius[key] = np.sqrt((cs_width[key]/2)*(cs_height[key]/2))
                 
             else:
                 #for intersections, calculate the mean of the splays, instead of the projections
-                for splay_direction in splays_direction[key]: 
-                    su.append(np.linalg.norm(splay_direction))
-                    sv.append(np.linalg.norm(splay_direction))
-                cs_width[key] = float(np.round(np.mean(su),2))
-                cs_height[key] = float(np.round(np.mean(sv),2))
+                for splay_vectors in projected_splay_vectors[key]: 
+                    su_len.append(np.linalg.norm(splay_vectors))
+                    sv_len.append(np.linalg.norm(splay_vectors))
+                cs_width[key] = float(np.round(np.mean(su_len),2))
+                cs_height[key] = float(np.round(np.mean(sv_len),2))
                 geommean_radius[key] = np.sqrt((cs_width[key]/2)*(cs_height[key]/2))
     
+    if output == 'csdim':
+        csdim={}
+        # reformat the output to have a list of [cs_width, cs_height] for each node
+        for k,cs_width_key in cs_width.items():
+            # csdim[k] = list(d[k] for d in [cs_width,cs_height])
+            # print(type(cs_width[k]))
+            csdim[k] = [cs_width_key, cs_height[k]]
+        return csdim
 
-    if output=='all':
+    elif output=='all':
         return geommean_radius, cs_width, cs_height, projected_splays_u, projected_splays_v
     
     elif output == 'geometric mean':
         return geommean_radius
+
+    elif output == 'cs_width':
+        return cs_width
+
+    elif output == 'cs_height':
+        return cs_height
+
+    elif output == 'projected_splays_u':
+        return projected_splays_u
+
+    elif output == 'projected_splays_v':
+        return projected_splays_v
+
+
     
-    elif output == 'csdim':
-        csdim={}
-        # print(cs_width)
-        for k in cs_width.keys():
-            # csdim[k] = list(d[k] for d in [cs_width,cs_height])
-            # print(type(cs_width[k]))
-            csdim[k] = [cs_width[k], cs_height[k]]
-        return csdim
-    
-    elif output == 'projections':
-        return projected_splays_u, projected_splays_v
     
 
 #---------------------------------------------------------------
@@ -267,7 +387,7 @@ def calc_splay_from_lrud(station_coordinates, normal_vector_dir,lrud, other_norm
 #---------------------------------------------------------------
 
 
-def calc_and_add_lrud_splays(G,df_lrud, direction, other_normal=None):
+def calc_and_add_lrud_splays(G,df_lrud, direction, other_normal=None, pos_attr='pos', splay_attr='splays', direction_attr='direction'):
     """_summary_
 
     Parameters
@@ -295,15 +415,15 @@ def calc_and_add_lrud_splays(G,df_lrud, direction, other_normal=None):
     
         #CACULATE THE SPLAYS
         #######################
-        node_pos = np.array(G.nodes('pos')[row.node_id])  
+        node_pos = np.array(G.nodes(pos_attr)[row.node_id])  
         lrud = [row.left, row.right, row.up, row.down]
         
         splays_list = splays_list + list(calc_splay_from_lrud(node_pos, direction[row.node_id], lrud, other_normal=other_normal[row.node_id]))
         node_key_list = node_key_list + [row.node_id,row.node_id,row.node_id,row.node_id] #there is always four splays
         
     dict_splays_lrud = kn.utils.list2dict(node_key_list, splays_list)
-    nx.set_node_attributes(G, dict_splays_lrud,'splays')
-    nx.set_node_attributes(G, direction, 'direction' )
+    nx.set_node_attributes(G, dict_splays_lrud,splay_attr)
+    nx.set_node_attributes(G, direction, direction_attr )
 
 
 
