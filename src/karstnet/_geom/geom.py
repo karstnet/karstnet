@@ -32,14 +32,23 @@ def get_conduit_direction(G, pos_attr='pos'):
     -------
     dictionnary
         Dictionnary with keys: node id, values: array[x,y,z]) direction
+        conduit_directions (numpy.ndarray, list): list or array of [x,y,z] values 
+            of the direction vector of the conduit at the point of interest.
+            vector origins has to be (0,0,0).
+            use function ... to determin the right direction of the vector.
     
     """
     keys = list(G.nodes()) #list(dict(G.degree()).keys())
     conduit_directions = {}
+    u_vectors = {}
+    v_vectors = {}
     
     # get conduit direction
-    
+    pos3d = nx.get_node_attributes(G,pos_attr)
+
+        
     for i,key in enumerate(keys):
+        #if the node exists. some nodes were survey duplicate, removed from the main graph
         degree = G.degree()[key]
         # print(i)
         # if i==695:
@@ -72,9 +81,33 @@ def get_conduit_direction(G, pos_attr='pos'):
         elif degree > 2:
             # no projection for conduit intersections
             conduit_directions[key] = []
+
+        #calculate the u and v vector for each node, to be used for the projection of the splay in the uv plan
+        #orthogonal vectors u and v are calculated in the horizontal plan, perpendicular to the conduit direction w.
+        #------------------------------------------------------------------------------------------------------------
+
+        if list(conduit_directions[key]) != []:
+            #normalize vector w
+            w = np.array(conduit_directions[key])
+            w /= np.linalg.norm(w)
+            #find normalized vector u in the horizontal plan, orthogonal to vector w
+            if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
+                #checks that x is not equal to zero and that its longer than y
+                u = np.array([-w[1]/w[0],1,0])
+            elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
+                u = np.array([1,-w[0]/w[1],0])
+
+            else:
+                print(f'{w[0]} and {w[1]} are equal to zero. Normalize vector cannot be calculated')
+                return np.array([0,0])    
+
+            u /= np.linalg.norm(u)
+            u_vectors[key] = u
+            #find normalized vector v, orthogonal to u, in the uv plan
+            v_vectors[key] = np.cross(u,w)
         
 
-    return conduit_directions
+    return conduit_directions, u_vectors, v_vectors
 
 def get_splay_vectors(G,pos_attr='pos',splay_attr='splays'):
     """The projected splay direction is calculated by subtracting the node position from the splay position, 
@@ -103,7 +136,7 @@ def get_splay_vectors(G,pos_attr='pos',splay_attr='splays'):
     """
 
 
-    projected_splay_vectors = {} 
+    splay_vectors = {} 
     splays = dict(G.nodes(splay_attr))
     keys = list(splays.keys())
     pos3d = nx.get_node_attributes(G,pos_attr)
@@ -115,20 +148,18 @@ def get_splay_vectors(G,pos_attr='pos',splay_attr='splays'):
             if splays[key]:
                 for j in np.arange(len(splays[key])):
                     list_temp.append(np.array(splays[key][j])-np.array(pos3d[key]))
-                projected_splay_vectors[key] = list_temp
+                splay_vectors[key] = list_temp
 
-    return projected_splay_vectors
+    return splay_vectors
 
-def calc_projected_splay_lengths(conduit_directions,splay_vectors,add_vector=False):
+def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
     """Projects a splay (disto measurement from a station to the surrounding wall) 
     in the u,v plan perpendicular to the cave conduit direction.
 
 
     Args:
-        conduit_directions (numpy.ndarray, list): list or array of [x,y,z] values 
-            of the direction vector of the conduit at the point of interest.
-            vector origins has to be (0,0,0).
-            use function ... to determin the right direction of the vector.
+        u (numpy.ndarray): The u vector for the uv plan.
+        v (numpy.ndarray): The v vector for the uv plan.
         splay_vectors (numpy.ndarray, list): list or array of [x,y,z] values 
             of the direction of splay. Splay values - node.
             vector origins has to be (0,0,0).
@@ -139,41 +170,81 @@ def calc_projected_splay_lengths(conduit_directions,splay_vectors,add_vector=Fal
             array of two values [u,v]. 
             u is in horizontal x,y plane, and v is orthogonal to u in the uv plan.
     """
-    #normalize vector w
-    w = np.array(conduit_directions)
-    w /= np.linalg.norm(w)
-    #find normalized vector u in the horizontal plan, orthogonal to vector w
-    if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
-        #checks that x is not equal to zero and that its longer than y
-        u = np.array([-w[1]/w[0],1,0])
-    elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
-        u = np.array([1,-w[0]/w[1],0])
+    # #normalize vector w
+    # w = np.array(conduit_directions)
+    # w /= np.linalg.norm(w)
+    # #find normalized vector u in the horizontal plan, orthogonal to vector w
+    # if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
+    #     #checks that x is not equal to zero and that its longer than y
+    #     u = np.array([-w[1]/w[0],1,0])
+    # elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
+    #     u = np.array([1,-w[0]/w[1],0])
 
-    else:
-        print(f'{w[0]} and {w[1]} are equal to zero. Normalize vector cannot be calculated')
-        return np.array([0,0])    
+    # else:
+    #     print(f'{w[0]} and {w[1]} are equal to zero. Normalize vector cannot be calculated')
+    #     return np.array([0,0])    
 
-    u /= np.linalg.norm(u)
-    #find normalized vector v, orthogonal to u, in the uv plan
-    v = np.cross(u,w)
+    # u /= np.linalg.norm(u)
+    # #find normalized vector v, orthogonal to u, in the uv plan
+    # v = np.cross(u,w)
     #calculate the length of the projected vector w in the u and v direction
-    s_u = float(np.dot(u,splay_vectors))
-    s_v = float(np.dot(v,splay_vectors))
-    if add_vector==False:
-        return np.array([s_u,s_v])
-    else:
-        return np.array([s_u,s_v]),u,v
+    conduit_directions, u_vectors, v_vectors = kn.geom.get_conduit_direction(G, pos_attr)
+    splay_vectors = kn.geom.get_splay_vectors(G, pos_attr, splay_attr)
+
+
+    projected_splay_lengths_u = {}
+    projected_splay_lengths_v = {}
+
+    # keys = list(splay_vectors.keys())
+    for key, splay_vector_list in splay_vectors.items():
+    #calculate the projected splay length component in u and v direction
+        #sometimes there is splays that were duplicates. 
+        # if key in conduit_directions:
+
+        for splay_vector in splay_vector_list: 
+            su_len=[]
+            sv_len=[]
+            if len(conduit_directions[key])>0:
+                  
+                # s = calc_projected_splay_lengths(conduit_directions[key],splay_vectors)
+                su = float(np.dot(u_vectors[key],splay_vector))
+                sv = float(np.dot(v_vectors[key],splay_vector))
+                # print('s:', s)
+                if su is None:
+                    pass
+                else:
+                    su_len.append(float(su))
+                    sv_len.append(float(sv))
+            else:
+                #here we are at an intersection, so we calculate the splay lengths instead of the projections in the uv plan
+                su_len.append(np.linalg.norm(splay_vector))
+                sv_len.append(np.linalg.norm(splay_vector))      
+
+            # # store su and sv in a dictionnary
+            # # this is only interesting for plots...
+            projected_splay_lengths_u[key] = su_len
+            projected_splay_lengths_v[key] = sv_len    
+
+
+    # s_u = float(np.dot(u,splay_vectors))
+    # s_v = float(np.dot(v,splay_vectors))
+
+    # return np.array([s_u,s_v])
+    return projected_splay_lengths_u, projected_splay_lengths_v
+
 
 
 def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_attr='splays'):#conduit_directions,splays_direction):
     """Estimate the cross-section dimensions of the conduits in the cave network represented by the graph G.
     The cross-sectional dimensions are calculated based on the projected splay lengths in the u and v directions, 
-    which are perpendicular to the conduit direction at each node. Different outputs can be requested, 
-    including the geometric mean of the cross-section radius, the cross-section width and height, 
-    and the projected splay lengths in the u and v directions. The function returns a dictionary 
-    with the requested geometric properties for each node in the graph. 
+    which are orthogonal to the conduit direction at each node. 
+    
+    If the node is an intersection (degree > 2), the cross-sectional dimensions are calculated as the mean of the projected splay lengths, 
+    otherwise, they are calculated as the difference between the maximum and minimum projected splay lengths in the u and v directions.
+    
+    Different outputs can be requested, including the geometric mean of the cross-section radius, the cross-section width and height. 
+    The function returns a dictionary with the requested geometric properties for each node in the graph. 
     The cross-sectional dimensions are calculated as follows:
-    - The projected splay lengths in the u and v directions are calculated using the `calc_projected_splay_lengths` function, which projects the splay vectors onto the u and v axes.
     - The cross-sectional width is calculated as the difference between the maximum and minimum projected splay lengths in the u direction.
     - The cross-sectional height is calculated as the difference between the maximum and minimum projected splay lengths in the v direction.
     - The geometric mean of the cross-section radius is calculated as the square root of the product of half the cross-section width and half the cross-section height.  
@@ -217,86 +288,56 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
             Cross-sectional height calculated as the difference between the maximum and minimum projected splay lengths in the v direction.
             Dictionnary with keys: node id, values: cross-section height calculated as max value of projected splay in v direction - min value of projected splay in v direction
 
-        'projected_splays_u': dictionnary
-            Length of the projected splay in the u direction, calculated as the dot product of the splay vector and the u vector.
-            Dictionnary with keys: node id, values: list of projected splay lengths in u direction
 
-        'projected_splays_v': dictionnary
-            Length of the projected splay in the v direction, calculated as the dot product of the splay vector and the v vector.
-            Dictionnary with keys: node id, values: list of projected splay lengths in v direction
-
-        'all': tuple of dictionnaries
-            Exports all the outputs at the same time: geometric_mean, cs_width, cs_height, projected_splays_u, projected_splays_v
-            ex: geommean_radius, width, height, projected_splays_u, projected_splays_v = kn.geom.calc_conduit_dimensions(G, output = 'all')
     """
     
-    
-    
-    conduit_directions = get_conduit_direction(G, pos_attr)
-    projected_splay_vectors = get_splay_vectors(G,pos_attr,splay_attr)
 
-    projected_splays_u = {}
-    projected_splays_v = {}
+    conduit_directions, u_vectors, v_vectors = get_conduit_direction(G, pos_attr)
+    splay_vectors = get_splay_vectors(G,pos_attr,splay_attr)
+    projected_splay_lengths_u, projected_splay_lengths_v = calc_projected_splay_lengths(G, pos_attr,splay_attr)
+
 
     cs_width = {}
     cs_height = {}
+    csdim = {}
     geommean_radius = {}
 
-    keys = list(projected_splay_vectors.keys())
-    for key in keys:
-    #calculate the projected splay length component in u and v direction
-        #sometimes there is splays that were duplicates. 
-        if key in conduit_directions:
-            su_len=[]
-            sv_len=[]
+
+    for key in projected_splay_lengths_u:
+
+        #sometimes there is splays that were duplicates. Verify than the node is in the list of splay vectors, 
+        # since some nodes were survey duplicates and removed from the main graph
+        if key in splay_vectors.keys():
+            if key == 24:
+                print(key)
+            su_len=projected_splay_lengths_u[key]
+            sv_len=projected_splay_lengths_v[key]
             if len(conduit_directions[key])>0:
-                for splay_vectors in projected_splay_vectors[key]:       
-                    s = calc_projected_splay_lengths(conduit_directions[key],splay_vectors)
-                    # print('s:', s)
-                    if s is None:
-                        pass
-                    else:
-                        su_len.append(float(s[0]))
-                        sv_len.append(float(s[1]))
-                # # store su and vs in a dictionnary
-                # # this is only interesting for plots...
-                projected_splays_u[key] = su_len
-                projected_splays_v[key] = sv_len           
 
                 # add zero to the array, in case all splays have been taken in the same direction
                 su_len.append(float(0))
                 sv_len.append(float(0))
+        
                 # print(key, '---', su, sv)
                 # # extract the futherst coordinate on each side
                 # print(key, '---', max(su), min(su), max(sv), min(sv))
-            
-                
+                            
                 cs_width[key]  = float(np.round(max(su_len)-min(su_len),2))
                 cs_height[key]  = float(np.round(max(sv_len)-min(sv_len),2))
+                csdim[key] = [cs_width[key],cs_height[key]]
                 geommean_radius[key] = np.sqrt((cs_width[key]/2)*(cs_height[key]/2))
                 
             else:
                 #for intersections, calculate the mean of the splays, instead of the projections
-                for splay_vectors in projected_splay_vectors[key]: 
-                    su_len.append(np.linalg.norm(splay_vectors))
-                    sv_len.append(np.linalg.norm(splay_vectors))
                 cs_width[key] = float(np.round(np.mean(su_len),2))
                 cs_height[key] = float(np.round(np.mean(sv_len),2))
+                csdim[key] = [cs_width[key],cs_height[key]]
                 geommean_radius[key] = np.sqrt((cs_width[key]/2)*(cs_height[key]/2))
-    
-    if output == 'csdim':
-        csdim={}
-        # reformat the output to have a list of [cs_width, cs_height] for each node
-        for k,cs_width_key in cs_width.items():
-            # csdim[k] = list(d[k] for d in [cs_width,cs_height])
-            # print(type(cs_width[k]))
-            csdim[k] = [cs_width_key, cs_height[k]]
-        return csdim
 
-    elif output=='all':
-        return geommean_radius, cs_width, cs_height, projected_splays_u, projected_splays_v
+    if output == 'csdim':
+        return csdim
     
-    elif output == 'geometric mean':
+    elif output == 'geometric_mean':
         return geommean_radius
 
     elif output == 'cs_width':
@@ -305,11 +346,7 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
     elif output == 'cs_height':
         return cs_height
 
-    elif output == 'projected_splays_u':
-        return projected_splays_u
 
-    elif output == 'projected_splays_v':
-        return projected_splays_v
 
 
     
