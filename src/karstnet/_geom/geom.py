@@ -44,9 +44,7 @@ def get_conduit_direction(G, pos_attr='pos'):
     v_vectors = {}
     
     # get conduit direction
-    pos3d = nx.get_node_attributes(G,pos_attr)
 
-        
     for i,key in enumerate(keys):
         #if the node exists. some nodes were survey duplicate, removed from the main graph
         degree = G.degree()[key]
@@ -57,7 +55,8 @@ def get_conduit_direction(G, pos_attr='pos'):
         if degree == 1:           
             #if node is the start or end of the cave
             neighbors = list(G.neighbors(key))#[n for n in G.neighbors(key)]
-            conduit_directions[key] = np.array(G.nodes(pos_attr)[key]) - np.array(G.nodes(pos_attr)[neighbors[0]])   
+            conduit_directions_temp = np.array(G.nodes(pos_attr)[key]) - np.array(G.nodes(pos_attr)[neighbors[0]])   
+            conduit_directions[key] = conduit_directions_temp/np.linalg.norm(conduit_directions_temp)
             if all(v == 0 for v in conduit_directions[key]): print(f'Conduit direction for node {key} is zero: {conduit_directions[key]}')
 
         #calc w in the middle of a conduit
@@ -74,7 +73,9 @@ def get_conduit_direction(G, pos_attr='pos'):
             length_0 = np.linalg.norm(vector_0)
             length_1 = np.linalg.norm(vector_1)
             #normalize (to prevent a change in direction)
-            conduit_directions[key] = vector_0/length_0 - vector_1/length_1
+            conduit_directions_temp = vector_0/length_0 + vector_1/length_1
+            #normalize the conduit direction vector
+            conduit_directions[key] = conduit_directions_temp/np.linalg.norm(conduit_directions_temp)
             #conduit_directions[key] = np.array(G.nodes(pos_attr)[neighbors[0]])/length_0 - np.array(G.nodes(pos_attr)[neighbors[1]])/length_1
             if all(v == 0 for v in conduit_directions[key]): print(conduit_directions[key])
     
@@ -87,9 +88,9 @@ def get_conduit_direction(G, pos_attr='pos'):
         #------------------------------------------------------------------------------------------------------------
 
         if list(conduit_directions[key]) != []:
-            #normalize vector w
+            
             w = np.array(conduit_directions[key])
-            w /= np.linalg.norm(w)
+            # w /= np.linalg.norm(w)
             #find normalized vector u in the horizontal plan, orthogonal to vector w
             if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
                 #checks that x is not equal to zero and that its longer than y
@@ -170,24 +171,7 @@ def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
             array of two values [u,v]. 
             u is in horizontal x,y plane, and v is orthogonal to u in the uv plan.
     """
-    # #normalize vector w
-    # w = np.array(conduit_directions)
-    # w /= np.linalg.norm(w)
-    # #find normalized vector u in the horizontal plan, orthogonal to vector w
-    # if ((np.abs(w[0])>np.abs(w[1])) and (np.abs(w[0])!=0)):
-    #     #checks that x is not equal to zero and that its longer than y
-    #     u = np.array([-w[1]/w[0],1,0])
-    # elif ((np.abs(w[1])>np.abs(w[0])) and (np.abs(w[1])!=0)):
-    #     u = np.array([1,-w[0]/w[1],0])
 
-    # else:
-    #     print(f'{w[0]} and {w[1]} are equal to zero. Normalize vector cannot be calculated')
-    #     return np.array([0,0])    
-
-    # u /= np.linalg.norm(u)
-    # #find normalized vector v, orthogonal to u, in the uv plan
-    # v = np.cross(u,w)
-    #calculate the length of the projected vector w in the u and v direction
     conduit_directions, u_vectors, v_vectors = kn.geom.get_conduit_direction(G, pos_attr)
     splay_vectors = kn.geom.get_splay_vectors(G, pos_attr, splay_attr)
 
@@ -200,10 +184,12 @@ def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
     #calculate the projected splay length component in u and v direction
         #sometimes there is splays that were duplicates. 
         # if key in conduit_directions:
+        
+        su_len=[]
+        sv_len=[]
 
         for splay_vector in splay_vector_list: 
-            su_len=[]
-            sv_len=[]
+
             if len(conduit_directions[key])>0:
                   
                 # s = calc_projected_splay_lengths(conduit_directions[key],splay_vectors)
@@ -296,7 +282,10 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
     splay_vectors = get_splay_vectors(G,pos_attr,splay_attr)
     projected_splay_lengths_u, projected_splay_lengths_v = calc_projected_splay_lengths(G, pos_attr,splay_attr)
 
-
+    radius_u_positive = {}
+    radius_u_negative = {}
+    radius_v_positive = {}
+    radius_v_negative = {}
     cs_width = {}
     cs_height = {}
     csdim = {}
@@ -321,6 +310,10 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
                 # print(key, '---', su, sv)
                 # # extract the futherst coordinate on each side
                 # print(key, '---', max(su), min(su), max(sv), min(sv))
+                radius_u_positive[key] = max(su_len)
+                radius_v_positive[key] = max(sv_len)
+                radius_u_negative[key] = min(su_len)
+                radius_v_negative[key] = min(sv_len)
                             
                 cs_width[key]  = float(np.round(max(su_len)-min(su_len),2))
                 cs_height[key]  = float(np.round(max(sv_len)-min(sv_len),2))
@@ -333,6 +326,9 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
                 cs_height[key] = float(np.round(np.mean(sv_len),2))
                 csdim[key] = [cs_width[key],cs_height[key]]
                 geommean_radius[key] = np.sqrt((cs_width[key]/2)*(cs_height[key]/2))
+
+    if output == 'plotting_radius':
+        return     radius_u_positive, radius_u_negative, radius_v_positive, radius_v_negative
 
     if output == 'csdim':
         return csdim
