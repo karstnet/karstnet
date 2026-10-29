@@ -50,7 +50,7 @@ import karstnet as kn
 #         # )
 
 
-def networkx_to_avend3d(G,H, outputpath, cavename):
+def networkx_to_avend3d(G,H, outputpath, cavename,run_therion_script=False):
    #nx2aven3d
     """G the original graph, H the clean graph
 
@@ -287,29 +287,33 @@ def networkx_to_avend3d(G,H, outputpath, cavename):
 
 
     thconfig_filename = '"' + filepath + cavename + '_CC3d.thconfig"'
-    
-    #chemin = "C:/Users/celia/OneDrive - unine.ch/in_progress/2_SystemMigovec/networkx_export/3d_visualization/system_migovec_CC3d.thconfig"
-    #path_process = 'C:/Users/celia/github/erc-karst-repositories/networks_code_repo'
-    # test_chemin = "therion '%s'"%path_process
-    print(f"therion {thconfig_filename}")
-    # print(normpath(test_chemin))
-    log = subprocess.check_output(f"therion {thconfig_filename}", shell=True)
 
-    #export file with original station stations name
-    # for key in H.nodes:
-    
-    #     assert H.nodes('pos')[key] != 'NoneType', f'{key} has no position'
+    if run_therion_script:
+        #chemin = "C:/Users/celia/OneDrive - unine.ch/in_progress/2_SystemMigovec/networkx_export/3d_visualization/system_migovec_CC3d.thconfig"
+        #path_process = 'C:/Users/celia/github/erc-karst-repositories/networks_code_repo'
+        # test_chemin = "therion '%s'"%path_process
+        print(f"therion {thconfig_filename}")
+        # print(normpath(test_chemin))
+        log = subprocess.check_output(f"therion {thconfig_filename}", shell=True)
 
-    #return the cleanned graph with flagged additional edges
+    else:
+        print(f"To produce the .3d file, in the terminal, navigate to the folder and run the command: 'therion {cavename}_CC3d.thconfig'")
+        print('The therion command requires the installation of the programme Therion (https://therion.speleo.sk)')
+        #export file with original station stations name
+        # for key in H.nodes:
+        
+        #     assert H.nodes('pos')[key] != 'NoneType', f'{key} has no position'
+
+        #return the cleanned graph with flagged additional edges
     return H
 
 
 #--------------------------------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------------------------------
 
-def networkx_to_aven3dclean(G,filepath, cavename):
+def networkx_to_aven3dclean(G,filepath, cavename, run_therion_script=False):
     #nx2clean3d
-    print(f'running nx2clean3d')
+    print('running nx2clean3d')
 
     import subprocess
     #from os.path import normpath
@@ -422,12 +426,19 @@ def networkx_to_aven3dclean(G,filepath, cavename):
 
     thconfig_filename = f'"{filepath}{cavename}_clean.thconfig"'
 
-    #chemin = "C:/Users/celia/OneDrive - unine.ch/in_progress/2_SystemMigovec/networkx_export/3d_visualization/system_migovec_CC3d.thconfig"
-    #path_process = 'C:/Users/celia/github/erc-karst-repositories/networks_code_repo'
-    # test_chemin = "therion '%s'"%path_process
-    print("therion %s"%thconfig_filename)
-    # print(normpath(test_chemin))
-    log = subprocess.check_output("therion %s"%thconfig_filename, shell=True)
+    if run_therion_script:
+        #chemin = "C:/Users/celia/OneDrive - unine.ch/in_progress/2_SystemMigovec/networkx_export/3d_visualization/system_migovec_CC3d.thconfig"
+        #path_process = 'C:/Users/celia/github/erc-karst-repositories/networks_code_repo'
+        # test_chemin = "therion '%s'"%path_process
+        print("therion %s"%thconfig_filename)
+        # print(normpath(test_chemin))
+        log = subprocess.check_output("therion %s"%thconfig_filename, shell=True)
+
+    else:
+        print(f"To produce the .3d file, in the terminal, navigate to the folder and run the command: 'therion {cavename}_CC3d.thconfig'")
+        print('The therion command requires the installation of the programme Therion (https://therion.speleo.sk)')
+
+
 
 
 #--------------------------------------------------------
