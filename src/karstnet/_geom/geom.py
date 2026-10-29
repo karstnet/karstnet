@@ -38,17 +38,16 @@ def get_conduit_direction(G, pos_attr='pos'):
             use function ... to determin the right direction of the vector.
     
     """
-    keys = list(G.nodes()) #list(dict(G.degree()).keys())
+    keys = list(G.nodes().keys()) #list(dict(G.degree()).keys())
     conduit_directions = {}
     u_vectors = {}
     v_vectors = {}
     
     # get conduit direction
 
-    for i,key in enumerate(keys):
+    for key in keys:
         #if the node exists. some nodes were survey duplicate, removed from the main graph
         degree = G.degree()[key]
-        # print(i)
         # if i==695:
         #     print(i)
         # calc w at the beginning  and end of a conduit
@@ -81,13 +80,15 @@ def get_conduit_direction(G, pos_attr='pos'):
     
         elif degree > 2:
             # no projection for conduit intersections
-            conduit_directions[key] = []
+            # The node should not contain any direction informations
+            pass
+            # conduit_directions[key] = []
 
         #calculate the u and v vector for each node, to be used for the projection of the splay in the uv plan
         #orthogonal vectors u and v are calculated in the horizontal plan, perpendicular to the conduit direction w.
         #------------------------------------------------------------------------------------------------------------
 
-        if list(conduit_directions[key]) != []:
+        if key in conduit_directions:
             
             w = np.array(conduit_directions[key])
             # w /= np.linalg.norm(w)
@@ -150,10 +151,10 @@ def get_splay_vectors(G,pos_attr='pos',splay_attr='splays'):
                 for j in np.arange(len(splays[key])):
                     list_temp.append(np.array(splays[key][j])-np.array(pos3d[key]))
                 splay_vectors[key] = list_temp
-
+ 
     return splay_vectors
 
-def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
+def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays',  max_angle=60):
     """Projects a splay (disto measurement from a station to the surrounding wall) 
     in the u,v plan perpendicular to the cave conduit direction.
 
@@ -172,8 +173,8 @@ def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
             u is in horizontal x,y plane, and v is orthogonal to u in the uv plan.
     """
 
-    conduit_directions, u_vectors, v_vectors = kn.geom.get_conduit_direction(G, pos_attr)
-    splay_vectors = kn.geom.get_splay_vectors(G, pos_attr, splay_attr)
+    conduit_directions, u_vectors, v_vectors = kn.geom.get_conduit_direction(G, pos_attr=pos_attr)
+    splay_vectors = kn.geom.get_splay_vectors(G, pos_attr=pos_attr, splay_attr=splay_attr)
 
 
     projected_splay_lengths_u = {}
@@ -190,8 +191,12 @@ def calc_projected_splay_lengths(G, pos_attr='pos', splay_attr='splays'):
 
         for splay_vector in splay_vector_list: 
 
-            if len(conduit_directions[key])>0:
-                  
+            if key in conduit_directions:
+                dp = np.dot(splay_vector,conduit_directions[key])
+                angle_from_dir = np.arccos(dp/np.sqrt(dp))
+                print(f'key:{key} {dp} {angle_from_dir}')
+
+                # if angle_from_dir < max_angle:     
                 # s = calc_projected_splay_lengths(conduit_directions[key],splay_vectors)
                 su = float(np.dot(u_vectors[key],splay_vector))
                 sv = float(np.dot(v_vectors[key],splay_vector))
@@ -278,9 +283,9 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
     """
     
 
-    conduit_directions, u_vectors, v_vectors = get_conduit_direction(G, pos_attr)
-    splay_vectors = get_splay_vectors(G,pos_attr,splay_attr)
-    projected_splay_lengths_u, projected_splay_lengths_v = calc_projected_splay_lengths(G, pos_attr,splay_attr)
+    conduit_directions, u_vectors, v_vectors = kn.geom.get_conduit_direction(G, pos_attr)
+    splay_vectors = kn.geom.get_splay_vectors(G,pos_attr,splay_attr)
+    projected_splay_lengths_u, projected_splay_lengths_v = kn.geom.calc_projected_splay_lengths(G, pos_attr=pos_attr,splay_attr=splay_attr)
 
     radius_u_positive = {}
     radius_u_negative = {}
@@ -296,12 +301,10 @@ def calc_conduit_dimensions(G, output = 'cs_dimensions',pos_attr='pos',splay_att
 
         #sometimes there is splays that were duplicates. Verify than the node is in the list of splay vectors, 
         # since some nodes were survey duplicates and removed from the main graph
-        if key in splay_vectors.keys():
-            if key == 24:
-                print(key)
+        if key in splay_vectors:
             su_len=projected_splay_lengths_u[key]
             sv_len=projected_splay_lengths_v[key]
-            if len(conduit_directions[key])>0:
+            if key in conduit_directions:
 
                 # add zero to the array, in case all splays have been taken in the same direction
                 su_len.append(float(0))
