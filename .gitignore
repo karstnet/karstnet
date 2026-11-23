@@ -1,6 +1,6 @@
 karstnet.egg-info/
 .nbgrader.log
-notebooks/.ipynb_checkpoints/
+.ipynb_checkpoints/
 .pytest_cache/*
 __pycache__/
 venv/
@@ -10,4 +10,3 @@ build/
 
 zzz*
 .DS_Store
-.ipynb_checkpoints/changelog-checkpoint.md
