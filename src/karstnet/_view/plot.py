@@ -1436,6 +1436,73 @@ def pv_plot_graph(
         return cpos
 # ----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+def get_mesh_plane(p, u, v, len_u, len_v, nu=2, nv=2, mesh_type='TRIANGLE'):
+    """
+    Computes the mesh of a plane going through `p` and spanned by `u` and `v`.
+    
+    The plane is represented by a rectangle embedded in 3D space.
+
+    Parameters
+    ----------
+    p : 1D array-like of floats of shape(3,)
+        points in the center of the meshed rectangle representing the plane
+    
+    u : 1D array-like of floats of shape(3,)
+        vector of the first axis in the plane
+
+    v : 1D array-like of floats of shape(3,)
+        vector of the second axis in the plane
+
+    len_u : float
+        length along the axis `u` of the meshed rectangle representing the plane
+
+    len_v : float
+        length along the axis `v` of the meshed rectangle representing the plane
+
+    nu : int, default: 2
+        number of points along the axis `u` for meshing the rectangle 
+        representing the plane
+
+    nv : int, default: 2
+        number of points along the axis `v` for meshing the rectangle 
+        representing the plane
+
+    mesh_type : str {'QUAD', 'TRIANGLE}, default: 'TRIANGLE'
+        mesh type
+    
+    Returns
+    -------    
+    mesh : :class:`pyvista.PolyData`
+        mesh of the rectangle representing the plane
+    """
+    import pyvista as pv
+
+    if not isinstance(mesh_type, str) or mesh_type not in ('QUAD', 'TRIANGLE'):
+        raise ValueError('`mesh_type` not valid')
+
+    h0 = np.linspace(-0.5*len_u, 0.5*len_u, nu)
+    h1 = np.linspace(-0.5*len_v, 0.5*len_v, nv)
+    hh1, hh0 = np.meshgrid(h1, h0, indexing='ij')
+
+    # points
+    points = p + hh1.reshape(-1,1)*v + hh0.reshape(-1,1)*u
+
+    # point ids for QUAD faces
+    point_ids = np.add.outer(nu*np.arange(nv-1), np.asarray([[i0, i0+1, i0+nu+1, i0+nu] for i0 in range(nu-1)])).reshape(-1, 4)
+
+    if mesh_type == 'QUAD':
+        cells_array = np.insert(point_ids, 0, 4, axis=1) # faces
+    elif mesh_type == 'TRIANGLE':
+        point_ids = np.array((point_ids[:,np.array([0, 1, 2])], point_ids[:,np.array([0, 2, 3])])).transpose(1,0,2).reshape(-1, 3)
+        cells_array = np.insert(point_ids, 0, 3, axis=1) # faces
+
+    # Define mesh of the plane
+    mesh = pv.PolyData(points, faces=cells_array.ravel())
+
+    return mesh
+# -----------------------------------------------------------------------------
+
 # # ----------------------------------------------------------------------------
 # def pv_plot_graph(
 #         G,         

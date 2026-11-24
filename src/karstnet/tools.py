@@ -1217,7 +1217,7 @@ def krige_node_attribute(
     pid : int, optional
         process id of the caller (used with multiprocessing)
 
-    verbose : int, default: 0
+    verbose : int, default: 1
         verbose mode, higher implies more printing (info)
 
     Returns
