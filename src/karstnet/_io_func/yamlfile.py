@@ -3,21 +3,22 @@ import networkx as nx
 import yaml
 import karstnet as kn
 
-
-
+# ----------------------------------------------------------------------------
 #!!! to do: transform to list all the tuples
-def networkx_to_yaml(G,filepath):
+def networkx_to_yaml(G, filepath):
     """Saves graph to a yaml file. This is a compact way to store the graph, 
     but still save it in a text readable format.
 
-        structure of the dictionnary:
+    Structure of the dictionnary:
+    
+    .. code-block:: python
+
         {metadata:  {cavename: string
                      crs: string
                      original_data_rights: string
                      citation: string
                      ...}
         edges: list of list of edge
-        
         edge_attributes:
             {flag:list of string
             comment:string
@@ -36,11 +37,10 @@ def networkx_to_yaml(G,filepath):
     ----------
     G : networkx graph
         The networkx graph to save in yaml format
+    
     filepath : string
         Path to save the file, with our without the .yaml extension
     """
-
-
     # initiate dictionnary
     dict_graph=dict()
     # extract metadata dictionnary attached to the graph:
@@ -90,10 +90,10 @@ def networkx_to_yaml(G,filepath):
         yaml.dump(dict_graph, file, default_flow_style=False, sort_keys=False)
 
     print(f"Graph saved to yaml here: {filepath}")
+# ----------------------------------------------------------------------------
 
-
-
-def networkx_from_yaml(filepath,add_edge_attr=True,add_node_attr=True):
+# ----------------------------------------------------------------------------
+def networkx_from_yaml(filepath, add_edge_attr=True, add_node_attr=True):
     """_summary_
 
     Parameters
@@ -121,7 +121,6 @@ def networkx_from_yaml(filepath,add_edge_attr=True,add_node_attr=True):
         attached to the graph as attributes.
 
     """
-
     with open(filepath) as f:
         # yml = yaml.safe_load(f) 
         yml = yaml.load(f, Loader=yaml.Loader) 
@@ -182,6 +181,7 @@ def networkx_from_yaml(filepath,add_edge_attr=True,add_node_attr=True):
 
         nx.set_node_attributes(G, yml['node_attributes'][attribute_name],attribute_name)  
     return G 
+# ----------------------------------------------------------------------------
 
 
 

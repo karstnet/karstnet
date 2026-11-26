@@ -1,34 +1,41 @@
 Installation guide
 ==================
 
-Installation
-------------
+Karstnet is available on:
+    
+    - `PyPI <https://pypi.org/project/karstnet>`_ (The Python Package Index)
+    - `Github <https://github.com/karstnet/karsnet>`_ (repository)
 
-Install Karstnet from pypi.org. From your command line, type::
+Installation from `PyPI <https://pypi.org/project/karstnet>`_
+-------------------------------------------------------------
+
+In a terminal type::
 
     pip install karstnet
 
-Otherwise, you can download the Karstnet package from github.
+Or, equivalently: `python -m pip install karstnet`.
 
-Install Karstnet from source. From the project's main directory, type::
 
+Installation from the `Github repository <https://github.com/karstnet/karsnet>`_
+--------------------------------------------------------------------------------
+
+In a terminal, change directory where to download Karstnet, and type::
+
+    git clone https://github.com/karstnet/karstnet.git
+    cd karstnet
     pip install .
 
-If you want to run it directly from source (useful for development)::
+.. tip::
+    Use `pip install . --verbose` or `pip install . -v` for printing (more) messages during the installation.
 
-    pip install -e .
-	
-Both these options can also be run without moving previously in the karstnet folder. 
-In that case, just type in your Anaconda prompt ::
+Alternatively:
 
-	pip install -e your\path\to\karstnet
+- Instead of `git clone ...`, you can download Karstnet from the `Github repository <https://github.com/karstnet/karstnet>`_: click on the green button "code" and choose "Download ZIP". 
+- Then, unzip the archive on your computer.
+- Finally, in a terminal, go into the unzipped directory, and type `pip install .`
 
-
-Testing
--------
-
-To check if the installation was done properly, from the source directory,
-and after instaling **karstnet**, run::
+.. tip::
+    To check if the installation was done properly, from the source directory, and after instaling **karstnet**, run::
 
     pytest tests/test_karstnet.py
 
@@ -36,9 +43,11 @@ and after instaling **karstnet**, run::
 Dependencies
 ------------
 karstnet requires the following python packages to function properly:
+ * geopandas
+ * matplotlib
+ * mplstereonet
  * networkx
  * numpy
- * scipy-stats
- * matplotlib.pyplot
- * mplstereonet
+ * pandas
  * pyvista
+ * scipy

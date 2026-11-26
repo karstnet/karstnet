@@ -4,34 +4,31 @@ import networkx as nx
 import karstnet as kn
 
 
-def networkx_from_kndata_csv(inputpath,
-                         node_attributes=['pos','csdim']):
+# ----------------------------------------------------------------------------
+def networkx_from_kndata_csv(inputpath, node_attributes=['pos','csdim']):
     """Loads the cave network from the Github repository <https://github.com/ERC-Karst/KNdata-public> and returns a networkx graph. The cave graph is stored in a folder containing .csv files for the edges and the node attributes.
 
     Parameters
     ----------
     inputpath : string
         path to the folder containing the .csv files. In the folder, there should be one file for the edges and one file for each node attribute. The files should be named as follows:
-            ID_Cavename_Subset_edges.csv: list of links between the nodes. [ID_from,ID_to]
-            ID_Cavename_Subset_node_pos: list of the nodes ID with x,y,z coordinates. [ID,x,y,z]
-            (Optional) ID_Cavename_Subset_node_csdim: list of the nodes ID with cross-sectional width dimension. [ID,CS_height,CS_width]
+        ID_Cavename_Subset_edges.csv: list of links between the nodes. [ID_from,ID_to]
+        ID_Cavename_Subset_node_pos: list of the nodes ID with x,y,z coordinates. [ID,x,y,z]
+        (Optional) ID_Cavename_Subset_node_csdim: list of the nodes ID with cross-sectional width dimension. [ID,CS_height,CS_width]
 
 
     node_attributes: list of string
         list of the node attribute names to attach to the graph (details about the node attributes can be found in the documentation of the KNdata-public repository).
         by default: ['pos','csdim'] 
-            'pos': list of 3 floats, [easting,northing,elevation], 3D coordinates of the nodes in specific coordinate system
-            'csdim': list of 2 floats, [Width,Height] cross-sectional dimensions of the nodes in m
+        'pos': list of 3 floats, [easting,northing,elevation], 3D coordinates of the nodes in specific coordinate system
+        'csdim': list of 2 floats, [Width,Height] cross-sectional dimensions of the nodes in m
 
 
     Returns
     -------
     networkx graph
     """
-
     G = nx.Graph()
-
-    
 
     for file in os.listdir(inputpath):
         sep='' if inputpath.endswith('/') else '/'
@@ -60,6 +57,7 @@ def networkx_from_kndata_csv(inputpath,
                 nx.set_node_attributes(G,dict_attribute,attribute_name)          
 
     return G
+# ----------------------------------------------------------------------------
 
 
 
@@ -69,14 +67,19 @@ def networkx_from_kndata_csv(inputpath,
 # #------------------------------------------------------------------
 # #function specific to sql import
 
+# ----------------------------------------------------------------------------
 def networkx_to_kndata_csv(G, outputpath, make_clean_folder_path = True, cavename='cavename'):
     """_summary_
 
-    Args:
-        G (_type_): _description_
-        outputpath (_type_): _description_
-        make_clean_folder_path (bool, optional): _description_. Defaults to True.
-        cavename (str, optional): _description_. Defaults to 'cavename'.
+    Parameters
+    ----------
+    G (_type_): _description_
+    
+    outputpath (_type_): _description_
+    
+    make_clean_folder_path (bool, optional): _description_. Defaults to True.
+    
+    cavename (str, optional): _description_. Defaults to 'cavename'.
     """
     #check and create new directory if necessary
     if make_clean_folder_path:
@@ -100,11 +103,8 @@ def networkx_to_kndata_csv(G, outputpath, make_clean_folder_path = True, cavenam
             df.to_csv(filepath + cavename + '_node_' + attribute_name + '.csv', index=False, header=['id','x','y','z'], sep=';', encoding = 'utf-8-sig')   
         elif attribute_name=='csdim':
             df.to_csv(filepath + cavename + '_node_' + attribute_name + '.csv', index=False, header=['id','cswidth','csheight'], sep=';', encoding = 'utf-8-sig')   
-
-
-
   
         print('saved edge attribute', attribute_name, ' to ', filepath, cavename, '_edge_', attribute_name, '.csv')
-
+# ----------------------------------------------------------------------------
 
 

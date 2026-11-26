@@ -1177,7 +1177,8 @@ def krige_node_attribute(
 
     err_std : float, or str, default : 0.0
         standard deviation of error (zero-mean Gaussian of given std):
-        - if float: the same error std is used for data at any graph node; 
+
+        - if float: the same error std is used for data at any graph node
         - if str: name of the node attribute of the error std
 
     edge_length_attr : str, optional
@@ -1191,6 +1192,7 @@ def krige_node_attribute(
         otherwise it is set to 'simple_kriging';
 
         notes:
+
         - if `method='simple_kriging'` and `mean` is `None`, then `mean` is set to the mean of \
         the known values of the node attribute `node_attr` \
         (and simple kriging is performed with this mean value)
@@ -1198,7 +1200,8 @@ def krige_node_attribute(
         (and ordinary kriging is performed)
 
     mean : float, or str, optional
-        kriging mean value :
+        kriging mean value:
+
         - if float: the value is used at all graph nodes; 
         - if str: name of the node attribute for the mean 
         
@@ -1247,7 +1250,7 @@ def krige_node_attribute(
         - if `True`: the kriging estimates is set as a node attribute (named \
         `kriging_est_node_attr` (see below)) and the kriging standard deviation \
         is set as a node attribute (named `kriging_std_node_attr` (see below))
-        - if `False`: the graph is not updated (`kriging_est_node_attr` and 
+        - if `False`: the graph is not updated (`kriging_est_node_attr` and \
         `kriging_std_node_attr` are not used)
 
     kriging_est_node_attr : str, optional
@@ -1673,7 +1676,7 @@ def krige_node_attribute_mp(
         
     - if `nproc >= 1`, then `nproc = max(min(nproc, G.number_of_nodes()), 1)` is used
     - if `nproc = -n <= 0`, then `nproc = max(min(nmax-n, G.number_of_nodes()), 1)` is used, \
-    where nmax is the total number of cpu(s) of the system (retrieved by 
+    where nmax is the total number of cpu(s) of the system (retrieved by \
     `multiprocessing.cpu_count()`)
 
     Note: if `nproc=None`, `nproc=-1` is used.
@@ -1805,7 +1808,8 @@ def sgs_node_attribute(
 
     err_std : float, or str, default : 0.0
         standard deviation of error (zero-mean Gaussian of given std):
-        - if float: the same error std is used for data at any graph node; 
+
+        - if float: the same error std is used for data at any graph node
         - if str: name of the node attribute of the error std
 
     edge_length_attr : str, optional
@@ -1819,6 +1823,7 @@ def sgs_node_attribute(
         otherwise it is set to 'simple_kriging';
 
         notes:
+
         - if `method='simple_kriging'` and `mean` is `None`, then `mean` is set to the mean of \
         the known values of the node attribute `node_attr` \
         (and simple kriging is performed with this mean value)
@@ -1826,7 +1831,8 @@ def sgs_node_attribute(
         (and ordinary kriging is performed)
 
     mean : float, or str, optional
-        kriging mean value :
+        kriging mean value:
+
         - if float: the value is used at all graph nodes; 
         - if str: name of the node attribute for the mean 
         
@@ -2222,7 +2228,7 @@ def sgs_node_attribute_mp(
         
     - if `nproc >= 1`, then `nproc = max(min(nproc, nreal), 1)` is used
     - if `nproc = -n <= 0`, then `nproc = max(min(nmax-n, nreal), 1)` is used, \
-    where nmax is the total number of cpu(s) of the system (retrieved by 
+    where nmax is the total number of cpu(s) of the system (retrieved by \
     `multiprocessing.cpu_count()`)
 
     Note: if `nproc=None`, `nproc=-1` is used.

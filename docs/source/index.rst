@@ -6,25 +6,65 @@
 Karstnet
 ========
 
+.. Update manually here! see ../../src/geone/_version.py
+
+**Current version : 2.0.0**
+
 Karstnet is a python 3 package for the statistical analysis of 
 the geometry and topology of karstic networks. 
 It considers a network of karstic conduits as a graph (an ensemble
 of nodes and edges).
 
-The package is a work in progress. Karstnet slowly expands to include
-several features including plausibility test, additional input/output
-interfaces, data base of network data, etc. Please contact us (see below)
-if you need further information.
+Karstnet provides:
+
+- a set of tools to import and export karstic networks from/to various formats
+- a set of statistical metrics to characterize the geometry and topology of karstic networks
+- visualization tools to display the networks in 2D and 3D
+- other tools and algorithms to analyze the networks
+
+The package is a work in progress.
+
+PyPI & Github
+=============
+Karstnet is available on:
+
+- On PyPI: `<https://pypi.org/project/karstnet/>`_
+- On Github: `<https://github.com/karstnet/karstnet>`_
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    installation
-   example1_simple_graph
-   example2_import_data
-   data
    api
+   data
+   examples_list
+   examples_gallery
+   LICENSE
+
+Authors
+=======
+
+Karstnet is developped by the Karstnet team:
+
+   - `Philippe Renard <https://www.unine.ch/chyn/biography/philippe-renard>`_,
+   - `Pauline Collon <http://www.ring-team.org/index.php/home/team?view=user&limitstart=0&id=189>`_
+   - `Celia Trunz <https://scholar.google.com/citations?user=fiCgGZIAAAAJ>`_
+   - `Julien Straubhaar <https://scholar.google.com/citations?user=N52N2P0AAAAJ>`_
+
+
+Reference
+=========
+
+The karstnet package implements the statistical metrics that were
+investigated and discussed in:
+
+- Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical metrics for the characterization of karst network geometry and topology. Geomorphology. 283: 122-142 `doi:10.1016/j.geomorph.2017.01.034 <http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>`_
+
+License
+=======
+
+Released under the MIT license; see :ref:`LICENSE <LICENSE_file>` file.
 
 Indices and tables
 ==================
@@ -33,34 +73,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-
-Authors
-=======
-
-Karstnet is developped by the Karstnet team:
-`Philippe Renard <https://www.unine.ch/chyn/fr/biographie/philippe-renard.html>`_,
-`Pauline Collon <http://www.ring-team.org/index.php/home/team?view=user&limitstart=0&id=189>`_
-`Celia Trunz`,
-and
-`Julien Straubhaar`.
-
-
-Reference
-=========
-
-The karstnet package implements the statistical metrics that were
-investigated and discussed in:
-Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical
-metrics for the characterization of karst network geometry and topology.
-Geomorphology. 283: 122-142 `doi:10.1016/j.geomorph.2017.01.034
-<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>`. 
-
-License
-=======
-
-Released under the MIT license:
-   Copyright (C) 2018-2025 Karstnet Developers:
-   Philippe Renard <philippe.renard@unine.ch>
-   Pauline Collon <pauline.collon@univ-lorraine.fr>
-   Celia Trunz <celia.trunz@unine.ch>
-   Julien Straubhaar <julien.straubhaar@unine.ch>

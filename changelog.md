@@ -1,10 +1,13 @@
 
-## V2.0.0 (...) - Julien Straubhaar & Celia Trunz
-- Extract functions that apply to Kg.graph only to make the functions usable outside of the Kg object. While keeping it in the method
-- Add new packages:
-	- io: import export and functions (previous import export functions used as methods exist now as functions under different names, but are still callable as the original method)
-	- clean: functions used to clean the graph before initating the kg object. 
-	- view: function for plotting or other viewing tools, that are applied to the graph only. Previously existing methods are transformed in functions with a different name, but methods is kept by calling the function in the 
+## V2.0.0 (xx/12/2026) - Julien Straubhaar & Celia Trunz
+- PACKAGE REDESIGN 
+- New modules / packages:
+	- io: import / export functions, various format are handled (previous import export functions still available)
+	- clean: functions used to clean the graph before instantiating the KGraph object
+	- view: functions for plotting / viewing graphs (in 2D and 3D, based on networkx / matplotlib / pyvista) (main argument is a Networkx graph for more generality - can be used with kg.graph for a KGraph object)
+	- tools: various tools and algorithm for graphs
+	- utils: basic utilities
+- New notebooks: numerous notebooks has been added for illustrating different aspects of karstnet
 
 ## V1.2.5 (30/08/2024) - Philippe Renard
 

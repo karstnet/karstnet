@@ -1,12 +1,14 @@
 karstnet.egg-info/
 .nbgrader.log
 .ipynb_checkpoints/
-.pytest_cache/*
+.pytest_cache/
 __pycache__/
 venv/
 .idea/
 env/
 build/
+data/test_export_example.yaml
+data/test_export_examples/
 
 zzz*
 .DS_Store

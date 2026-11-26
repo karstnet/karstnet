@@ -180,7 +180,7 @@ class KGraph:
         """
 
         self.verbose = verbose
-
+    
         if networkx_graph is not None:
             # This assumes that a netorwkx graph is already defined, with
             # node attribute 'pos' for the position, and optional additional
@@ -1263,14 +1263,14 @@ class KGraph:
 
     # -------------------------------------------------------------------------
     def length_entropy(self, mode="default"):
-        r"""
+        """
         Computes the entropy of lengths of the branches of a karstic network.
 
         The entropy of the branch lengths, normalized in [0, 100] is computed
         as
 
         .. math::
-            H=-\sum_i p_i \log_n(p_i)
+            H=-\\sum_i p_i \\log_n(p_i)
 
         where :math:`p_i` is the probability mass in the `i`-th bin, and the
         base of logarithm, `n`, is the number of bins (see parameter `mode`
@@ -1283,10 +1283,10 @@ class KGraph:
             the property is normalized as compared to the
             maximum observed value
 
-            - If mode="default", the entropy is computed according to the \
+            - if `mode="default"` : the entropy is computed according to the \
             implementation proposed in Collon et al. 2017 : \
             using a fixed bin number of 10 and ranging from 0 to 100
-            - If mode="sturges" : alternative calculation using Sturges \
+            - if `mode="sturges"` : alternative calculation using Sturges \
             rules to define the number of bins
 
         Returns
@@ -1331,7 +1331,7 @@ class KGraph:
 
     # -------------------------------------------------------------------------
     def orientation_entropy(self, mode="default", weighted=True):
-        r"""
+        """
         Computes the entropy of orientation (2d) of the segments of a
         karstic network.
 
@@ -1341,7 +1341,7 @@ class KGraph:
         computed as
 
         .. math::
-            H=-\sum_i p_i \log_n(p_i)
+            H=-\\sum_i p_i \\log_n(p_i)
 
         where :math:`p_i` is the probability mass in the `i`-th bin, and the
         base of logarithm, `n`, is the number of bins (see parameter `mode`
@@ -1355,10 +1355,10 @@ class KGraph:
         mode : string
             the mode style should be equal to "default" or "sturges"
 
-            - If mode="default", the entropy is computed according to \
+            - if `mode="default"` : the entropy is computed according to \
             the implementation proposed in Collon et al. 2017 : \
             using a fixed bin number of 18 and ranging from 0 to 180
-            - If mode="sturges" : alternative calculation using Sturges \
+            - if `mode="sturges"` : alternative calculation using Sturges \
             rules to define the number of bins
 
         weighted : bool, default: True

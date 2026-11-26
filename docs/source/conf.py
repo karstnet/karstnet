@@ -18,11 +18,19 @@ sys.path.insert(0, os.path.abspath('../../src/karstnet/'))
 
 from karstnet import __version__
 
+# To avoid warnings about syntax errors in the code examples, we ignore SyntaxWarning.
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    category=SyntaxWarning,
+    module="<unknown>",
+)
 
 # -- Project information -----------------------------------------------------
 
 project = 'Karstnet'
-copyright = '2018-2025, Karstnet team'
+copyright = '2018-2026, Karstnet team'
 author = 'Karstnet team'
 
 # The short X.Y version
@@ -42,12 +50,16 @@ release = __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.doctest',
-              'sphinx.ext.todo',
-              'sphinx.ext.imgmath',
-              'sphinx.ext.autosummary',
-              'numpydoc']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.todo',
+    # 'sphinx.ext.imgmath',
+    'sphinx.ext.autosummary',
+    'nbsphinx',
+    'sphinx.ext.mathjax',
+    # 'numpydoc',
+]
 
 autosummary_generate = True
 # autosummary_imported_members = True

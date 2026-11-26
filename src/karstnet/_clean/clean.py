@@ -4,40 +4,40 @@ import yaml
 import re
 
 
-def add_edges(G,additional_edges, dict_address=None, additional_flag = None, comment_string=None):
-    """Add edges to a networkx cave graph, based on a list of edges
+# -------------------------------------------------------------------------
+def add_edges(G, additional_edges, dict_address=None, additional_flag=None, comment_string=None):
+    """Add edges to a networkx cave graph, based on a list of edges.
+
     Parameters
     ----------
     G : networkx graph 
         Graph produced with the function kn.io_func.networkx_from_therion_sql
 
     additional_edges : list of tuple or list of lists
-        list of edges to add to the graph. The edges will be created between already existing nodes, and a flag add will be added. 
+        list of edges to add to the graph. The edges will be created between already 
+        existing nodes, and a flag add will be added. 
 
-        example:
-        -----------
-        in the case that use_fulladdress == True: additional_edges = [['full_address.0','full_address.1],['full_address.3','full_address.10]]
+        For example, in the case that use_fulladdress == True: 
+        additional_edges = [['full_address.0', 'full_address.1], ['full_address.3', 'full_address.10]]
         if the current networkx key is used: additional_edges = [[67,2],[110,232]]
 
     dict_address : dict, optional
         by default this function takes the current networkx keys of the graph G. 
-        When dict_address is not None, then it uses other node identifiers (for example, it can be the original node name)
-        The dictionnary 
-        stored in the graph attributes G.nodes('fulladdress').
+        When dict_address is not None, then it uses other node identifiers 
+        (for example, it can be the original node name).
+        The dictionary stored in the graph attributes `G.nodes('fulladdress')`.
         This attribute is created with the therion import function.
 
-        example:
-        --------
-        Each current node id can be associated to a series of older ids, in the case that stations where regrouped because they were at the same positions.
-        dict_address = {id_0:['old_id_20','old_id_1','old_id_200'], id_1:['old_id_3']}
+        For example, each current node id can be associated to a series of older ids, 
+        in the case that stations where regrouped because they were at the same positions,
+        `dict_address = {id_0:['old_id_20','old_id_1','old_id_200'], id_1:['old_id_3']}`
 
-        When the cave is processed created with the import function therion, then the original node name is stored in the 
-        graph attributes G.nodes('fulladdress'), in the form of a full path from the main folder. This is a therion standard:
-        dict_address = {id_0:['full_address.0','full_address.1','full_address.4'], id_1:['full_address.0']}
-
+        When the cave is processed created with the import function therion, then the 
+        original node name is stored in the graph attributes `G.nodes('fulladdress')`, 
+        in the form of a full path from the main folder. This is a therion standard:
+        `dict_address = {id_0:['full_address.0','full_address.1','full_address.4'], id_1:['full_address.0']}`
     """
-    
-    #create dictionnary to find current id based on the fulladdress
+    # Create dictionary to find current id based on the fulladdress
     if dict_address is not None:
         inverse_dict_address = { v: k for k, l in dict_address.items() for v in l }
 
@@ -54,7 +54,7 @@ def add_edges(G,additional_edges, dict_address=None, additional_flag = None, com
             edge_to = edge[1]
             
 
-        #check if there is flags already attached to the edges
+        # Check if there is flags already attached to the edges
         if G.has_edge(edge_from,edge_to):
             print(f'edge {(edge_from,edge_to)} already exists. ignore add_edge')
         else:
@@ -65,17 +65,10 @@ def add_edges(G,additional_edges, dict_address=None, additional_flag = None, com
 
             if comment_string is not None:
                 nx.set_edge_attributes(G, {(edge_from,edge_to): {'comments': comment_string}})
+# -------------------------------------------------------------------------
 
-
-
-
-                
-            
-
-
-def flag_nodes(G,flagged_nodes, dict_address=None):
-    
-    
+# -------------------------------------------------------------------------
+def flag_nodes(G, flagged_nodes, dict_address=None):
     """Add a string in the node attribute 'flag' of the networkx cave graph.
 
     Parameters
@@ -83,39 +76,34 @@ def flag_nodes(G,flagged_nodes, dict_address=None):
     G : networkx graph 
         Graph produced with the function kn.io_func.networkx_from_therion_sql
     
-    flagged_nodes : dictionnary of list, optional
+    flagged_nodes : dict, optional
         list of nodes to be flagged, with associated flag.
-        The dictionnary key is the flag, and the values associated with the key is the list of node ids to flag.
+        The dictionary key is the flag, and the values associated with the key is the list of node ids to flag.
 
-        Example of dictionnary: 
-        -----------------------
-        flagged_nodes = {'ent':['full_address.0','full_address.1','full_address.4']}
-        flagged_nodes = {'ent':[old_id_1,old_id_4,old_id_400]}
-        or 
-        flagged_nodes = {'ent':[8,45,201]}
+        For example:
+
+        - `flagged_nodes = {'ent':['full_address.0','full_address.1','full_address.4']}`
+        - `flagged_nodes = {'ent':[old_id_1,old_id_4,old_id_400]}`
+        - `flagged_nodes = {'ent':[8,45,201]}`
 
     dict_address : dict, optional
         by default this function takes the current networkx keys of the graph G. 
-        When dict_address is not None, then it uses other node identifiers (for example, it can be the original node name)
-        The dictionnary 
-        stored in the graph attributes G.nodes('fulladdress').
-        This attribute is created with the therion import function.
+        When dict_address is not None, then it uses other node identifiers (for example, 
+        it can be the original node name). The dictionary stored in the graph attributes 
+        `G.nodes('fulladdress')`. This attribute is created with the therion import function.
         
-        example:
-        --------
-        Each current node id can be associated to a series of older ids, in the case that stations where regrouped because they were at the same positions.
-        dict_address = {id_0:['old_id_20','old_id_1','old_id_200'], id_1:['old_id_3']}
+        For example, each current node id can be associated to a series of older ids, 
+        in the case that stations where regrouped because they were at the same positions,
+        `dict_address = {id_0:['old_id_20','old_id_1','old_id_200'], id_1:['old_id_3']}`
 
-        When the cave is processed created with the import function therion, then the original node name is stored in the 
-        graph attributes G.nodes('fulladdress'), in the form of a full path from the main folder. This is a therion standard:
-        dict_address = {id_0:['full_address.0','full_address.1','full_address.4'], id_1:['full_address.0']}
-
-
+        When the cave is processed created with the import function therion, then 
+        the original node name is stored in the graph attributes, in the form of a full path 
+        from the main folder. This is a therion standard:
+        `dict_address = {id_0:['full_address.0','full_address.1','full_address.4'], id_1:['full_address.0']}`
     """
-
     print(f'flag_nodes - adding manual node flags: {flagged_nodes.keys()}')
 
-    #create dictionnary to find current id based on the fulladdress
+    #create dictionary to find current id based on the fulladdress
     if dict_address is not None:
         inverse_dict_address = { v: k for k, l in dict_address.items() for v in l }
 
@@ -185,12 +173,9 @@ def flag_nodes(G,flagged_nodes, dict_address=None):
 
                 else:
                     print(f'Node {id_node} does not exist anymore.')
+# -------------------------------------------------------------------------
 
-                    
-                
-
-
-
+# -------------------------------------------------------------------------
 def flag_edges(G, flagged_edges, dict_address = None):
     """Add a string in the edge attribute 'flag' of the networkx cave graph.
 
@@ -199,10 +184,10 @@ def flag_edges(G, flagged_edges, dict_address = None):
     G : networkx graph 
         Graph produced with the function kn.io_func.networkx_from_therion_sql
 
-    flagged_edges : dictionnary of list of tuple or list of lists, optional
+    flagged_edges : dictionary of list of tuple or list of lists, optional
         lists of edges to be flagged with corresponding flag to add. Any flag can be added. by default None
         However, for the duplicate edges and surface edges to be removed, it is necessary to use the correct flags.
-        It is also possible to use the add edges with this dictionnary instead of using the 'add_edges' option.
+        It is also possible to use the add edges with this dictionary instead of using the 'add_edges' option.
         List of flagged edge that will be removed by default:  'dpl', 'srf', 'art', 'rmv', 'spl'
 
     use_fulladdress : bolean, default False
@@ -210,25 +195,26 @@ def flag_edges(G, flagged_edges, dict_address = None):
         When True, then it uses the "fulladdress" string stored in the graph attributes G.nodes('fulladdress').
         This attribute is created with the therion import function.
 
-    Example of dictionnary: 
+    Example of dictionary: 
     ----------------------
     if use_fulladdress == True:
-    flagged_edges = {'dpl':[['full_address.0','full_address.1],['full_address.3','full_address.10]], 'srf':[[full_address.3,full_address.2]]}   
+    
+    - flagged_edges = {'dpl':[['full_address.0','full_address.1],['full_address.3','full_address.10]], 'srf':[[full_address.3,full_address.2]]}   
 
     if we use the networkx key:
-    flagged_edges = {'dpl':[[1,3],[11,5]], 'srf':[[5,11]]}   
+    
+    - flagged_edges = {'dpl':[[1,3],[11,5]], 'srf':[[5,11]]}   
     """
     print(f'flag_edges - adding manual edges flags: {flagged_edges.keys()}')
 
-    #create dictionnary to find current id based on the fulladdress
+    # Create dictionary to find current id based on the fulladdress
     if dict_address is not None:
         inverse_dict_address = { v: k for k, l in dict_address.items() for v in l }
 
-    
-    #loop through all the flags
+    # Loop through all the flags
     for flag in flagged_edges.keys():
         print(flag)
-        #loop through all the edges for each flag
+        # Loop through all the edges for each flag
         for edge in flagged_edges[flag]:
             if dict_address is not None:
                 edge_from = inverse_dict_address[edge[0]]
@@ -239,7 +225,7 @@ def flag_edges(G, flagged_edges, dict_address = None):
             #check if edge exists already (for example to add a duplicate flag on an exisiting edge)
             if G.has_edge(edge_from,edge_to):
             #check if there is flags already attached to the edges
-            #if not, create a new edge with the dictionnary 'flags' and the flag value
+            #if not, create a new edge with the dictionary 'flags' and the flag value
                 if 'flags' not in G[edge_from][edge_to]:
                     # print(f'adding {flag} to edge {edge_from}-{edge_to}')
                     nx.set_edge_attributes(G,{(edge_from,edge_to):{'flags':['add',flag]}})
@@ -268,9 +254,6 @@ def flag_edges(G, flagged_edges, dict_address = None):
                         if edge[2] not in G[edge_from][edge_to]['comments']:
                             G[edge_from][edge_to]['comments'].append(edge[2])
                         
-
-
-
             #if edge does not exist yet, then just create a new edge with the appropriate flag name            
             else:
                 # add the flag add by default?? if yes, implement this feature (20 fev 2025)
@@ -280,9 +263,9 @@ def flag_edges(G, flagged_edges, dict_address = None):
                 if len(edge)==3: 
                     #add comments if there is any               
                     nx.set_edge_attributes(G,{(edge_from,edge_to):{'comments':[edge[2]]}})
+# -------------------------------------------------------------------------
 
-
-
+# -------------------------------------------------------------------------
 def find_flags(G, attribute_name = 'flags'):
     """List all the unique flags attached to the edges of a networkx cave graph.
 
@@ -302,14 +285,18 @@ def find_flags(G, attribute_name = 'flags'):
     #extract flag unique values into a list
     flags = {x for l in list(nx.get_edge_attributes(G,attribute_name).values()) for x in l}
     return flags
+# -------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
 def list_flagged_edges(G, attribute_name, flag):
     # the 'de' flags superseed the removing flags and prevents the points from being removed. its applied to edges that were fasly flagged
     list_edges = [edge for edge, action in nx.get_edge_attributes(G,attribute_name).items() if ((flag in action) & ('de' not in action))]
     return list_edges
+# -------------------------------------------------------------------------
 
 # def remove_edges()
 
+# -------------------------------------------------------------------------
 def remove_flagged_edges(G, flags_to_remove=['srf','dpl','rmv','art','spl'], attribute_name = 'flags'):
     """Remove edges flagged with certain strings.
 
@@ -329,8 +316,6 @@ def remove_flagged_edges(G, flags_to_remove=['srf','dpl','rmv','art','spl'], att
         name of the attribute attached to the graph 
 
     if the flag 'de' is present ont
-
-
     """
     #edges_to_remove = list(dict(nx.get_edge_attributes(G,'flags')).keys()) 
     #extract flag unique values into a list
@@ -357,9 +342,7 @@ def remove_flagged_edges(G, flags_to_remove=['srf','dpl','rmv','art','spl'], att
 
     # print(f'Initial Graph size: {len(G)}, Graph size after removing flagged edges: {len(H)}')
     # return H
-
-
-
+# -------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
 def get_potential_connection(
@@ -427,7 +410,7 @@ def get_potential_connection(
     angle_list : list of lists of float(s), optional
         returned if `return_angle=True`, list of same length as `edges_list`, where
         `angle_list[i]` is the list of angles between the potential new edge `edge_list[i]`
-        and the existing edge(s) whose one extremity is the node ``edge_list[i][0]`;
+        and the existing edge(s) whose one extremity is the node `edge_list[i][0]`;
         each angle is in degree in the interval [0, 180]
     """
     # Set dictionary to convert node label (id) to node index, and vice versa
@@ -506,6 +489,7 @@ def get_potential_connection(
     return out
 # ----------------------------------------------------------------------------
 
+# -------------------------------------------------------------------------
 def find_disconnected_node(G, H):
     """Identify node of degree one that were initially of degree 2 or more at an earlier stage of the cleaning process
 
@@ -551,6 +535,7 @@ def find_disconnected_node(G, H):
         return keys_disconnected_all
     else:
         print('There is no disconnected components, no need to merge')
+# -------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
 def find_splays_via_letters(G, filepath=None):
@@ -562,15 +547,18 @@ def find_splays_via_letters(G, filepath=None):
     The result is a dictionary where each key is the full address of a station and each value is a list of the full addresses
     of its connected splays. If a file path is provided, this dictionary is saved as a YAML file.
 
-
-    Args:
-        G (networkx graph): Graph exported from therion, containing all the data
+    Parameters
+    ----------
+    G : networkx.Graph
+        Graph exported from therion, containing all the data
         filepath (str, optional): Path to the YAML file. Defaults to None.
 
-    Returns:
+    Returns
+    -------
         dict: Dictionary with each station's full address and the list of its connected splays' full addresses.
-         - Each key is the fulladdress of a node (station),
-         - Each value is a list of fulladdresses of connected splays (nodes whose fulladdress ends with a letter).
+        
+        - Each key is the fulladdress of a node (station),
+        - Each value is a list of fulladdresses of connected splays (nodes whose fulladdress ends with a letter).
     """    
     splay_dict = {} #Dictionnaire qui va contenir le résultat
 
@@ -606,6 +594,8 @@ def find_splays_via_letters(G, filepath=None):
         print(f"Splay structure saved to {filepath}")
     
     return splay_dict
+# -------------------------------------------------------------------------
+
 # ----------------------------------------------------------------------------
 def find_splays_via_structure(G, filepath=None, degree_threshold=5, neighbors_degree_threshold=1, neighbors_count_threshold=4):
     """
@@ -618,15 +608,19 @@ def find_splays_via_structure(G, filepath=None, degree_threshold=5, neighbors_de
 
     If a file path is provided, the dictionary is saved as a YAML file.
 
-    Args:
-        G (networkx graph): Graph exported from therion, containing all the data
+    Parameters
+    ----------
+    G : networkx.Graph
+        Graph exported from therion, containing all the data
         filepath (str, optional): Path to the YAML file to export. Defaults to None.
         degree_threshold (int): Minimum degree for a node to be considered a potential central station.
         neighbors_degree_threshold (int): Maximum degree for a neighbor to be considered a splay.
         neighbors_count_threshold (int): Minimum number of splay-like neighbors required to retain the central station.
 
-    Returns:
-        dict: Dictionary with each central station’s fulladdress as key and the list of connected splays’ fulladdresses as value.
+    Returns
+    -------
+    dict: 
+        Dictionary with each central station’s fulladdress as key and the list of connected splays’ fulladdresses as value.
     """
     splay_dict = {}
 
@@ -657,7 +651,8 @@ def find_splays_via_structure(G, filepath=None, degree_threshold=5, neighbors_de
         print(f"Splay structure saved to {filepath}")
 
     return splay_dict
-
+# -------------------------------------------------------------------------
+    
 # ----------------------------------------------------------------------------
 def add_splay(G, splay_dict, dict_address=None):
     """
@@ -672,16 +667,19 @@ def add_splay(G, splay_dict, dict_address=None):
 
     This function assumes that splay_dict is of the form: {station_fulladdress: [splay_fulladdress1, splay_fulladdress2, ...]}
 
-    Args:
-        G (networkx.Graph): The input graph to be updated with splay data.
+    Parameters
+    ----------
+    G : networkx.Graph
+        The input graph to be updated with splay data.
         splay_dict (dict): A dictionary that lists, for each station, the names (fulladdresses) of its splay nodes.
         dict_address (dict, optional): A dictionary that helps convert a fulladdress into a node ID in the graph.
-            If provided, it's used to convert fulladdresses into node IDs.
+        If provided, it's used to convert fulladdresses into node IDs.
 
-    Returns:
-        None. Updates the graph G.
+    Returns
+    -------
+    None. Updates the graph G.
     """
-    #create dictionnary to find current id based on the fulladdress
+    #create dictionary to find current id based on the fulladdress
     if dict_address is not None:
         inverse_dict_address = { v: k for k, l in dict_address.items() for v in l }
 
@@ -720,7 +718,7 @@ def add_splay(G, splay_dict, dict_address=None):
 
     print("Splays successfully assigned to the corresponding stations.")
     print(f"{len(splay_dict)} stations updated with 'splays'.")
-
+# ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
 def transform_station_splay_dict(original_dict):
@@ -731,17 +729,22 @@ def transform_station_splay_dict(original_dict):
     It reformats this information into a dictionary with a single key 'spl', whose value is a list of [station, splay] pairs. This format is required by
     the flag_edges() function in the clean.py.
 
-    Args:
-        original_dict (dict): A dictionary that lists, for each station fulladdress, the splays associated with it.
-        
-    Returns:
-        dict: A new dictionary with a single key 'spl' and a list of [station, splay] pairs as its value.
+    Parameters
+    ----------
+    original_dict : dict
+        A dictionary that lists, for each station fulladdress, the splays associated with it.
+
+    Returns
+    -------
+    dict: 
+        A new dictionary with a single key 'spl' and a list of [station, splay] pairs as its value.
     """
     new_dict = {'spl': []}
     for station, splays in original_dict.items():
         for splay in splays:
             new_dict['spl'].append([station, splay])
     return new_dict
+# ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
 def find_shortest_connection_between_components(G, distance_threshold=15):
@@ -793,6 +796,7 @@ def find_shortest_connection_between_components(G, distance_threshold=15):
                 shortest_links.append(best_pair)
 
     return shortest_links
+# ----------------------------------------------------------------------------
 
 #######################################
 ########################################

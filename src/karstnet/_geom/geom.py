@@ -55,7 +55,7 @@ def get_local_coordinate_system(
 
     Returns
     -------
-    dictionary 
+    dict
         Dictionary `local_coordinate_system` with keys: node id, values: numpy.ndarray of shape (3, 3)
         representing the local coordinate system at each node, where
         loc_coor_sys[0] = u vector, loc_coor_sys[1] = v vector, loc_coor_sys[2] = w vector, 
@@ -182,7 +182,7 @@ def get_splay_vectors(
 
     Returns
     -------
-    dictionnary
+    dict
         Dictionnary with keys: node id, values: list of splay vectors in (x, y, z) coordinates, 
         each key: value item of the dictionary is of the form:
         id: [array([xi, yi, zi]), ...]
@@ -313,6 +313,7 @@ def calc_conduit_dimensions(
     Different outputs can be requested, including the geometric mean of the cross-section radius, the cross-section width and height. 
     The function returns a dictionary with the requested geometric properties for each node in the graph. 
     The cross-sectional dimensions are calculated as follows:
+
     - The cross-sectional width is calculated as the difference between the maximum and minimum projected splay lengths in the u direction.
     - The cross-sectional height is calculated as the difference between the maximum and minimum projected splay lengths in the v direction.
     - The geometric mean of the cross-section radius is calculated as the square root of the product of half the cross-section width and half the cross-section height.  
@@ -321,9 +322,9 @@ def calc_conduit_dimensions(
     -------------------------
     - Depending on the survey data, some nodes may have no splays or only one splay, which can result in zero cross-sectional dimensions or biased estimates. 
     - The splay measurements may not be uniformly distributed around the node, which can also affect the accuracy of the cross-sectional dimensions. 
-    - Some cavers measure splays in the front and back of the station, sometime far away from the station and the projection of those splays may not 
+    - Some cavers measure splays in the front and back of the station, sometime far away from the station and the projection of those splays may not \
     be representative of the actual cross-section.
-    - For nodes with degree greater than 2 (intersections), the cross-sectional dimensions are calculated as 
+    - For nodes with degree greater than 2 (intersections), the cross-sectional dimensions are calculated as \
     the mean of the projected splay lengths, rather than the projections in the u and v directions. 
 
     Parameters
@@ -355,6 +356,7 @@ def calc_conduit_dimensions(
 
     output : str {'csdim' (default), 'cs_width', 'cs_height', 'geommean_radius', 'plotting_radius'}
         The type of geometric property to compute and return. Options are:
+        
         - 'csdim': cross-sectional dimensions (width and height)
         - 'cs_width': cross-sectional width
         - 'cs_height': cross-sectional height
