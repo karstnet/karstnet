@@ -143,7 +143,7 @@ def networkx_to_pline(G,
                     data_type = 'lines-points', #or 'points_only'
                     properties = [], #
                     nodata_value = '-999999999',
-                    name = 'graph_gocad_export',
+                    name = 'graph_pline_export',
                     node_id = [], #list of nodes id to export
                     pos_attr = 'pos'
                     ):
