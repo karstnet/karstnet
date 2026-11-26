@@ -75,6 +75,7 @@ def add_edges(G,additional_edges, dict_address=None, additional_flag = None, com
 
 def flag_nodes(G,flagged_nodes, dict_address=None):
     
+    
     """Add a string in the node attribute 'flag' of the networkx cave graph.
 
     Parameters
@@ -282,7 +283,30 @@ def flag_edges(G, flagged_edges, dict_address = None):
 
 
 
+def find_flags(G, attribute_name = 'flags'):
+    """List all the unique flags attached to the edges of a networkx cave graph.
 
+    Parameters
+    ----------
+    G : networkx graph 
+        Graph produced with the function kn.io_func.networkx_from_therion_sql
+
+    attribute_name : string, optional
+        name of the attribute attached to the graph, by default 'flags'
+
+    Returns
+    -------
+    list
+        list of unique flags attached to the edges of the graph
+    """
+    #extract flag unique values into a list
+    flags = {x for l in list(nx.get_edge_attributes(G,attribute_name).values()) for x in l}
+    return flags
+
+def list_flagged_edges(G, attribute_name, flag):
+    # the 'de' flags superseed the removing flags and prevents the points from being removed. its applied to edges that were fasly flagged
+    list_edges = [edge for edge, action in nx.get_edge_attributes(G,attribute_name).items() if ((flag in action) & ('de' not in action))]
+    return list_edges
 
 # def remove_edges()
 
@@ -310,7 +334,7 @@ def remove_flagged_edges(G, flags_to_remove=['srf','dpl','rmv','art','spl'], att
     """
     #edges_to_remove = list(dict(nx.get_edge_attributes(G,'flags')).keys()) 
     #extract flag unique values into a list
-    flags = {x for l in list(nx.get_edge_attributes(G,attribute_name).values()) for x in l}
+    flags = find_flags(G, attribute_name = attribute_name)
     #loop through the unique flags and 
 
 
