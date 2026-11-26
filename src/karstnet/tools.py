@@ -22,8 +22,9 @@ def remove_simple_cycles(
         G, 
         max_cycle_len=None,
         n_iter_max = None,
-        node_attr_mode='mean',
         node_weight=None,
+        edge_weight=None,
+        node_attr_mode='mean',
         node_attr_list=None,
         return_node_merging_count_dict=False,
         return_node_merging_list_dict=False,
@@ -46,7 +47,14 @@ def remove_simple_cycles(
 
     The node attributes in the output graph are computed according to the 
     attributes of the nodes merged (aggregated) from the input graph, using 
-    the mode(s)  specified in `node_attr_mode`.
+    the mode(s) specified in `node_attr_mode`
+
+    - `node_attr_mode='first'`: the attribute of the "first" node in the cycle is used
+    - `node_attr_mode='mean'`: mean is used
+    - `node_attr_mode='medoid'`: medoid is used, the medoid of the subgraph of the \
+    input graph induced by the nodes aggregated in one cluster is computed, where \
+    the medoid is the node realizing the minimum of the sum of the shortest path lengths \
+    wrt. `edgg_weight` to any other node
 
     The edge attributes are not considered for new edges.
 
@@ -72,11 +80,20 @@ def remove_simple_cycles(
         maximal number of iteration(s)
         by default (`None`): as many iterations as needed to remove all 
         cycles (not exceeding a length of `max_cycle_len`)
+    
+    edge_weight : str, optional
+        name of the edge attribute used as weight (for computing distance
+        between nodes);
+        by default (`None`) : all edges have a weight of 1
+
+    node_weight : str, optional
+        name of the node attribute used as weight to compute the weighted
+        mean if `node_attr_mode` is set to 'mean'
 
     node_attr_mode : str {'first', 'mean'} (or list of strs), default: 'mean'
         string or list of strings, the strings indicate how the node attributes
         (for nodes that are part of a cycle) are computed at each iteration
-         of the  in the output graph (see above)
+        in the output graph (see above)
 
         - if string: the same operation (mode) is used for all considered \
         node attributes
@@ -84,10 +101,8 @@ def remove_simple_cycles(
         the list `node_attr_list`, and `node_attr_mode[i]` indicates the \
         operation (mode) used for the node attribute `node_attr_list[i]`
 
-    node_weight : str, optional
-        name of the node attribute used as weight to compute the weighted
-        mean if `node_attr_mode` is set to 'mean'
-
+        Note that if the operation is not possible for an attribute, it will be ignored.
+        
     node_attr_list : list of strs, optional
         list of node attributes of the input graph to be included in 
         the output graph;
@@ -150,11 +165,11 @@ def remove_simple_cycles(
         if len(node_attr_mode) != len(node_attr_list):
             raise ValueError('Length of the list `node_attr_mode` is not valid')
 
-        if np.any([s not in ('first', 'mean') for s in node_attr_mode]):
+        if np.any([s not in ('first', 'mean', 'medoid') for s in node_attr_mode]):
             raise ValueError('Entry of the list `node_attr_mode` is not valid')
 
     else: # `node_attr_mode` assumed to be a string
-        if node_attr_mode not in ('first', 'mean'):
+        if node_attr_mode not in ('first', 'mean', 'medoid'):
             raise ValueError('`node_attr_mode` is not valid')
         node_attr_mode = len(node_attr_list)*[node_attr_mode]
 
@@ -169,10 +184,7 @@ def remove_simple_cycles(
 
     for n_iter in range(n_iter_max):
         # Get simple cycles to be removed
-        if max_cycle_len is not None:
-            cycle_nodes_list = [c for c in nx.simple_cycles(G_out) if len(c) <= max_cycle_len]
-        else:
-            cycle_nodes_list = [c for c in nx.simple_cycles(G_out)]
+        cycle_nodes_list = [c for c in nx.simple_cycles(G_out, length_bound=max_cycle_len)]
 
         # Remove cycles so that two cycles do not have common nodes
         i0 = 0
@@ -236,7 +248,28 @@ def remove_simple_cycles(
         G_out.add_edges_from(new_edges)
 
         # --- End for loop iter ---
+
+    # Compute medoid of each cluster (box) and set cluster (box) diameter, if needed
+    if 'medoid' in node_attr_mode:
+        medoid_id_dict = {} # initialization of the dictionary
+        
+        for u, u_list in node_merging_list_dict.items():
+            if len(u_list) == 0:
+                continue
+            
+            if len(u_list) == 1:
+                medoid_id_dict[u] = u_list[0]
+            else:            
+                G_cluster = nx.subgraph(G, u_list)
                 
+                d_sum_min = np.inf
+                for (v, dist_from_v) in nx.all_pairs_dijkstra_path_length(G_cluster, weight=edge_weight):
+                    d_sum = np.asarray(list(dist_from_v.values())).sum()
+                    if d_sum < d_sum_min:
+                        medoid = v
+                        d_sum_min = d_sum
+
+                medoid_id_dict[u] = medoid
 
     # Set node attributes (according to `node_attr_list` and `node_attr_mode`)
     failed_attr_list = [] # attributes in node_attr_list that could not be set in the output graph
@@ -249,8 +282,8 @@ def remove_simple_cycles(
                 G_out.nodes[u][attr] = d[u_list[0]][attr]
 
         elif mode == 'mean':
-            v0 = list(d.values())[0] # value of one node in G
             try:
+                v0 = list(d.values())[0] # value of one node in G
                 if node_weight is None:
                     for u, u_list in node_merging_list_dict.items():
                         if len(u_list) <= 1:
@@ -285,6 +318,10 @@ def remove_simple_cycles(
                 print(f'Warning: attribute {attr} could not be set in the output graph')
                 failed_attr_list.append(attr)
                 pass
+
+        elif mode == 'medoid':
+            for u in G_out.nodes():
+                G_out.nodes[u][attr] = d[medoid_id_dict[u]]
 
     # Remove node attributes that are not in `node_attr_list` or that failed to be set in the output graph
     remove_node_attr_list = failed_attr_list
@@ -817,7 +854,6 @@ def variogram_cloud(
     if np.all(np.isnan(v), axis=0).any():
         raise ValueError('The specified attribute (or one of its component) has only undefined (`nan`) values')
 
-
     # Initialize random number generator
     if seed is not None:
         np.random.seed(seed)
@@ -838,11 +874,11 @@ def variogram_cloud(
                 print(f'Progress: {progress:3d}%')
                 progress_old = progress
                 
+        ui = node_index2label[i]
+
         vi = v[i]
         if exclude_nan and np.isnan(vi).any():
             continue
-
-        ui = node_index2label[i]
 
         length_dict = nx.single_source_dijkstra_path_length(G, ui, cutoff=hmax, weight=edge_length_attr)
         for uj, hj in length_dict.items():
@@ -856,7 +892,7 @@ def variogram_cloud(
 
             h.append(h_ij)
             gamma.append(gamma_ij)
-
+        
     if verbose > 0:
         progress = 100
         print(f'Progress: {progress:3d}%')
@@ -878,6 +914,11 @@ def variogram_cloud(
         else: 
             plt.plot(h, gamma, label=[f'index {i}' for i in range(n_prop)], **kwargs)
             plt.legend()
+
+        # Set y-axis min at 0
+        plt.gca().autoscale(enable=True, axis='y', tight=False) # recompute ymax ! (otherwise, if ylim has already been set before, ymax is not recomputed and the plot may be cropped)
+        plt.ylim(bottom=0) # or plt.ylim(ymin=ymin)
+
         plt.xlabel('h (distance btween pair of nodes)')
         # plt.xlabel('h')
         # plt.ylabel(r'$1/2(Z(x)-Z(x+h))^2$ (with $Z$ considered variable)')
@@ -1079,6 +1120,11 @@ def variogram_exp_from_variogram_cloud(
                         if c > 0:
                             plt.text(hexp[i, j], gexp[i, j], str(c), ha='left', va='top')
                 plt.legend()
+
+        # Set y-axis min at 0
+        plt.gca().autoscale(enable=True, axis='y', tight=False) # recompute ymax ! (otherwise, if ylim has already been set before, ymax is not recomputed and the plot may be cropped)
+        plt.ylim(bottom=0) # or plt.ylim(ymin=ymin)
+
         plt.xlabel('h (distance btween pair of nodes)')
         # plt.xlabel('h')
         # plt.ylabel(r'$1/2(Z(x)-Z(x+h))^2$ (with $Z$ considered variable)')
@@ -1098,7 +1144,7 @@ def krige_node_attribute(
         node_attr,
         err_std=0.0,
         edge_length_attr=None,
-        method='ordinary_kriging',
+        method=None,
         mean=None,
         var=None,
         neighbors_on_same_branch_only=False,
@@ -1139,25 +1185,29 @@ def krige_node_attribute(
         nodes);
         by default (`None`): the edges have a length of one
 
-    method : str {'simple_kriging', 'ordinary_kriging'}, default: 'ordinary_kriging'
-        type of kriging;
-        note: if `method='ordinary_kriging'`, the parameter `mean` is not used
+    method : str {'simple_kriging', 'ordinary_kriging'}, optional
+        type of kriging; 
+        by default (`None`): the method is set to 'ordinary_kriging' if `mean` is `None`, 
+        otherwise it is set to 'simple_kriging';
+
+        notes:
+        - if `method='simple_kriging'` and `mean` is `None`, then `mean` is set to the mean of \
+        the known values of the node attribute `node_attr` \
+        (and simple kriging is performed with this mean value)
+        - if `method='ordinary_kriging'`, the parameters `mean` and `var` must be set to `None` \
+        (and ordinary kriging is performed)
 
     mean : float, or str, optional
         kriging mean value :
         - if float: the value is used at all graph nodes; 
         - if str: name of the node attribute for the mean 
         
-        by default (`None`), the mean of data node values is used for any node
+        by default (`None`), the mean of the known values of the node attribute `node_attr` is used
         
-        note: if `method=ordinary_kriging`, parameter `mean` is ignored
-
     var : float, or str, optional
         kriging variance value :
         - if float: the value is used at all graph nodes; 
-        - if str: name of the node attribute for the mean 
-
-        note: if `method=ordinary_kriging`, parameter `var` is ignored
+        - if str: name of the node attribute for the variance 
 
     neighbors_on_same_branch_only : bool, default: False
         - if `True`: only neighbors on the branch of the estimated graph node are used
@@ -1288,21 +1338,28 @@ def krige_node_attribute(
     # cov0 = cov_fun(np.array([0.]))[0] # covariance function at origin (lag=0)
     cov0 = cov_fun(0.0) # covariance function at origin (lag=0)
 
-    # Default mean value    
+    # Compute default mean value
     tmp = np.asarray(list(prop_dict.values()))
     if np.isnan(tmp).all():
         mean_default = 0.0
     else:
         # Set mean of data values
         mean_default = np.nanmean(tmp)
-    
+
+    # Method
+    if method is None:
+        if mean is not None:
+            method = 'simple_kriging'
+        else:
+            method = 'ordinary_kriging'
+
     # Method and mean, var
     if method == 'simple_kriging':
         ordinary_kriging = False
-        # Get the dictionary of mean kriging values
+        # Set / get the dictionary of mean kriging values
         if mean is not None:
             if isinstance(mean, float) or isinstance(mean, int):
-                mean_dict = {u:mean for u in G.nodes()}
+                mean_dict = {u: float(mean) for u in G.nodes()}
 
             elif isinstance(mean, str):
                 mean_dict = nx.get_node_attributes(G, mean, default=np.nan)
@@ -1313,10 +1370,10 @@ def krige_node_attribute(
                 raise ValueError(f'{pid_str}Specified mean is not valid')
 
         else:
-            mean_dict = {u:mean_default for u in G.nodes()}
+            mean_dict = {u: mean_default for u in G.nodes()}
     
-        # Get the dictionary of "variance update"
         if var is not None:
+            # Set / get the dictionary of "variance update"
             if isinstance(var, float) or isinstance(var, int):
                 tmp = np.sqrt(var/cov0)
                 var_update_dict = {u:tmp for u in G.nodes()}
@@ -1332,16 +1389,11 @@ def krige_node_attribute(
                 raise ValueError(f'{pid_str}Specified var is not valid')
 
     elif method == 'ordinary_kriging':
+        if mean is not None or var is not None:
+            raise ValueError(f"{pid_str}With `method='ordinary_kriging'`, `mean` and `var` must be `None`")
+ 
         ordinary_kriging = True
-        if verbose > 0 and mean is not None:
-            print(f"{pid_str}WARNING: `mean` is ignored with `method='ordinary_kriging'`")
-
-        mean = None
-
-        if verbose > 0 and var is not None:
-            print(f"{pid_str}WARNING: `var` is ignored with `method='ordinary_kriging'`")
-
-        var = None
+        # mean, var = None, None
 
     else:
         raise ValueError(f'{pid_str}`method` ({method}) unknown')
@@ -1591,7 +1643,7 @@ def krige_node_attribute_mp(
         node_attr,
         err_std=0.0,
         edge_length_attr=None,
-        method='ordinary_kriging',
+        method=None,
         mean=None,
         var=None,
         neighbors_on_same_branch_only=False,
@@ -1657,7 +1709,7 @@ def krige_node_attribute_mp(
         if verbose > 0 and nproc != nproc_tmp:
             print(f'Number of processes has been changed (now: nproc={nproc})')
 
-    # Set index for distributing realizations
+    # Set index for distributing nodes
     q, r = np.divmod(n_nodes, nproc)
     ids_proc = [i*q + min(i, r) for i in range(nproc+1)]
 
@@ -1722,7 +1774,7 @@ def sgs_node_attribute(
         node_attr,
         err_std=0.0,
         edge_length_attr=None,
-        method='ordinary_kriging',
+        method=None,
         mean=None,
         var=None,
         neighbors_on_same_branch_only=False,
@@ -1761,23 +1813,29 @@ def sgs_node_attribute(
         nodes);
         by default (`None`): the edges have a length of one
 
-    method : str {'simple_kriging', 'ordinary_kriging'}, default: 'ordinary_kriging'
-        type of kriging;
-        note: if `method='ordinary_kriging'`, the parameter `mean` is not used
+    method : str {'simple_kriging', 'ordinary_kriging'}, optional
+        type of kriging; 
+        by default (`None`): the method is set to 'ordinary_kriging' if `mean` is `None`, 
+        otherwise it is set to 'simple_kriging';
 
-    mean : float, or str, default : 0.0
+        notes:
+        - if `method='simple_kriging'` and `mean` is `None`, then `mean` is set to the mean of \
+        the known values of the node attribute `node_attr` \
+        (and simple kriging is performed with this mean value)
+        - if `method='ordinary_kriging'`, the parameters `mean` and `var` must be set to `None` \
+        (and ordinary kriging is performed)
+
+    mean : float, or str, optional
         kriging mean value :
         - if float: the value is used at all graph nodes; 
         - if str: name of the node attribute for the mean 
         
-        note: if `method=ordinary_kriging`, parameter `mean` is ignored
-
+        by default (`None`), the mean of the known values of the node attribute `node_attr` is used
+        
     var : float, or str, optional
         kriging variance value :
         - if float: the value is used at all graph nodes; 
-        - if str: name of the node attribute for the mean 
-
-        note: if `method=ordinary_kriging`, parameter `var` is ignored
+        - if str: name of the node attribute for the variance 
         
     neighbors_on_same_branch_only : bool, default: False
         - if `True`: only neighbors on the branch of the simulated graph node are used
@@ -1823,7 +1881,7 @@ def sgs_node_attribute(
     pid : int, optional
         process id of the caller (used with multiprocessing)
     
-    verbose : int, default: 0
+    verbose : int, default: 1
         verbose mode, higher implies more printing (info)
 
     Returns
@@ -1883,7 +1941,7 @@ def sgs_node_attribute(
     # cov0 = cov_fun(np.array([0.]))[0] # covariance function at origin (lag=0)
     cov0 = cov_fun(0.0) # covariance function at origin (lag=0)
 
-    # Default mean value    
+    # Compute default mean value    
     tmp = np.asarray(list(prop_dict.values()))
     if np.isnan(tmp).all():
         mean_default = 0.0
@@ -1891,24 +1949,34 @@ def sgs_node_attribute(
         # Set mean of data values
         mean_default = np.nanmean(tmp)
     
+    # Method
+    if method is None:
+        if mean is not None:
+            method = 'simple_kriging'
+        else:
+            method = 'ordinary_kriging'
+
     # Method and mean, var
     if method == 'simple_kriging':
         ordinary_kriging = False
-        # Get the dictionary of mean kriging values
+        # Set / get the dictionary of mean kriging values
         if mean is not None:
             if isinstance(mean, float) or isinstance(mean, int):
-                mean_dict = {u:mean for u in G.nodes()}
+                mean_dict = {u: float(mean) for u in G.nodes()}
 
             elif isinstance(mean, str):
                 mean_dict = nx.get_node_attributes(G, mean, default=np.nan)
                 if np.isnan(np.asarray(list(mean_dict.values()))).any():
                     raise ValueError(f'{pid_str}Specified mean is not defined at all graph nodes')
+            
+            else:
+                raise ValueError(f'{pid_str}Specified mean is not valid')
 
         else:
-            mean_dict = {u:mean_default for u in G.nodes()}
+            mean_dict = {u: mean_default for u in G.nodes()}
     
-        # Get the dictionary of "variance update"
         if var is not None:
+            # Set / get the dictionary of "variance update"
             if isinstance(var, float) or isinstance(var, int):
                 tmp = np.sqrt(var/cov0)
                 var_update_dict = {u:tmp for u in G.nodes()}
@@ -1924,16 +1992,11 @@ def sgs_node_attribute(
                 raise ValueError(f'{pid_str}Specified var is not valid')
 
     elif method == 'ordinary_kriging':
+        if mean is not None or var is not None:
+            raise ValueError(f"{pid_str}With `method='ordinary_kriging'`, `mean` and `var` must be `None`")
+ 
         ordinary_kriging = True
-        if verbose > 0 and mean is not None:
-            print(f"{pid_str}WARNING: `mean` is ignored with `method='ordinary_kriging'`")
-
-        mean = None
-
-        if verbose > 0 and var is not None:
-            print(f"{pid_str}WARNING: `var` is ignored with `method='ordinary_kriging'`")
-
-        var = None
+        # mean, var = None, None
 
     else:
         raise ValueError(f'{pid_str}`method` ({method}) unknown')
@@ -2050,8 +2113,10 @@ def sgs_node_attribute(
             if nn == 0:
                 # Mean and std (by kriging)
                 if mean is not None:
+                    # simple kriging
                     mu = mean_dict[u]
                 else:
+                    # ordinary kriging
                     mu = mean_default
 
                 std = float(np.sqrt(cov0))
@@ -2485,9 +2550,9 @@ def reduce_graph_spectral_kmeans(
     - `node_attr_mode='medoid'`: medoid is used, in that case each cluster must be \
     connected, i.e. must have one connected component; the medoid of the subgraph of the \
     input graph induced by the nodes in the cluster is computed, where the medoid is the \
-    node realizing the minimum of the sum of the shortest path lengths wrt. inverse of edge \
-    weight (i.e., wrt. resistances (instead of conductances determining the Laplacian matrix)) \
-    to any other node
+    node realizing the minimum of the sum of the shortest path lengths wrt. inverse of \
+    `edge_weight` (i.e., wrt. resistances (instead of conductances determining the Laplacian \
+    matrix)) to any other node
     
     Finally, an edge is set between two super-nodes if the two corresponding clusters are 
     linked in the original graph.
@@ -2532,6 +2597,8 @@ def reduce_graph_spectral_kmeans(
         of the list `node_attr_list`, and `node_attr_mode[i]` indicates the \
         operation (mode) used for the node attribute `node_attr_list[i]`
 
+        Note that if the operation is not possible for an attribute, it will be ignored.
+        
     node_attr_list : list of strs, optional
         list of node attributes of the input graph to be included in 
         the reduced graph;
@@ -2736,7 +2803,6 @@ def reduce_graph_spectral_kmeans(
     except Exception as exc:
         raise ValueError(f'exc')
 
-
     # Set dictionary `nodes_orig_id_dict` according to cluster index
     nodes_new_id_dict = {node_index2label[i]:int(cluster_ind[i]) for i in range(G.number_of_nodes())}
 
@@ -2746,24 +2812,27 @@ def reduce_graph_spectral_kmeans(
     for id in G.nodes():
         nodes_orig_id_dict[nodes_new_id_dict[id]].append(id)
 
-    # # Check if every cluster is connected
-    # ok = True
-    # for i in range(nclusters):
-    #     if nx.number_connected_components(nx.subgraph(G, nodes_orig_id_dict[i])) > 1:
-    #         ok = False
-    #         break
-    
-    # if not ok:
-    #     raise ValueError('A cluster is not connected (after K-means)')
-
-    # Check if every cluster is connected
+    # Check if every cluster is connected, and split them if needed
     cluster_ncc = np.asarray([nx.number_connected_components(nx.subgraph(G, nodes_orig_id_dict[i])) for i in range(nclusters)])
+    # print('nodes_new_id_dict =', nodes_new_id_dict)
+    # print('nodes_orig_id_dict =', nodes_orig_id_dict)
+    # print('cluster_ncc =', cluster_ncc)
     if np.any(cluster_ncc !=1 ):
+        k = nclusters
         ind = np.where(cluster_ncc > 1)[0]
         for i in ind:
-            print(f'... error: cluster {i} has {cluster_ncc[i]} connected components')
+            if verbose > 1:
+                print(f'Warning: ... cluster {i} has {cluster_ncc[i]} connected components, split this cluster into {cluster_ncc[i]} clusters')
+            cc_nodes_list = [cc for cc in nx.connected_components(nx.subgraph(G, nodes_orig_id_dict[i]))]
+            nodes_orig_id_dict[i] = list(cc_nodes_list[0])
+            for cc_nodes in cc_nodes_list[1:]:
+                for u in cc_nodes:
+                    nodes_new_id_dict[u] = nclusters
+                nodes_orig_id_dict[nclusters] = list(cc_nodes)
+                nclusters += 1
         
-        raise ValueError('Cluster(s) not connected (after K-means)')
+        if verbose > 0:
+            print(f'Warning: some clusters had more than one connected component, and have been split ({nclusters} clusters at total)')
 
     # Build the reduced (coarse) graph (output)
     if verbose > 0:
@@ -2813,23 +2882,56 @@ def reduce_graph_spectral_kmeans(
                 cluster_diameter_dict[i] = nx.diameter(G_cluster, weight=dist_edge_weight)
 
     # Set node attributes in the reduced graph (according to `node_attr_list` and `node_attr_mode`)
+    failed_attr_list = [] # attributes in node_attr_list that could not be set in the output graph
     for attr, mode in zip(node_attr_list, node_attr_mode):
         d = nx.get_node_attributes(G, attr, default=np.nan) # dictionary original_id:value_of_attribute
 
         if mode == 'mean':
-            v0 = list(d.values())[0] # value of one node in G
-            if hasattr(v0, '__len__'):
-                # attr_type = type(v0)[0]     # attribute type
+            try:
+                v0 = list(d.values())[0] # value of one node in G
                 for i in G_red.nodes():
                     # G_red.nodes[i][attr] = attr_type(np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0))
                     G_red.nodes[i][attr] = np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0)
-            else:
-                for i in G_red.nodes():
-                    G_red.nodes[i][attr] = np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0)[0]
+
+                if isinstance(v0, list):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = list(G_red.nodes[i][attr])
+
+                elif isinstance(v0, np.ndarray):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = np.asarray(G_red.nodes[i][attr])
+
+                elif isinstance(v0, tuple):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = tuple(float(x) for x in G_red.nodes[i][attr])
+                
+                else:
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = float(G_red.nodes[i][attr][0])
+
+            except:
+                print(f'Warning: attribute {attr} could not be set in the output graph')
+                failed_attr_list.append(attr)
+                pass
         
         elif mode == 'medoid':
             for i in G_red.nodes():
                 G_red.nodes[i][attr] = d[medoid_id_dict[i]]
+
+    # Remove node attributes that are not in `node_attr_list` or that failed to be set in the output graph
+    remove_node_attr_list = failed_attr_list
+    # for attr in kn.utils.get_node_attribute_names(G_red):
+    #     if attr not in node_attr_list:
+    #         remove_node_attr_list.append(attr)
+    for attr in set([k for n in G_red.nodes for k in G_red.nodes[n].keys()]):
+        if attr not in node_attr_list:
+            remove_node_attr_list.append(attr)
+    
+    for attr in remove_node_attr_list:
+        # kn.utils.remove_node_attribute(G_red, attr)
+        for u in G_red.nodes():
+            if attr in G_red.nodes[u].keys():
+                del G_red.nodes[u][attr]
 
     out = [G_red]
     if return_new_id_dict:
@@ -2934,7 +3036,7 @@ def reduce_graph_memb(
     is used, `node_attr_mode='medoid'`: medoid is used, the medoid of the subgraph \
     of the input graph induced by the nodes in the cluster is computed, where the \
     medoid is the node realizing the minimum of the sum of the shortest path lengths \
-    (wrt. edge weight) to any other node
+    (wrt. `edge_weight`) to any other node
     - an edge is set between two nodes if the two corresponding clusters \
     are linked in the original graph
 
@@ -2974,6 +3076,8 @@ def reduce_graph_memb(
         - if list of strings: the length of the list must be equal to the length \
         of the list `node_attr_list`, and `node_attr_mode[i]` indicates the \
         operation (mode) used for the node attribute `node_attr_list[i]`
+
+        Note that if the operation is not possible for an attribute, it will be ignored.
 
     node_attr_list : list of strs, optional
         list of node attributes of the input graph to be included in 
@@ -3311,6 +3415,7 @@ def reduce_graph_memb(
                 cluster_diameter_dict[i] = nx.diameter(G_cluster, weight=edge_weight)
 
     # Set node attributes in the reduced graph (according to `node_attr_list` and `node_attr_mode`)
+    failed_attr_list = [] # attributes in node_attr_list that could not be set in the output graph
     for attr, mode in zip(node_attr_list, node_attr_mode):
         d = nx.get_node_attributes(G, attr, default=np.nan) # dictionary original_id:value_of_attribute
         if mode == 'center':
@@ -3318,19 +3423,51 @@ def reduce_graph_memb(
                 G_red.nodes[nodes_new_id_dict[c]][attr] = d[c]
 
         elif mode == 'mean':
-            v0 = list(d.values())[0] # value of one node in G
-            if hasattr(v0, '__len__'):
-                # attr_type = type(v0)[0]     # attribute type
+            try:
+                v0 = list(d.values())[0] # value of one node in G
                 for i in G_red.nodes():
                     # G_red.nodes[i][attr] = attr_type(np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0))
                     G_red.nodes[i][attr] = np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0)
-            else:
-                for i in G_red.nodes():
-                    G_red.nodes[i][attr] = np.nanmean(np.asarray([np.atleast_1d(d[j]) for j in nodes_orig_id_dict[i]]), axis=0)[0]
+
+                if isinstance(v0, list):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = list(G_red.nodes[i][attr])
+
+                elif isinstance(v0, np.ndarray):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = np.asarray(G_red.nodes[i][attr])
+
+                elif isinstance(v0, tuple):
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = tuple(float(x) for x in G_red.nodes[i][attr])
+                
+                else:
+                    for i in G_red.nodes():
+                        G_red.nodes[i][attr] = float(G_red.nodes[i][attr][0])
+
+            except:
+                print(f'Warning: attribute {attr} could not be set in the output graph')
+                failed_attr_list.append(attr)
+                pass
         
         elif mode == 'medoid':
             for i in G_red.nodes():
                 G_red.nodes[i][attr] = d[medoid_id_dict[i]]
+
+    # Remove node attributes that are not in `node_attr_list` or that failed to be set in the output graph
+    remove_node_attr_list = failed_attr_list
+    # for attr in kn.utils.get_node_attribute_names(G_red):
+    #     if attr not in node_attr_list:
+    #         remove_node_attr_list.append(attr)
+    for attr in set([k for n in G_red.nodes for k in G_red.nodes[n].keys()]):
+        if attr not in node_attr_list:
+            remove_node_attr_list.append(attr)
+    
+    for attr in remove_node_attr_list:
+        # kn.utils.remove_node_attribute(G_red, attr)
+        for u in G_red.nodes():
+            if attr in G_red.nodes[u].keys():
+                del G_red.nodes[u][attr]
 
     out = [G_red]
     if return_new_id_dict:
@@ -4328,7 +4465,7 @@ def graph_random_walk_dimension(
     (all the same if not given); then, assuming the relationship
     
     .. math::
-        R^2 \propto t^{2/d_{rw}}
+        R^2 \\propto t^{2/d_{rw}}
     
     where :math:`R^2` is the mean Euclidean square distance travelled, and
     :math:`t` the numnber of time steps, the random walk dimension (also 

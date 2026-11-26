@@ -266,7 +266,7 @@ def plot_graph2d(
                 cmap = plt.get_cmap(kwargs_base['cmap'])
                 cbad = cmap.get_bad()
                 # cbad = matplotlib.colors.to_rgba(cbad)
-                cbad = matplotlib.colors.to_hex(cbad)
+                cbad = matplotlib.colors.to_hex(cbad, keep_alpha=True)
                 kwargs_base['node_color'] = cbad
         
             # Remove 'cmap' key
@@ -303,7 +303,7 @@ def plot_graph2d(
                 edge_cmap = plt.get_cmap(kwargs_base['edge_cmap'])
                 edge_cbad = edge_cmap.get_bad()
                 # edge_cbad = matplotlib.colors.to_rgba(edge_cbad)
-                edge_cbad = matplotlib.colors.to_hex(edge_cbad)
+                edge_cbad = matplotlib.colors.to_hex(edge_cbad, keep_alpha=True)
                 kwargs_base['edge_color'] = edge_cbad
 
             # Remove 'edge_cmap' key
@@ -704,12 +704,12 @@ def plot_graph3d(
 
             if 'c' in options_nodes.keys():
                 # cbad = matplotlib.colors.to_rgba(options_nodes['c'])
-                cbad = matplotlib.colors.to_hex(options_nodes['c'])
+                cbad = matplotlib.colors.to_hex(options_nodes['c'], keep_alpha=True)
                 del(options_nodes['c'])
 
             if 'color' in options_nodes.keys():
                 # cbad = matplotlib.colors.to_rgba(options_nodes['color'])
-                cbad = matplotlib.colors.to_hex(options_nodes['color'])
+                cbad = matplotlib.colors.to_hex(options_nodes['color'], keep_alpha=True)
                 del(options_nodes['color'])
 
             # Set (update) s (node size) option
@@ -774,15 +774,15 @@ def plot_graph3d(
 
             cmap = plt.get_cmap(cmap)
             # cbad = matplotlib.colors.to_rgba(cmap.get_bad())
-            cbad = matplotlib.colors.to_hex(cmap.get_bad())
+            cbad = matplotlib.colors.to_hex(cmap.get_bad(), keep_alpha=True)
             if 'c' in options_edges.keys():
                 # cbad = matplotlib.colors.to_rgba(options_edges['c'])
-                cbad = matplotlib.colors.to_hex(options_edges['c'])
+                cbad = matplotlib.colors.to_hex(options_edges['c'], keep_alpha=True)
                 del(options_edges['c'])
 
             if 'color' in options_edges.keys():
                 # cbad = matplotlib.colors.to_rgba(options_edges['color'])
-                cbad = matplotlib.colors.to_hex(options_edges['color'])
+                cbad = matplotlib.colors.to_hex(options_edges['color'], keep_alpha=True)
                 del(options_edges['color'])
 
             t = 1.0/(vmax - vmin)
@@ -1225,7 +1225,7 @@ def pv_plot_graph(
 
             if 'color' in options_nodes.keys():
                 # cbad = matplotlib.colors.to_rgba(options_nodes['color'])
-                cbad = matplotlib.colors.to_hex(options_nodes['color'])
+                cbad = matplotlib.colors.to_hex(options_nodes['color'], keep_alpha=True)
                 del(options_nodes['color'])
 
             if 'nan_color' not in options_nodes.keys():
@@ -1261,12 +1261,12 @@ def pv_plot_graph(
 
             if below_color is not None and 'below_color' not in options_nodes.keys():
                 # below_color = matplotlib.colors.to_rgba(below_color)
-                below_color = matplotlib.colors.to_hex(below_color)
+                below_color = matplotlib.colors.to_hex(below_color, keep_alpha=True)
                 options_nodes['below_color'] = below_color
 
             if above_color is not None and 'above_color' not in options_nodes.keys():
                 # above_color = matplotlib.colors.to_rgba(above_color)
-                above_color = matplotlib.colors.to_hex(above_color)
+                above_color = matplotlib.colors.to_hex(above_color, keep_alpha=True)
                 options_nodes['above_color'] = above_color
 
             if scale_point:
@@ -1337,7 +1337,7 @@ def pv_plot_graph(
 
             if 'color' in options_edges.keys():
                 # cbad = matplotlib.colors.to_rgba(options_edges['color'])
-                cbad = matplotlib.colors.to_hex(options_edges['color'])
+                cbad = matplotlib.colors.to_hex(options_edges['color'], keep_alpha=True)
                 del(options_edges['color'])
 
             if 'nan_color' not in options_edges.keys():
@@ -1373,12 +1373,12 @@ def pv_plot_graph(
 
             if below_color is not None and 'below_color' not in options_edges.keys():
                 # below_color = matplotlib.colors.to_rgba(below_color)
-                below_color = matplotlib.colors.to_hex(below_color)
+                below_color = matplotlib.colors.to_hex(below_color, keep_alpha=True)
                 options_edges['below_color'] = below_color
 
             if above_color is not None and 'above_color' not in options_edges.keys():
                 # above_color = matplotlib.colors.to_rgba(above_color)
-                above_color = matplotlib.colors.to_hex(above_color)
+                above_color = matplotlib.colors.to_hex(above_color, keep_alpha=True)
                 options_edges['above_color'] = above_color
 
             pp.add_mesh(mesh, scalars=scalars, **options_edges, show_scalar_bar=False)
@@ -1741,7 +1741,7 @@ def get_mesh_plane(p, u, v, len_u, len_v, nu=2, nv=2, mesh_type='TRIANGLE'):
 #             cbad = cmap.get_bad()
 
 #             if 'color' in options_nodes.keys():
-#                 cbad = matplotlib.colors.to_hex(options_nodes['color'])
+#                 cbad = matplotlib.colors.to_hex(options_nodes['color'], keep_alpha=True)
 #                 del(options_nodes['color'])
 
 #             if 'nan_color' not in options_nodes.keys():
@@ -1776,11 +1776,11 @@ def get_mesh_plane(p, u, v, len_u, len_v, nu=2, nv=2, mesh_type='TRIANGLE'):
 #                 options_nodes['clim'] = clim
 
 #             if below_color is not None and 'below_color' not in options_nodes.keys():
-#                 below_color = matplotlib.colors.to_hex(below_color)
+#                 below_color = matplotlib.colors.to_hex(below_color, keep_alpha=True)
 #                 options_nodes['below_color'] = below_color
 
 #             if above_color is not None and 'above_color' not in options_nodes.keys():
-#                 above_color = matplotlib.colors.to_hex(above_color)
+#                 above_color = matplotlib.colors.to_hex(above_color, keep_alpha=True)
 #                 options_nodes['above_color'] = above_color
 
 #             pp.add_mesh(meshp, render_points_as_spheres=True, **options_nodes, show_scalar_bar=False)
@@ -1813,7 +1813,7 @@ def get_mesh_plane(p, u, v, len_u, len_v, nu=2, nv=2, mesh_type='TRIANGLE'):
 #             cbad = cmap.get_bad()
 
 #             if 'color' in options_edges.keys():
-#                 cbad = matplotlib.colors.to_hex(options_edges['color'])
+#                 cbad = matplotlib.colors.to_hex(options_edges['color'], keep_alpha=True)
 #                 del(options_edges['color'])
 
 #             if 'nan_color' not in options_edges.keys():
@@ -1848,11 +1848,11 @@ def get_mesh_plane(p, u, v, len_u, len_v, nu=2, nv=2, mesh_type='TRIANGLE'):
 #                 options_edges['clim'] = clim
 
 #             if below_color is not None and 'below_color' not in options_edges.keys():
-#                 below_color = matplotlib.colors.to_hex(below_color)
+#                 below_color = matplotlib.colors.to_hex(below_color, keep_alpha=True)
 #                 options_edges['below_color'] = below_color
 
 #             if above_color is not None and 'above_color' not in options_edges.keys():
-#                 above_color = matplotlib.colors.to_hex(above_color)
+#                 above_color = matplotlib.colors.to_hex(above_color, keep_alpha=True)
 #                 options_edges['above_color'] = above_color
 
 #             pp.add_mesh(mesh, scalars=scalars, **options_edges, show_scalar_bar=False)

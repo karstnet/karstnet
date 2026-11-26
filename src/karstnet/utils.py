@@ -11,7 +11,7 @@ import os
 
 # -------------------------------------------------------------------------
 def rescale_array(arr, out_min, out_max, exponent=1, nan_val=None, in_min=None, in_max=None):
-    """Rescales array values linearly.
+    """Rescales array values between `out_min` and `out_max` with a polynomial transformation.
     
     Parameters
     ----------

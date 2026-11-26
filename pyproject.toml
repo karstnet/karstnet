@@ -7,17 +7,19 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "karstnet"
 description = "Statistical characterization of karst networks"
-#version = "1.2.5"
+#version = "0.0.1"
 dynamic = [
    "version"
 ]
 authors = [
   { name="Philippe Renard", email="philippe.renard@unine.ch"},
-  { name="Pauline Collon", email="pauline.collon@univ-lorraine.fr"}
+  { name="Pauline Collon", email="pauline.collon@univ-lorraine.fr"},
+  { name="Celia Trunz", email="celia.trunz@unine.ch"},
+  { name="Julien Straubhaar", email="julien.straubhaar@unine.ch"}
 ]
 readme = "README.md"
 license = { file = "LICENSE" }
-keywords = ["geomorphology", "karst", "graph", "statistics"]
+keywords = ["graph", "karst", "statistics", "geomorphology"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

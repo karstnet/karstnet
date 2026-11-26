@@ -93,15 +93,15 @@ class KGraph:
     - graph_of_branches : networkx.Graph
         the graph of branches of the karstic network, where a node represents 
         a branch in the original graph (labeled by integers from 0) and an edge
-        exists between two nodes if the two branches represented by the two nodes 
-        have a common extremity, with
+        exists between two nodes if the two represented branches have a common 
+        extremity (in the original graph), with
 
         - node attributes :
             - 'pos' : sequence of 2 or 3 floats
                 mean position of the original graph nodes in the branch
                 represented by the node
 
-            - 'length' : flaot
+            - 'length' : float
                 real length of the branch represented by the node
         
     - branches : list
@@ -2061,6 +2061,10 @@ class KGraph:
             else: 
                 plt.plot(h, gamma, label=[f'index {i}' for i in range(n_prop)], **kwargs)
                 plt.legend()
+
+            # Set y-axis min at 0
+            plt.gca().autoscale(enable=True, axis='y', tight=False) # recompute ymax ! (otherwise, if ylim has already been set before, ymax is not recomputed and the plot may be cropped)
+            plt.ylim(bottom=0) # or plt.ylim(ymin=ymin)
 
             plt.xlabel('h (distance btween pair of nodes)')
             # plt.xlabel('h')
