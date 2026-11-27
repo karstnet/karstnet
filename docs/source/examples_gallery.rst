@@ -56,7 +56,7 @@ The following notebooks illustrate some functions to generate synthetic networks
         E3 - Generating miscellaneous networks (percolation) <notebooks/E3-Misc-Percloation-networks>
 
 Reducing / Coarsening networks
------------------------------
+------------------------------
 The following notebooks illustrate some functions to coarsen (reduce) graphs.
 
     .. nbgallery::

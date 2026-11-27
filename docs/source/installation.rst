@@ -36,8 +36,8 @@ Alternatively:
 
 .. tip::
     To check if the installation was done properly, from the source directory, and after instaling **karstnet**, run::
-
-    pytest tests/test_karstnet.py
+        
+    `pytest tests/test_karstnet.py`
 
 
 Dependencies

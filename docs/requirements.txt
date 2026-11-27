@@ -1,0 +1,6 @@
+sphinx
+sphinx-gallery
+nbsphinx
+sphinx_rtd_theme
+ipython
+karstnet

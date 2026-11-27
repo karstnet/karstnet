@@ -1,4 +1,4 @@
-V2.0.0 TODOLIST
+<!-- V2.0.0 TODOLIST
 
 test Notebooks:
 - [x] notebooks\Read_and_clean_therionSQL.ipynb 
@@ -57,118 +57,97 @@ Environment:
 - [ ] dev should replace the previous environnement?
 - [ ] verify if all the packages are needed
 - [ ] is geone needed? do we want to keep krigeage?
-- [ ] geopandas is only used for shapefile import/export function
+- [ ] geopandas is only used for shapefile import/export function -->
 
 # Karstnet - statistics of karstic networks
 
+[![Documentation Status](https://readthedocs.org/projects/karstnet/badge/?version=latest)](https://karstnet.readthedocs.io/en/latest/?badge=latest)
+
+**Current version : 2.0.0 - December 2026** <!-- Update manually here! see src/karstnet/_version.py -->
+
 Karstnet is a python3 project providing tools for the statistical analysis of karstic networks.
-
-<!-- [![Documentation Status](https://readthedocs.org/projects/karstnet/badge/?version=latest)](https://karstnet.readthedocs.io/en/latest/?badge=latest) -->
-
-
-
-Version 1.4.4 - July 2025
 
 Please check the file [changelog.md](changelog.md) to track the novel functionalities of karstnet.
 
+## Installation from [PyPI](https://pypi.org/project/karstnet)
 
-## Simple installation from pypi.org
-
-If you just need to use karstnet (e.g. in Jupyter notebooks), the simplest way to install it is to get it from [Pypi.org](https://pypi.org/) by typing the command:
+In a terminal (Python prompt), type:
 
 `pip install karstnet`
 
-This command should install directly all the required dependencies for a fully functional version of karstnet and you do not need to download manually anything.
+## Installation from Github
 
-## Installation from github
+In a terminal (Python prompt), change directory where to download Karstnet, and type:
 
-If you want to access the source code and potentially contribute. You should follow the following steps.
+    git clone https://github.com/karstnet/karstnet.git
+    cd karstnet
+    pip install .
 
-### 1. Download
+**Note.** Use `pip install . --verbose` or `pip install . -v` for printing (more) messages during the installation.
 
-Download karstnet from the [Github repository](https://github.com/karstnet/karstnet): green button "clone or download". Then, unzip it on your computer. 
+Alternatively:
 
+- Instead of `git clone ...`, you can download Karstnet by clicking on the green button "code" and choose "Download ZIP". 
+- Then, unzip the archive on your computer.
+- Finally, in a terminal (Python prompt), go into the unzipped directory, and type `pip install .`
 
-### 2. Go in the directory
+### Installation in editable mode
 
-Once this has been done, open a Python prompt (like the Anaconda prompt), and go to your directory location (ex: 
-`cd C:\Users\YourName\Documents\KARSTNET\karstnet`).
+If you want to run it directly from the source files (useful for development), instead of `pip install .`, type:
 
-### 3. Launch the local installation
+`pip install -e .`
 
-You have three options: the minimal one will install the code.
+To install all the dependencies used in karstnet to have complete development environment:
 
-`pip install .`
+`pip install -e .[dev]`
 
-Do not forget the point "." at the end of the command
-
-If you want to run it directly from the source files (useful for development):
-
-` pip install -e .`
-
-You can also install all the dependencies used in karstnet to have complete development environment:
-
-` pip install -e .[dev]`
-
-All these options can also be run without moving previously in the karstnet folder. 
-In that case, just type in your Anaconda prompt :
-
-` pip install -e your\path\to\karstnet` 
-
-### 4. Testing
+### Testing
 
 If you start modifying the code, you should regularly check that you did not break some key features. For that you can run the unit tests.  From source directory, and after instaling **karstnet** run:
 
 `pytest tests/test_karstnet.py`
 
-## In Jupyter notebooks
+**Note.** In a "Python session", to import and print version of the Karstnet package, type:
 
-Example of jupyter notebooks are provided to help you use **karstnet**. 
-To use **karstnet** in notebooks, you just have to write
+```
+import karstnet as kn
+print(kn.__version__)
+```
 
-`import karstnet as kn`
+## Documentation and examples
 
-A call-test function is available to help you check if the package is ready to use : just type: 
-`kn.test_kn()`
+The documentation of Karstnet is on https://karstnet.readthedocs.io.
 
-## Documentation
+The notebooks (examples) from the documentation are available in [docs/source/notebooks](https://github.com/karstnet/karstnet/tree/master/docs/source/notebooks).
 
-The html documentation is available in the sub directory:  [docs/_build/html/index.html](docs/_build/html/index.html)
- and it is available online at: https://karstnet.readthedocs.io/
+### Additional resources
 
 A french version of a guide for students willing to code karstnet extensions is available:
 [FR_GuideDebutant_karstnet_jupyter_github.pdf](docs/pdf/FR_GuideDebutant_karstnet_jupyter_github.pdf)
 
+**Remark on ENTROPIES**
 
-**Remark on ENTROPIES**:
 Note that, by default, Karstnet computes Entropies as described in the paper (mode = "default") : 
 on normalized values ranged on 10 bins for branch lengths and on 18 bins of 10° for orientations
 
-**If you want to compute entropies using Sturges'rule use** : 
+**If you want to compute entropies using Sturges'rule use**
+
 l_entrop = myKGraph.length_entropy(mode = "sturges")
 or_entropy = myKGraph.orientation_entropy(mode = "sturges")
 
 
 ## Reference and Corrigendum
 
-The karstnet package implements some of the statistical metrics that were
-investigated and discussed in:
-Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical
-metrics for the characterization of karst network geometry and topology.
-Geomorphology. 283: 122-142 doi:10.1016/j.geomorph.2017.01.034
-<http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034>
+The karstnet package implements some of the statistical metrics that were investigated and discussed in:
+- Collon, P., Bernasconi D., Vuilleumier C., and Renard P., 2017, Statistical metrics for the characterization of karst network geometry and topology. Geomorphology. 283: 122-142 [doi:10.1016/j.geomorph.2017.01.034]
+(http://dx.doi.org/doi:10.1016/j.geomorph.2017.01.034)
 
-An **updated paper** (see remarks below) is available in the "doc" folder of this github and 
-can be downloaded here  <https://hal.univ-lorraine.fr/hal-01468055v3/document>. 
- (complete link : <https://hal.univ-lorraine.fr/hal-01468055>)
+An **updated paper** (see remarks below) is available in the "doc" folder of this github repository, [2016Pap_Collon_Geomorphology_Autho_Upd_2021.pdf](docs/pdf/2016Pap_Collon_Geomorphology_Autho_Upd_2021.pdf), and 
+can be downloaded here  <https://hal.univ-lorraine.fr/hal-01468055v3/document> (complete link : <https://hal.univ-lorraine.fr/hal-01468055>).
 
 **Concerning the paper, important remarks should be made :** 
 
-There was some **errors** in the old Matlab implementation (the one used for the paper) **that have been corrected in Karstnet**. 
-A **corrigendum** has been published in Geomorphology journal : Geomorphology 389, 107848. <http://dx.doi.org/doi:10.1016/j.geomorph.2021.107848>.
-The **results** obtained on the same 34 networks than the ones used for the paper but 
-with the **implementation of Karstnet** are proposed for information in the **doc part** (New_Statistics_results.xls) 
-as well as the updated author version of the paper in pdf : **2016Pap_Collon_Geomorphology_Autho_Upd_2021.pdf**.
+There was some **errors** in the old Matlab implementation (the one used for the paper) **that have been corrected in Karstnet**. A **corrigendum** has been published in Geomorphology journal : Geomorphology 389, 107848. [doi:10.1016/j.geomorph.2021.107848](http://dx.doi.org/doi:10.1016/j.geomorph.2021.107848). The **results** obtained on the same 34 networks than the ones used for the paper but with the **implementation of Karstnet** are proposed for information in [New_Statistics_results.xls](docs/data_table/NewStatistics_result.xlsx) as well as the updated author version of the paper in pdf: [2016Pap_Collon_Geomorphology_Autho_Upd_2021.pdf](docs/pdf/2016Pap_Collon_Geomorphology_Autho_Upd_2021.pdf).
 
 Here we summarize the main differences : 
 
@@ -183,3 +162,15 @@ Here we summarize the main differences :
 **SPL** : In addition, the previous code also ignored independent connected components of two nodes. This is not justified. This correction slightly impacts the values of the (SPL) coefficient of Agen Allwed, Arphidia Robinet, Daren Cilau, Grotte du Roy, Krubera, Lechuguilla, Llangattwg, MammuthHöhle Ratasse, SaintMarcel, Sakany, SiebenHengsteUpPart
 
 We are sorry for any inconvenience.
+
+## Authors
+Karstnet is developped by the Karstnet team:
+
+   - [Philippe Renard](https://www.unine.ch/chyn/biography/philippe-renard)
+   - [Pauline Collon](http://www.ring-team.org/index.php/home/team?view=user&limitstart=0&id=189)
+   - [Celia Trunz](https://scholar.google.com/citations?user=fiCgGZIAAAAJ)
+   - [Julien Straubhaar](https://scholar.google.com/citations?user=N52N2P0AAAAJ)
+
+## License
+
+Released under the [MIT license](https://github.com/karstnet/karstnet/blob/master/LICENSE).
